@@ -216,18 +216,6 @@
   <button id="playAudioBtn">Ativar Som</button>
 
 <script>
-/* DEBUG: mostra erros via alert para depuração móvel */
-window.onerror = function(message, source, lineno, colno, error) {
-  try {
-    alert("Erro JS: " + message + "\nLinha: " + lineno + (colno ? (":" + colno) : ""));
-  } catch(e){}
-  console.error("Erro JS:", message, "at", lineno, colno, error);
-};
-window.addEventListener('unhandledrejection', function(e){
-  try{ alert("Promise rejeitada: " + (e.reason && e.reason.message ? e.reason.message : String(e.reason))); }catch(err){}
-  console.error("Unhandled rejection:", e);
-});
-</script>
 /* ========= Simple game logic + UI glue (single-file) ========= */
 /* Utilities */
 const uid = (p='') => p + Math.random().toString(36).slice(2,9);
