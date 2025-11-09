@@ -1,20 +1,395 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RPG da Vida</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <script type="module" src="assets/js/game.js" defer></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>RPG da Vida</title>
+<style>
+  /* Reset + base */
+  :root{
+    --bg-dark1:#120421; --bg-dark2:#2a083a; --accent:#C084FC; --muted:#ddd;
+    --light1:#f3eefb; --light2:#e8def8; --tile:#efe9fb;
+  }
+  html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-dark1),var(--bg-dark2));color:#eef2ff}
+  .app{max-width:420px;margin:0 auto;height:100vh;display:flex;flex-direction:column;gap:8px;padding:10px;box-sizing:border-box}
+  /* header */
+  .header{display:flex;justify-content:space-between;align-items:center}
+  .title{font-weight:800;letter-spacing:1px}
+  .controls{display:flex;gap:8px;align-items:center}
+  .icon-btn{width:40px;height:40px;background:rgba(255,255,255,0.03);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  /* top menu */
+  .menu-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:10px}
+  .selector{display:flex;align-items:center;justify-content:center;gap:12px}
+  .sel-box{min-width:160px;text-align:center;font-weight:700;padding:8px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06))}
+  .arrow{width:36px;height:36px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer}
+  /* avatar and item */
+  .play-area{display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:flex-start}
+  .avatar-rect{width:240px;height:120px;background:linear-gradient(180deg,rgba(76,29,149,0.6),rgba(31,6,74,0.6));border:3px solid rgba(192,148,255,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative}
+  .avatar-rect svg{image-rendering:pixelated}
+  .item-slot{width:72px;height:72px;margin-top:8px;background:rgba(255,255,255,0.03);border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .xp-info{width:100%}
+  .xp-bar{width:100%;height:20px;background:#555;border-radius:6px;overflow:hidden;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.4);margin-top:6px}
+  .xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#5dc3ff,#c084fc);transition:width .6s}
+  .tasks{margin-top:6px;display:flex;flex-direction:column;gap:8px}
+  .task{display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.02);border-radius:6px}
+  .task .meta{font-size:12px;color:#ddd}
+  /* calendar / scheduling UI */
+  .small{font-size:12px;color:#ddd}
+  /* loading screen */
+  #loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#120421,#4c1d95);color:#fff;z-index:9999;flex-direction:column}
+  #loadingBar{width:260px;height:14px;background:#333;border-radius:8px;overflow:hidden;margin-top:12px}
+  #loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#5dc3ff,#c084fc);transition:width 0.4s}
+  /* modal settings */
+  .modal {position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:10000}
+  .modal .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));padding:14px;border-radius:10px;width:320px}
+  .hamb{position:fixed;right:12px;top:12px;z-index:10001}
+  /* responsive orientation handling */
+  @media (orientation:portrait){
+    body{height:100vh}
+  }
+  @media (orientation:landscape){
+    .app{max-width:100%;height:100vh;padding:14px}
+  }
+  /* pixel style arrows animation */
+  .arrow:active{transform:translateY(1px)}
+  /* mini badges */
+  .badge{padding:4px 8px;border-radius:6px;background:rgba(0,0,0,0.2);font-weight:700}
+  /* task importance colors */
+  .imp-1{background:transparent}
+  .imp-2{box-shadow:0 0 6px rgba(192,148,255,0.06)}
+  .imp-3{box-shadow:0 0 10px rgba(192,148,255,0.12)}
+  .imp-4{box-shadow:0 0 14px rgba(192,148,255,0.18)}
+  /* small play button for sound */
+  #playAudioBtn{position:fixed;right:12px;top:70px;z-index:10002;padding:8px 10px;border-radius:6px;background:#7C3AED;color:#fff;border:none;display:none}
+  /* fight animation placeholder */
+  .battle-area{width:100%;height:140px;background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12));border-radius:8px;display:flex;align-items:center;justify-content:space-around;padding:8px;box-sizing:border-box}
+  .monster{width:96px;height:96px;display:flex;align-items:center;justify-content:center}
+  .avatar-small{width:96px;height:96px;display:flex;align-items:center;justify-content:center}
+  /* footer small */
+  .footer{font-size:12px;color:#ccc;text-align:center;margin-top:auto;padding-bottom:6px}
+</style>
 </head>
 <body>
-  <div id="loading-screen">
-    <h2>RPG da Vida — Carregando...</h2>
-    <div class="progress-bar"><div class="progress"></div></div>
+  <!-- Loading -->
+  <div id="loadingScreen">
+    <div style="font-weight:800;font-size:20px">RPG da Vida — Carregando...</div>
+    <div id="loadingBar"><div id="loadingFill"></div></div>
   </div>
 
-  <div id="game-container" class="hidden">
-    <!-- O jogo completo será renderizado aqui -->
+  <div class="app" id="app" style="display:none">
+    <div class="header">
+      <div class="title">RPG da Vida</div>
+      <div class="controls">
+        <div class="icon-btn hamb" id="hambBtn" title="Configurações ☰">☰</div>
+      </div>
+    </div>
+
+    <!-- Top menu selectors -->
+    <div class="menu-card" id="startMenu">
+      <div class="selector">
+        <div style="flex:1">Gênero</div>
+        <div class="arrow" id="genLeft">◀</div>
+        <div class="sel-box" id="selGender">Masculino</div>
+        <div class="arrow" id="genRight">▶</div>
+      </div>
+      <div class="selector">
+        <div style="flex:1">Modo</div>
+        <div class="arrow" id="modeLeft">◀</div>
+        <div class="sel-box" id="selMode">Escuro</div>
+        <div class="arrow" id="modeRight">▶</div>
+      </div>
+      <div class="selector">
+        <div style="flex:1">Música</div>
+        <div class="arrow" id="musicLeft">◀</div>
+        <div class="sel-box" id="selMusic">Intermediária</div>
+        <div class="arrow" id="musicRight">▶</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
+        <button id="confirmBtn" style="padding:8px 12px;background:#7C3AED;border:none;color:#fff;border-radius:8px;font-weight:700">Confirmar</button>
+      </div>
+    </div>
+
+    <!-- Main game area -->
+    <div id="gameUI" style="display:none">
+      <div class="play-area">
+        <div class="avatar-rect" id="avatarRect" role="img" aria-label="Avatar">
+          <!-- SVG avatar (rectangular) - will switch gender via JS -->
+          <svg id="avatarSVG" width="220" height="100" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="6" width="208" height="88" rx="6" fill="#2b0b4a"/>
+            <text x="50%" y="55%" font-size="20" text-anchor="middle" fill="#fff">AVATAR</text>
+          </svg>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="item-slot" id="itemSlot">Vazio</div>
+          <div class="xp-info" style="width:220px">
+            <div style="font-size:13px;font-weight:800">Nível <span id="levelLabel">1</span> — <span id="xpLabel">0</span>/<span id="xpNext">100</span> XP</div>
+            <div class="xp-bar" role="progressbar"><div class="xp-fill" id="xpFill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- tasks -->
+      <div style="margin-top:8px">
+        <div class="menu-card">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="newTitle" placeholder="Nova meta..." style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(0,0,0,0.12);color:#fff" />
+            <select id="newType" style="padding:8px;border-radius:6px">
+              <option value="diaria">Diária (-10%)</option>
+              <option value="semanal">Semanal (-20%)</option>
+              <option value="mensal">Mensal (-30%)</option>
+            </select>
+            <select id="newImportance" style="padding:8px;border-radius:6px">
+              <option value="1">Sem muita importância</option>
+              <option value="2">Importante</option>
+              <option value="3">Muito importante</option>
+              <option value="4">Essencial</option>
+            </select>
+            <input id="newXP" placeholder="XP" style="width:68px;padding:8px;border-radius:6px;border:none;background:rgba(0,0,0,0.12);color:#fff" />
+            <button id="addTask" style="padding:8px;background:#5dc3ff;border:none;border-radius:6px">Adicionar</button>
+          </div>
+          <div class="tasks" id="taskList"></div>
+        </div>
+      </div>
+
+      <!-- battle area -->
+      <div style="margin-top:8px" class="menu-card">
+        <div style="font-weight:800">Batalha</div>
+        <div class="battle-area">
+          <div class="avatar-small" id="battleAvatar">
+            <svg width="96" height="96" viewBox="0 0 64 64">
+              <rect x="4" y="10" width="56" height="44" rx="6" fill="#2b0b4a"></rect>
+              <text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">AV</text>
+            </svg>
+          </div>
+          <div class="monster" id="battleMonster">
+            <svg width="96" height="96" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="20" fill="#6b21a8"></circle>
+              <text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">M</text>
+            </svg>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+          <button id="simulateWin" style="padding:8px 12px;background:#10b981;border:none;border-radius:6px;color:#fff">Simular vitória (XP)</button>
+          <button id="simulateLoss" style="padding:8px 12px;background:#ef4444;border:none;border-radius:6px;color:#fff">Simular falha (penalidade)</button>
+        </div>
+      </div>
+
+      <!-- calendar small -->
+      <div class="menu-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800">Calendário (pixel)</div>
+          <div class="small">Tarefas agendadas: <span id="scheduledCount">0</span></div>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+          <input id="schedTitle" placeholder="Título agendado" style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(0,0,0,0.12);color:#fff" />
+          <input id="schedDate" type="datetime-local" style="padding:8px;border-radius:6px" />
+          <button id="addSched" style="padding:8px;background:#f59e0b;border:none;border-radius:6px">Agendar</button>
+        </div>
+      </div>
+
+      <div class="footer">RPG da Vida — pixel art 64×64 • Salvo localmente</div>
+    </div>
   </div>
-</body>
-</html>
+
+  <!-- Modal settings -->
+  <div class="modal" id="modal">
+    <div class="card">
+      <div style="font-weight:900;margin-bottom:8px">Configurações</div>
+      <div style="margin-bottom:8px">
+        <div style="font-weight:700">Música</div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="musicOpt" data-id="calm">Calma</button>
+          <button class="musicOpt" data-id="mid">Intermediária</button>
+          <button class="musicOpt" data-id="intense">Agitada</button>
+        </div>
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-weight:700">Volume</div>
+        <input type="range" id="volRange" min="0" max="1" step="0.01" value="0.6" style="width:100%" />
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button id="closeModal" style="padding:8px 10px;border-radius:6px">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="playAudioBtn">Ativar Som</button>
+
+<script>
+/* ========= Simple game logic + UI glue (single-file) ========= */
+/* Utilities */
+const uid = (p='') => p + Math.random().toString(36).slice(2,9);
+const now = ()=>Date.now();
+
+/* Persistent state */
+const STORAGE_KEY = 'rpg-da-vida-state-v1';
+let state = {
+  character:{name:'Aventureiro',gender:'male',level:1,xp:0,totalXP:0,equipped:{weapon:null},status:'idle'},
+  tasks:[], scheduled:[], settings:{mode:'dark',music:'mid',volume:0.6}, lastVisit: now()
+};
+function loadState(){ try{ const raw = localStorage.getItem(STORAGE_KEY); if(raw){ Object.assign(state, JSON.parse(raw)); } }catch(e){} }
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+/* XP math */
+function xpToNext(level){ return Math.floor(100 * Math.pow(1.35, level-1)); }
+function xpPercent(){ return Math.floor((state.character.xp / xpToNext(state.character.level)) * 100); }
+function gainXP(amount){
+  const lvl = state.character.level;
+  state.character.xp += Math.round(amount);
+  state.character.totalXP += Math.round(amount);
+  while(state.character.xp >= xpToNext(state.character.level)){
+    state.character.xp -= xpToNext(state.character.level);
+    state.character.level++;
+    // optional level up effects
+    playSFX('levelup');
+  }
+  saveState();
+  renderCharacter();
+}
+
+/* Penalty calc when task overdue */
+function basePenaltyForType(t){ if(t==='diaria') return 10; if(t==='semanal') return 20; return 30; }
+function importanceExtraPct(imp){ return 0.025*(imp-1); } // 2.5% per level shift (as requested)
+function applyOverduePenalty(task){
+  const base = basePenaltyForType(task.type)/100;
+  const extra = importanceExtraPct(task.importance);
+  const ratio = base + extra;
+  const loss = Math.round(task.xp * ratio);
+  state.character.xp = Math.max(0, state.character.xp - loss);
+  saveState();
+  playSFX('penalty');
+  renderCharacter();
+}
+
+/* Music / SFX via WebAudio */
+let audioCtx = null, masterGain = null, musicPlayer = null;
+function initAudio(){
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain(); masterGain.gain.value = state.settings.volume; masterGain.connect(audioCtx.destination);
+  }catch(e){ console.warn('Audio not supported'); }
+}
+function playSFX(name){
+  if(!audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = 'square';
+  if(name==='attack'){ o.frequency.value = 600; g.gain.value = 0.02; }
+  if(name==='levelup'){ o.frequency.value=880; g.gain.value = 0.03; }
+  if(name==='chest'){ o.frequency.value=520; g.gain.value=0.02; }
+  if(name==='penalty'){ o.frequency.value=200; g.gain.value=0.04; }
+  o.connect(g); g.connect(masterGain);
+  o.start(); o.stop(audioCtx.currentTime + 0.12);
+}
+
+/* Simple music loops synthesized */
+function startMusic(kind){
+  if(!audioCtx) return;
+  stopMusic();
+  musicPlayer = { kind };
+  // basic 2-voice loop using oscillators and scheduled repeats
+  function makeLoop(){
+    if(!musicPlayer) return;
+    const t0 = audioCtx.currentTime;
+    // base oscillator
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = kind==='calm'?220:(kind==='mid'?280:360);
+    const g = audioCtx.createGain(); g.gain.value = 0.02;
+    osc.connect(g); g.connect(masterGain);
+    osc.start(t0); osc.stop(t0 + 2.0);
+    // little percussive
+    const perc = audioCtx.createOscillator(); perc.type='triangle'; perc.frequency.value = kind==='intense'?1200:800;
+    const pg = audioCtx.createGain(); pg.gain.value = 0.01;
+    perc.connect(pg); pg.connect(masterGain);
+    perc.start(t0); perc.stop(t0+0.25);
+    // schedule next
+    musicPlayer.timer = setTimeout(makeLoop, kind==='calm'?2000:(kind==='mid'?1400:900));
+  }
+  makeLoop();
+}
+function stopMusic(){
+  if(musicPlayer){
+    clearTimeout(musicPlayer.timer);
+    musicPlayer=null;
+  }
+}
+
+/* UI rendering */
+function renderCharacter(){
+  document.getElementById('levelLabel').textContent = state.character.level;
+  document.getElementById('xpLabel').textContent = state.character.xp;
+  document.getElementById('xpNext').textContent = xpToNext(state.character.level);
+  const pct = Math.max(0, Math.min(100, xpPercent()));
+  document.getElementById('xpFill').style.width = Math.max(4, pct) + '%';
+}
+
+/* Task UI */
+function renderTasks(){
+  const container = document.getElementById('taskList'); container.innerHTML='';
+  state.tasks.forEach(t=>{
+    const div = document.createElement('div'); div.className='task imp-'+t.importance;
+    const left = document.createElement('div'); left.innerHTML = `<div style="font-weight:700">${t.title}</div><div class="meta">${t.type} • ${t.xp} XP • ${['','Sem muita importância','Importante','Muito importante','Essencial'][t.importance]}</div>`;
+    const right = document.createElement('div');
+    const fightBtn = document.createElement('button'); fightBtn.textContent = 'Lutar'; fightBtn.onclick = ()=>completeTask(t.id);
+    const delBtn = document.createElement('button'); delBtn.textContent='Excluir'; delBtn.onclick=()=>{ state.tasks = state.tasks.filter(x=>x.id!==t.id); saveState(); renderTasks(); };
+    right.appendChild(fightBtn); right.appendChild(delBtn);
+    div.appendChild(left); div.appendChild(right);
+    container.appendChild(div);
+  });
+  document.getElementById('scheduledCount').textContent = state.scheduled.length;
+}
+
+/* Add task */
+document.getElementById('addTask').addEventListener('click',()=>{
+  const title = document.getElementById('newTitle').value.trim(); if(!title) return alert('Nome da tarefa?');
+  const type = document.getElementById('newType').value; const imp = Number(document.getElementById('newImportance').value);
+  const xp = Math.max(5, Number(document.getElementById('newXP').value) || 20);
+  const t = { id: uid('t-'), title, type, importance:imp, xp, created: now(), due: (type==='diaria'? now() + 24*60*60*1000 : type==='semanal'? now() + 7*24*60*60*1000 : now() + 30*24*60*60*1000), done:false };
+  state.tasks.unshift(t); saveState(); renderTasks(); document.getElementById('newTitle').value='';
+});
+
+/* Complete task -> battle animation -> XP gain */
+function completeTask(taskId){
+  const task = state.tasks.find(x=>x.id===taskId); if(!task) return;
+  // Simulate battle: avatar attacks monster n times depending on importance
+  const attacks = task.importance; // more importance => more attacks to defeat
+  // Animate battle: flash monster then defeat
+  const monsterEl = document.getElementById('battleMonster');
+  monsterEl.style.transition='transform .12s';
+  let i=0;
+  const atk = setInterval(()=>{
+    monsterEl.style.transform = 'translateX(-6px)'; setTimeout(()=> monsterEl.style.transform='',120);
+    playSFX('attack'); i++;
+    if(i>=attacks){ clearInterval(atk);
+      // defeat
+      monsterEl.style.opacity=0.2; setTimeout(()=>{ monsterEl.style.opacity=1; },400);
+      // XP calc: base + importance % bonus (2.5% per level-1 as requested -> we already used importanceExtraPct)
+      const bonusFactor = 1 + (0.025 * (task.importance - 1));
+      const gain = Math.round(task.xp * bonusFactor);
+      // apply type penalty reductions? The user requested that tasks types lose XP: but that was applied as penalty if missed; here we give full gain; adjust if needed
+      gainXP(gain);
+      // mark done and visual
+      task.done=true; task.completedAt = now();
+      saveState(); renderTasks();
+    }
+  }, 220);
+}
+
+/* Simulate loss (penalty) */
+document.getElementById('simulateLoss').addEventListener('click',()=>{
+  // take 30% xp as demo penalty
+  const loss = Math.round(state.character.xp * 0.3);
+  state.character.xp = Math.max(0, state.character.xp - loss);
+  saveState(); renderCharacter(); playSFX('penalty');
+});
+
+/* Simulate win */
+document.getElementById('simulateWin').addEventListener('click',()=>{ gainXP(25); });
+
+/* Scheduled tasks (simple) */
+document.getElementById('addSched').addEventListener('click',()=>{
+  const title = document.getElementById('schedTitle').value.trim(); const dt = document.getElementById('schedDate').value;
+  if(!title || !dt) return alert('Título e data/hora');
+  const s = { id: uid('s-'), title, when: new Date(dt).getTime(), created: now() };
+  state.scheduled.push(s);
