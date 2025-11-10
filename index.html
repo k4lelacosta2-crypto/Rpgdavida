@@ -5,43 +5,89 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>RPG da Vida</title>
 <style>
-:root{--bg1:#120421;--bg2:#2a083a;--accent:#C084FC}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#eef2ff;font-family:Inter,Arial,Helvetica,sans-serif}
-.app{max-width:420px;margin:0 auto;height:100vh;display:flex;flex-direction:column;gap:8px;padding:10px;box-sizing:border-box}
+:root{
+  --bg-dark1:#0f0424;--bg-dark2:#2b0a44;--bg-light1:#f5f0ff;--bg-light2:#efe9fb;
+  --accent:#C084FC;--muted:#ddd;
+  --rarity-common: #cfcfcf; --rarity-uncommon:#6fe18a; --rarity-rare:#66b3ff; --rarity-epic:#c084fc; --rarity-legend:#ffd166;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-dark1),var(--bg-dark2));color:#eef2ff}
+.app{max-width:720px;margin:0 auto;height:100vh;display:flex;flex-direction:column;padding:12px;gap:10px}
 .header{display:flex;justify-content:space-between;align-items:center}
-.title{font-weight:800}
-.menu-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;display:flex;flex-direction:column;gap:10px}
-.selector{display:flex;align-items:center;justify-content:center;gap:12px}
-.sel-box{min-width:160px;text-align:center;font-weight:700;padding:8px;border-radius:6px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06))}
-.arrow{width:36px;height:36px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer}
-.avatar-rect{width:240px;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;border:3px solid rgba(192,148,255,0.18);background:linear-gradient(180deg,rgba(76,29,149,0.55),rgba(31,6,74,0.55))}
-.item-slot{width:72px;height:72px;margin-top:8px;background:rgba(255,255,255,0.03);border-radius:6px;display:flex;align-items:center;justify-content:center}
-.xp-bar{width:100%;height:20px;background:#555;border-radius:6px;overflow:hidden;margin-top:6px}
-.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#5dc3ff,#c084fc);transition:width .6s}
-.tasks{margin-top:6px;display:flex;flex-direction:column;gap:8px}
-.task{display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(255,255,255,0.02);border-radius:6px}
-#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#120421,#4c1d95);color:#fff;z-index:9999;flex-direction:column}
-#loadingBar{width:260px;height:14px;background:#333;border-radius:8px;overflow:hidden;margin-top:12px}
-#loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#5dc3ff,#c084fc);transition:width .4s}
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:10000}
-.modal .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));padding:14px;border-radius:10px;width:320px}
-.hamb{position:fixed;right:12px;top:12px;z-index:10001}
-.badge{padding:4px 8px;border-radius:6px;background:rgba(0,0,0,0.2);font-weight:700}
-.battle-area{width:100%;height:140px;background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.12));border-radius:8px;display:flex;align-items:center;justify-content:space-around;padding:8px;box-sizing:border-box}
-.footer{font-size:12px;color:#ccc;text-align:center;margin-top:auto;padding-bottom:6px}
-@media (orientation:portrait){body{height:100vh}}
-@media (orientation:landscape){.app{max-width:100%;height:100vh;padding:14px}}
-button{cursor:pointer;border-radius:6px;padding:6px 8px}
+.title{font-weight:900;font-size:18px;letter-spacing:1px}
+.icon-btn{width:44px;height:44px;background:rgba(255,255,255,0.03);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.menu-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px}
+.selector{display:flex;align-items:center;gap:10px;justify-content:center}
+.sel-box{min-width:160px;text-align:center;font-weight:800;padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06))}
+.arrow{width:36px;height:36px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer}
+.flex-row{display:flex;gap:12px;align-items:flex-start}
+.left-col{width:160px;display:flex;flex-direction:column;gap:8px}
+.center-col{flex:1;display:flex;flex-direction:column;gap:8px;align-items:center}
+.right-col{width:260px}
+.avatar-rect{width:220px;height:132px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;border:3px solid rgba(192,148,255,0.16);background:linear-gradient(180deg,rgba(76,29,149,0.55),rgba(31,6,74,0.55))}
+.avatar-rect img{image-rendering:pixelated;width:128px;height:128px}
+.slot{width:72px;height:72px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;position:relative;border:2px solid rgba(255,255,255,0.03)}
+.slot .label{position:absolute;bottom:-16px;font-size:11px;color:#ddd}
+.slot.rarity-1{box-shadow:0 0 6px rgba(0,0,0,0.2)}
+.slot.rarity-2{box-shadow:0 0 10px rgba(38,217,126,0.06)}
+.slot.rarity-3{box-shadow:0 0 14px rgba(102,179,255,0.08)}
+.slot.rarity-4{box-shadow:0 0 18px rgba(192,148,255,0.12)}
+.slot.rarity-5{box-shadow:0 0 22px rgba(255,209,102,0.14)}
+.xp-bar{width:100%;height:18px;background:#3b2b49;border-radius:8px;overflow:hidden;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.3)}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .6s}
+.tasks{display:flex;flex-direction:column;gap:8px}
+.task{display:flex;justify-content:space-between;align-items:center;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.03));border-radius:8px}
+.badge{padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.04);font-weight:800}
+#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#0c031a,#260434);color:#fff;z-index:9999;flex-direction:column}
+#loadingBar{width:320px;height:14px;background:#2a2340;border-radius:10px;overflow:hidden;margin-top:12px}
+#loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .4s}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:10000}
+.modal .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));padding:14px;border-radius:12px;width:320px}
+.hamb{position:fixed;right:14px;top:14px;z-index:10001}
+.battle-area{width:100%;height:160px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));border-radius:10px;display:flex;align-items:center;justify-content:space-around;padding:12px}
+.monster-name{position:absolute;top:-18px;font-weight:800;background:rgba(0,0,0,0.35);padding:4px 8px;border-radius:8px}
+.chest{width:60px;height:60px;border-radius:8px;background:linear-gradient(180deg,#5a3b90,#a06cf9);display:flex;align-items:center;justify-content:center;cursor:pointer;transform-origin:center;animation:none}
+.chest.open{animation:chestOpen .9s steps(8) forwards}
+@keyframes chestOpen{0%{transform:scale(1) translateY(0)}50%{transform:scale(1.08) translateY(-6px)}100%{transform:scale(1.02) translateY(0)}}
+.item-drop{position:absolute;top:-30px;opacity:0;transform:translateY(0);transition:all .8s cubic-bezier(.2,.9,.3,1)}
+.item-drop.show{opacity:1;transform:translateY(-80px)}
+/* 8-frame simulated attack animation by toggling classes */
+@keyframes avatarAttack{
+  0%{transform:translateX(0)}
+  12%{transform:translateX(6px) rotate(1deg)}
+  25%{transform:translateX(-4px) rotate(-1deg)}
+  38%{transform:translateX(8px) rotate(2deg)}
+  50%{transform:translateX(-6px) rotate(-2deg)}
+  62%{transform:translateX(10px) rotate(2deg)}
+  75%{transform:translateX(-8px) rotate(-3deg)}
+  100%{transform:translateX(0)}
+}
+.avatar-attack{animation:avatarAttack .7s steps(8) forwards}
+.monster-hit{animation:monsterHit .36s ease;}
+@keyframes monsterHit{0%{transform:translateX(0)}50%{transform:translateX(-8px)}100%{transform:translateX(0)}
+}
+.footer{font-size:12px;color:#ccc;text-align:center;margin-top:8px}
+@media (max-width:720px){
+  .app{padding:8px}
+  .flex-row{flex-direction:column;align-items:center}
+  .left-col,.right-col{width:100%}
+  .avatar-rect{width:280px;height:160px}
+}
 </style>
 </head>
 <body>
-<!-- Loading -->
-<div id="loadingScreen"><div style="font-weight:800;font-size:20px">RPG da Vida — Carregando...</div><div id="loadingBar"><div id="loadingFill"></div></div></div>
+<!-- Loading / Intro -->
+<div id="loadingScreen">
+  <div id="introLogo" style="font-weight:900;font-size:22px;opacity:0">RPG da Vida</div>
+  <div id="loadingBar"><div id="loadingFill"></div></div>
+</div>
 
 <div class="app" id="app" style="display:none">
   <div class="header">
     <div class="title">RPG da Vida</div>
-    <div class="controls"><div class="icon-btn hamb" id="hambBtn" title="Configurações ☰">☰</div></div>
+    <div class="controls">
+      <div class="icon-btn hamb" id="hambBtn" title="Configurações ☰">☰</div>
+    </div>
   </div>
 
   <!-- Start menu -->
@@ -64,97 +110,136 @@ button{cursor:pointer;border-radius:6px;padding:6px 8px}
       <div class="sel-box" id="selMusic">Intermediária</div>
       <div class="arrow" id="musicRight">▶</div>
     </div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:6px">
-      <button id="confirmBtn" style="background:#7C3AED;color:#fff;font-weight:800">Confirmar</button>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+      <button id="confirmBtn" style="background:var(--accent);color:#111;font-weight:900;padding:10px 14px;border:none;border-radius:10px">Iniciar Jornada</button>
     </div>
   </div>
 
-  <!-- Game UI -->
+  <!-- Main UI -->
   <div id="gameUI" style="display:none">
-    <!-- Inline SVG banner as embedded art (roxo, pixel-like) -->
-    <div style="width:100%;max-width:420px;border-radius:8px;overflow:hidden">
-      <svg width="100%" viewBox="0 0 420 120" preserveAspectRatio="xMidYMid slice" style="display:block">
-        <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#2b0b4a"/><stop offset="1" stop-color="#6b21a8"/></linearGradient></defs>
-        <rect width="420" height="120" fill="url(#g)"></rect>
-        <!-- pixel blocks -->
-        <g fill="#a77be9" opacity="0.12">
-          <rect x="20" y="10" width="40" height="40"></rect>
-          <rect x="70" y="30" width="28" height="28"></rect>
-          <rect x="110" y="15" width="60" height="60"></rect>
-          <rect x="180" y="25" width="36" height="36"></rect>
-          <rect x="240" y="8" width="56" height="56"></rect>
-          <rect x="310" y="30" width="28" height="28"></rect>
-        </g>
-        <text x="50%" y="65" text-anchor="middle" font-size="28" fill="#f3eefb" font-weight="700" font-family="Verdana,Arial">RPG da Vida</text>
-      </svg>
-    </div>
-
-    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px">
-      <div class="avatar-rect" id="avatarRect"><div style="font-weight:800">AVATAR</div></div>
-      <div class="item-slot" id="itemSlot">Vazio</div>
-      <div style="width:100%;max-width:420px">
-        <div style="font-weight:800">Nível <span id="levelLabel">1</span> — <span id="xpLabel">0</span>/<span id="xpNext">100</span> XP</div>
-        <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-      </div>
-    </div>
-
-    <div style="margin-top:8px" class="menu-card">
-      <div style="font-weight:800">Tarefas</div>
-      <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-        <input id="newTitle" placeholder="Nova meta..." style="flex:1;padding:8px;border-radius:6px;border:none;background:rgba(0,0,0,0.12);color:#fff"/>
-        <select id="newType" style="padding:8px;border-radius:6px">
-          <option value="diaria">Diária (-10%)</option>
-          <option value="semanal">Semanal (-20%)</option>
-          <option value="mensal">Mensal (-30%)</option>
-        </select>
-        <select id="newImportance" style="padding:8px;border-radius:6px">
-          <option value="1">Sem muita importância</option>
-          <option value="2">Importante</option>
-          <option value="3">Muito importante</option>
-          <option value="4">Essencial</option>
-        </select>
-        <input id="newXP" placeholder="XP" style="width:68px;padding:8px;border-radius:6px;border:none;background:rgba(0,0,0,0.12);color:#fff"/>
-        <button id="addTask" style="background:#5dc3ff;border:none">Adicionar</button>
-      </div>
-      <div class="tasks" id="taskList"></div>
-    </div>
-
-    <div style="margin-top:8px" class="menu-card">
-      <div style="font-weight:800">Batalha</div>
-      <div class="battle-area">
-        <div id="battleAvatar" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center">
-          <svg width="96" height="96" viewBox="0 0 64 64"><rect x="4" y="10" width="56" height="44" rx="6" fill="#2b0b4a"/><text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">AV</text></svg>
-        </div>
-        <div id="battleMonster" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center">
-          <svg width="96" height="96" viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#6b21a8"/><text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">M</text></svg>
+    <div class="flex-row">
+      <div class="left-col">
+        <div style="font-weight:900;margin-bottom:6px">Inventário</div>
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+          <div class="slot" id="slotWeapon"><div class="label">Arma</div></div>
+          <div class="slot" id="slotArmor"><div class="label">Armadura</div></div>
+          <div class="slot" id="slotCos"><div class="label">Cosmético</div></div>
         </div>
       </div>
+
+      <div class="center-col">
+        <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px">
+          <!-- Avatar rect -->
+          <div style="position:relative">
+            <div class="avatar-rect" id="avatarRect">
+              <!-- SVG avatar placeholder: will be replaced by chosen art variant (pijama) -->
+              <svg id="avatarSVG" width="128" height="128" viewBox="0 0 64 64" style="image-rendering:pixelated">
+                <rect x="0" y="0" width="64" height="64" rx="4" fill="#2b0b4a"></rect>
+                <g id="avatarBody">
+                  <rect x="16" y="20" width="32" height="28" rx="3" fill="#e6d2ff"></rect>
+                  <rect x="22" y="8" width="20" height="14" rx="3" fill="#c7a4ff"></rect>
+                </g>
+              </svg>
+            </div>
+
+            <!-- XP/level small -->
+            <div style="position:absolute;right:-12px;top:-12px;background:rgba(0,0,0,0.3);padding:6px;border-radius:8px;font-weight:800">Nível <span id="levelLabel">1</span></div>
+          </div>
+
+          <!-- XP bar -->
+          <div style="width:100%;max-width:480px">
+            <div style="font-weight:800">XP: <span id="xpLabel">0</span>/<span id="xpNext">100</span></div>
+            <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:900">Tarefas</div>
+          <div class="small">Agendadas: <span id="scheduledCount">0</span></div>
+        </div>
+
+        <div class="menu-card" style="margin-top:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="newTitle" placeholder="Nova meta..." style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+            <select id="newType" style="padding:8px;border-radius:8px">
+              <option value="diaria">Diária (-10%)</option>
+              <option value="semanal">Semanal (-20%)</option>
+              <option value="mensal">Mensal (-30%)</option>
+            </select>
+            <select id="newImportance" style="padding:8px;border-radius:8px">
+              <option value="1">Sem muita importância</option>
+              <option value="2">Importante</option>
+              <option value="3">Muito importante</option>
+              <option value="4">Essencial</option>
+            </select>
+            <input id="newXP" placeholder="XP" style="width:72px;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+            <button id="addTask" style="background:#7be3ff;border:none;padding:8px;border-radius:8px">+</button>
+          </div>
+          <div id="taskList" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
+        <div class="menu-card" style="margin-top:8px">
+          <div style="font-weight:900">Agendar</div>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input id="schedTitle" placeholder="Título agendado" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+            <input id="schedDate" type="datetime-local" style="padding:8px;border-radius:8px"/>
+            <button id="addSched" style="background:#f5c26b;border:none;padding:8px;border-radius:8px">Agendar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Battle area -->
+    <div style="margin-top:10px" class="menu-card">
+      <div style="font-weight:900">Batalha</div>
+      <div class="battle-area" style="position:relative">
+        <div style="position:relative">
+          <div id="battleAvatar" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center"></div>
+        </div>
+        <div style="position:relative">
+          <div id="battleMonster" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;position:relative">
+            <div class="monster-name" id="monsterName" style="display:none">Monstro</div>
+            <svg width="96" height="96" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#6b21a8"/><text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">M</text></svg>
+          </div>
+        </div>
+      </div>
+
       <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
-        <button id="simulateWin" style="background:#10b981;color:#fff">Simular vitória (XP)</button>
-        <button id="simulateLoss" style="background:#ef4444;color:#fff">Simular falha (penalidade)</button>
+        <button id="simulateWin" style="background:#10b981;color:#fff;border:none;padding:8px;border-radius:8px">Simular vitória</button>
+        <button id="simulateLoss" style="background:#ef4444;color:#fff;border:none;padding:8px;border-radius:8px">Simular falha</button>
       </div>
     </div>
 
-    <div class="footer">RPG da Vida — pixel art 64×64 • Salvo localmente</div>
+    <div style="margin-top:8px" class="footer">RPG da Vida • Pixel Glow • Salvo no dispositivo</div>
+
   </div>
 </div>
 
+<!-- Modal settings -->
 <div class="modal" id="modal"><div class="card">
   <div style="font-weight:900;margin-bottom:8px">Configurações</div>
-  <div style="margin-bottom:8px"><div style="font-weight:700">Música</div>
+  <div style="margin-bottom:8px">
+    <div style="font-weight:700">Música</div>
     <div style="display:flex;gap:8px;margin-top:6px">
       <button class="musicOpt" data-id="calm">Calma</button>
       <button class="musicOpt" data-id="mid">Intermediária</button>
-      <button class="musicOpt" data-id="intense">Agitada</button>
+      <button class="musicOpt" data-id="intense">Batalha</button>
     </div>
   </div>
-  <div style="margin-bottom:8px"><div style="font-weight:700">Volume</div><input type="range" id="volRange" min="0" max="1" step="0.01" value="0.6" style="width:100%"/></div>
-  <div style="display:flex;gap:8px;justify-content:flex-end"><button id="closeModal">Fechar</button></div>
+  <div style="margin-bottom:8px">
+    <div style="font-weight:700">Volume</div>
+    <input type="range" id="volRange" min="0" max="1" step="0.01" value="0.6" style="width:100%"/>
+  </div>
+  <div style="display:flex;justify-content:flex-end">
+    <button id="closeModal" style="padding:8px 12px;border-radius:8px">Fechar</button>
+  </div>
 </div></div>
 
-<button id="playAudioBtn" style="position:fixed;right:12px;top:70px;z-index:10002;padding:8px 10px;border-radius:6px;background:#7C3AED;color:#fff;border:none;display:none">Ativar Som</button>
+<button id="playAudioBtn" style="position:fixed;right:14px;top:80px;z-index:10002;padding:8px 10px;border-radius:8px;background:var(--accent);color:#111;border:none;display:none">Ativar Som</button>
 
-<!-- debug: alerts para o celular -->
+<!-- DEBUG alerts for mobile -->
 <script>
 window.onerror = function(message, source, lineno, colno, error) {
   try { alert("Erro JS: " + message + "\\nLinha: " + lineno + (colno?(":" + colno):"")); } catch(e){}
@@ -167,61 +252,127 @@ window.addEventListener('unhandledrejection', function(e){
 </script>
 
 <script>
-/* compact game logic (single-file) */
-const uid=(p='')=>p+Math.random().toString(36).slice(2,9), now=()=>Date.now();
-const STORAGE_KEY='rpg-da-vida-state-v1';
-let state={character:{name:'Aventureiro',gender:'male',level:1,xp:0,totalXP:0},tasks:[],scheduled:[],settings:{mode:'dark',music:'mid',volume:0.6}};
-function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(r) Object.assign(state, JSON.parse(r)); }catch(e){} }
+/* ========= RPG da Vida — single file final (optimized) ========= */
+/* Utilities */
+const uid = (p='') => p + Math.random().toString(36).slice(2,9);
+const now = () => Date.now();
+const STORAGE_KEY = 'rpg-da-vida-state-v2';
+/* Initial state */
+let state = {
+  character:{name:'Aventureiro',gender:'male',level:1,xp:0,totalXP:0,equipped:{weapon:{id:'stick',name:'Graveto',type:'weapon',rarity:1},armor:null,cos:null},status:'idle'},
+  tasks:[], scheduled:[], settings:{mode:'dark',music:'mid',volume:0.6}, monthlyRewardedFor:''
+};
+function loadState(){ try{ const r = localStorage.getItem(STORAGE_KEY); if(r) state = JSON.parse(r); }catch(e){} }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function xpToNext(l){ return Math.floor(100*Math.pow(1.35,l-1)); }
-function xpPercent(){ return Math.floor((state.character.xp / xpToNext(state.character.level)) * 100); }
-function renderCharacter(){ document.getElementById('levelLabel').textContent = state.character.level; document.getElementById('xpLabel').textContent = state.character.xp; document.getElementById('xpNext').textContent = xpToNext(state.character.level); const pct = Math.max(4, Math.min(100, xpPercent())); document.getElementById('xpFill').style.width = pct + '%'; }
-function gainXP(a){ state.character.xp += Math.round(a); state.character.totalXP += Math.round(a); while(state.character.xp >= xpToNext(state.character.level)){ state.character.xp -= xpToNext(state.character.level); state.character.level++; } saveState(); renderCharacter(); }
 
-/* tasks UI */
-document.getElementById('addTask').addEventListener('click', ()=>{
-  const title=document.getElementById('newTitle').value.trim(); if(!title) return alert('Nome da tarefa?');
-  const type=document.getElementById('newType').value; const imp=Number(document.getElementById('newImportance').value);
-  const xp=Math.max(5, Number(document.getElementById('newXP').value) || 20);
-  const t={id:uid('t-'),title,type,importance:imp,xp,created:now(),due:(type==='diaria'? now()+24*3600*1000 : type==='semanal'? now()+7*24*3600*1000 : now()+30*24*3600*1000),done:false};
-  state.tasks.unshift(t); saveState(); renderTasks(); document.getElementById('newTitle').value='';
-});
-function renderTasks(){ const c=document.getElementById('taskList'); c.innerHTML=''; state.tasks.forEach(t=>{ const d=document.createElement('div'); d.className='task imp-'+t.importance; const left=document.createElement('div'); left.innerHTML=`<div style="font-weight:700">${t.title}</div><div class="meta">${t.type} • ${t.xp} XP • ${['','Sem muita importância','Importante','Muito importante','Essencial'][t.importance]}</div>`; const right=document.createElement('div'); const f=document.createElement('button'); f.textContent='Lutar'; f.onclick=()=>completeTask(t.id); const del=document.createElement('button'); del.textContent='Excluir'; del.onclick=()=>{ state.tasks=state.tasks.filter(x=>x.id!==t.id); saveState(); renderTasks(); }; right.appendChild(f); right.appendChild(del); d.appendChild(left); d.appendChild(right); c.appendChild(d); }); }
-function completeTask(id){ const task = state.tasks.find(x=>x.id===id); if(!task) return; const attacks = task.importance; const mon = document.getElementById('battleMonster'); let i=0; const atk = setInterval(()=>{ mon.style.transform='translateX(-6px)'; setTimeout(()=> mon.style.transform=''); i++; if(i>=attacks){ clearInterval(atk); mon.style.opacity=0.2; setTimeout(()=> mon.style.opacity=1,400); const bonus = 1 + (0.025*(task.importance-1)); const gain = Math.round(task.xp * bonus); gainXP(gain); task.done=true; task.completedAt=now(); saveState(); renderTasks(); } }, 260); }
+/* XP math */
+function xpToNext(level){ return Math.floor(100 * Math.pow(1.35, level-1)); }
+function xpPercent(){ return (state.character.xp / xpToNext(state.character.level)) * 100; }
+function renderCharacter(){
+  document.getElementById('levelLabel').textContent = state.character.level;
+  document.getElementById('xpLabel').textContent = state.character.xp;
+  document.getElementById('xpNext').textContent = xpToNext(state.character.level);
+  const pct = Math.max(3, Math.min(100, Math.round(xpPercent())));
+  document.getElementById('xpFill').style.width = pct + '%';
+  // equipped visuals
+  updateSlots();
+  // avatar style
+  updateAvatarSVG();
+}
 
-/* simulate buttons */
-document.getElementById('simulateWin').addEventListener('click', ()=> gainXP(25));
-document.getElementById('simulateLoss').addEventListener('click', ()=> { const loss = Math.round(state.character.xp * 0.3); state.character.xp = Math.max(0, state.character.xp - loss); saveState(); renderCharacter(); alert('Penalidade aplicada: -' + loss + ' XP'); });
+/* Rarity colors */
+function rarityColor(r){
+  return r===1?getComputedStyle(document.documentElement).getPropertyValue('--rarity-common'):
+         r===2?getComputedStyle(document.documentElement).getPropertyValue('--rarity-uncommon'):
+         r===3?getComputedStyle(document.documentElement).getPropertyValue('--rarity-rare'):
+         r===4?getComputedStyle(document.documentElement).getPropertyValue('--rarity-epic'):
+                getComputedStyle(document.documentElement).getPropertyValue('--rarity-legend');
+}
 
-/* menu picker */
-const genders=['Masculino','Feminino'], modes=['Escuro','Claro'], musics=['calm','mid','intense'];
-let sel={gender:0,mode:0,music:1};
-function updateSelections(){ document.getElementById('selGender').textContent=genders[sel.gender]; document.getElementById('selMode').textContent=modes[sel.mode]; const names={calm:'Calma',mid:'Intermediária',intense:'Agitada'}; document.getElementById('selMusic').textContent = names[musics[sel.music]]; }
-['genLeft','genRight','modeLeft','modeRight','musicLeft','musicRight'].forEach(id=>{ const el=document.getElementById(id); el && el.addEventListener('click', ()=>{ if(id.includes('gen')) sel.gender=(sel.gender + (id.includes('Left')?-1:1) + genders.length)%genders.length; if(id.includes('mode')) sel.mode=(sel.mode + (id.includes('Left')?-1:1) + modes.length)%modes.length; if(id.includes('music')) sel.music=(sel.music + (id.includes('Left')?-1:1) + musics.length)%musics.length; updateSelections(); }); });
-updateSelections();
-document.getElementById('confirmBtn').addEventListener('click', ()=>{ state.character.gender = sel.gender===0?'male':'female'; state.settings.mode = sel.mode===0?'dark':'light'; state.settings.music = musics[sel.music]; saveState(); document.getElementById('startMenu').style.display='none'; document.getElementById('gameUI').style.display='block'; applyTheme(); tryStartAudio(); renderCharacter(); renderTasks(); });
+/* Slots update */
+function updateSlots(){
+  const we = state.character.equipped.weapon;
+  const ar = state.character.equipped.armor;
+  const co = state.character.equipped.cos;
+  const sw = (id,el, item) => {
+    el.innerHTML = item?`<div style="text-align:center"><div style="font-weight:900">${item.name}</div><div style="font-size:11px;color:#fff">R${item.rarity}</div></div>`:'Vazio';
+    el.className = 'slot' + (item?(' rarity-'+item.rarity):'');
+  };
+  sw('w', document.getElementById('slotWeapon'), we);
+  sw('a', document.getElementById('slotArmor'), ar);
+  sw('c', document.getElementById('slotCos'), co);
+}
 
-/* audio (synth) */
-let audioCtx=null, masterGain=null, musicLoop=null;
-function initAudio(){ try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); masterGain = audioCtx.createGain(); masterGain.gain.value = state.settings.volume || 0.6; masterGain.connect(audioCtx.destination); }catch(e){ console.warn('Audio init failed', e); } }
-function startMusic(kind){ if(!audioCtx) return; stopMusic(); musicLoop = setInterval(()=>{ const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value = kind==='calm'?220: kind==='mid'?280:360; g.gain.value = 0.008; o.connect(g); g.connect(masterGain); o.start(); setTimeout(()=> o.stop(),1200); }, kind==='calm'?2000: kind==='mid'?1400:900); }
-function stopMusic(){ if(musicLoop) clearInterval(musicLoop); musicLoop=null; }
-function tryStartAudio(force=false){ if(!audioCtx) initAudio(); if(!audioCtx) return; audioCtx.resume().then(()=>{ startMusic(state.settings.music || 'mid'); }).catch(()=>{}); if(!force && audioCtx.state!=='running'){ document.getElementById('playAudioBtn').style.display='block'; } }
-document.getElementById('playAudioBtn').addEventListener('click', ()=>{ tryStartAudio(true); document.getElementById('playAudioBtn').style.display='none'; });
+/* Avatar rendering (pijama + equip overlay) */
+function updateAvatarSVG(){
+  const svg = document.getElementById('avatarSVG');
+  // clear existing equipment overlays
+  const avatarBody = svg.querySelector('#avatarBody');
+  if(!avatarBody) return;
+  // change colors based on mode/gender/equips
+  const mode = state.settings.mode;
+  const gender = state.character.gender;
+  // body/pijama colors
+  const bodyColor = (mode==='light')? '#fff8ff' : '#e6d2ff';
+  const pajColor = (gender==='male')? '#c7a4ff' : '#ffd8ff';
+  // update rects
+  avatarBody.querySelector('rect:nth-child(1)').setAttribute('fill', bodyColor);
+  avatarBody.querySelector('rect:nth-child(2)').setAttribute('fill', pajColor);
+  // cosmetic overlay (simple)
+  const cos = state.character.equipped.cos;
+  // remove old overlay
+  const old = svg.querySelector('#overlay');
+  if(old) old.remove();
+  if(cos){
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('id','overlay');
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x','12'); rect.setAttribute('y','22'); rect.setAttribute('width','40'); rect.setAttribute('height','8'); rect.setAttribute('rx','2');
+    rect.setAttribute('fill', rarityColor(cos.rarity) || '#fff');
+    g.appendChild(rect);
+    svg.appendChild(g);
+  }
+}
 
-/* theme */
-function applyTheme(){ if(state.settings.mode==='light'){ document.documentElement.style.setProperty('--bg1','#f5f0ff'); document.documentElement.style.setProperty('--bg2','#efe9fb'); document.body.style.color='#1f1233' } else { document.documentElement.style.setProperty('--bg1','#120421'); document.documentElement.style.setProperty('--bg2','#2a083a'); document.body.style.color='#eef2ff' } }
+/* Music + SFX (WebAudio synth) */
+let audioCtx=null, masterGain=null, musicTimer=null;
+function initAudio(){
+  try{
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain(); masterGain.gain.value = state.settings.volume || 0.6;
+    masterGain.connect(audioCtx.destination);
+  }catch(e){ console.warn('Audio not supported', e); }
+}
+function playSFX(type){
+  if(!audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  if(type==='attack'){ o.type='square'; o.frequency.value=520; g.gain.value=0.02; }
+  if(type==='win'){ o.type='sine'; o.frequency.value=900; g.gain.value=0.03; }
+  if(type==='chest'){ o.type='triangle'; o.frequency.value=420; g.gain.value=0.02; }
+  if(type==='penalty'){ o.type='sawtooth'; o.frequency.value=220; g.gain.value=0.04; }
+  o.connect(g); g.connect(masterGain);
+  o.start(); o.stop(audioCtx.currentTime + 0.12);
+}
+function startMusic(kind){
+  if(!audioCtx) return;
+  stopMusic();
+  const tempo = kind==='calm'?2000: kind==='mid'?1400:900;
+  musicTimer = setInterval(()=>{
+    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+    o.type='sine'; o.frequency.value = kind==='calm'?200: kind==='mid'?270:350; g.gain.value = 0.01;
+    o.connect(g); g.connect(masterGain);
+    o.start(); setTimeout(()=>o.stop(),1200);
+  }, tempo);
+}
+function stopMusic(){ if(musicTimer) clearInterval(musicTimer); musicTimer=null; }
 
-/* load and start */
-loadState();
-if(!localStorage.getItem('rpg-da-vida-first-run')){ document.getElementById('startMenu').style.display='block'; } else { document.getElementById('startMenu').style.display='none'; document.getElementById('gameUI').style.display='block'; applyTheme(); tryStartAudio(); renderCharacter(); renderTasks(); }
-(function(){ const f=document.getElementById('loadingFill'); let v=0; const t=setInterval(()=>{ v+=Math.random()*24; if(v>=100){ v=100; f.style.width='100%'; clearInterval(t); setTimeout(()=>{ document.getElementById('loadingScreen').style.display='none'; document.getElementById('app').style.display='block'; localStorage.setItem('rpg-da-vida-first-run','1'); },300); } else { f.style.width = Math.floor(v) + '%'; } },120); })();
-
-/* overdue check and scheduled processing */
-function checkOverdueAndScheduled(){ const nowt=now(); state.tasks.forEach(t=>{ if(!t.done && t.due && (t.due + 24*3600*1000) <= nowt){ const base = (t.type==='diaria'?0.10: t.type==='semanal'?0.20:0.30); const extra = 0.025*(t.importance-1); const loss = Math.round(t.xp * (base + extra)); state.character.xp = Math.max(0, state.character.xp - loss); alert('Tarefa vencida! Penalidade aplicada: -' + loss + ' XP'); } }); state.scheduled = state.scheduled.filter(s=>{ if(s.when <= nowt){ state.tasks.unshift({ id:uid('t-'), title:s.title, type:'diaria', importance:1, xp:20, created:now(), due: now()+24*3600*1000, done:false }); return false; } return true; }); saveState(); renderTasks(); }
-window.addEventListener('load', ()=> setTimeout(checkOverdueAndScheduled,600) );
-window._rpgState = state;
-</script>
-
-</body>
-          </html>
+/* State helpers */
+function addTask(title,type,importance,xp){
+  const t = { id: uid('t-'), title, type, importance, xp, created: now(), due: (type==='diaria'? now()+24*3600*1000: type==='semanal'? now()+7*24*3600*1000 : now()+30*24*3600*1000), done:false };
+  state.tasks.unshift(t); saveState(); renderTasks();
+}
+function renderTasks(){
+  const list = document.getElementById('taskList'); list.innerHTML='';
+  state.tasks.forEach(t=>{
+    const el = document.createElement('div'); el.className='
