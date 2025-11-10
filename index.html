@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>RPG da Vida</title>
+<title>RPG de Tarefas</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='100%' height='100%' fill='%232b0b4a'/><g fill='%23d9b3ff'><rect x='12' y='10' width='40' height='44' rx='4' opacity='0.08'/><path d='M18 14 L46 14 L46 22 L18 22 Z' fill='%23924cff'/><rect x='18' y='22' width='28' height='28' fill='%23f3e9ff' rx='2'/></g></svg>"/>
 <style>
 :root{
-  --bg-dark1:#0f0424;--bg-dark2:#2b0a44;--bg-light1:#f5f0ff;--bg-light2:#efe9fb;
-  --accent:#C084FC;--muted:#ddd;
-  --rarity-common: #cfcfcf; --rarity-uncommon:#6fe18a; --rarity-rare:#66b3ff; --rarity-epic:#c084fc; --rarity-legend:#ffd166;
+  --bg-dark1:#0f0424;--bg-dark2:#2b0a44;--accent:#C084FC;
+  --rarity-common:#cfcfcf;--rarity-uncommon:#6fe18a;--rarity-rare:#66b3ff;--rarity-epic:#c084fc;--rarity-legend:#ffd166;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-dark1),var(--bg-dark2));color:#eef2ff}
 .app{max-width:720px;margin:0 auto;height:100vh;display:flex;flex-direction:column;padding:12px;gap:10px}
 .header{display:flex;justify-content:space-between;align-items:center}
-.title{font-weight:900;font-size:18px;letter-spacing:1px}
+.title{font-weight:900;font-size:18px}
 .icon-btn{width:44px;height:44px;background:rgba(255,255,255,0.03);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .menu-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px}
 .selector{display:flex;align-items:center;gap:10px;justify-content:center}
@@ -25,50 +25,24 @@ html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;back
 .center-col{flex:1;display:flex;flex-direction:column;gap:8px;align-items:center}
 .right-col{width:260px}
 .avatar-rect{width:220px;height:132px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;border:3px solid rgba(192,148,255,0.16);background:linear-gradient(180deg,rgba(76,29,149,0.55),rgba(31,6,74,0.55))}
-.avatar-rect img{image-rendering:pixelated;width:128px;height:128px}
 .slot{width:72px;height:72px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;position:relative;border:2px solid rgba(255,255,255,0.03)}
 .slot .label{position:absolute;bottom:-16px;font-size:11px;color:#ddd}
-.slot.rarity-1{box-shadow:0 0 6px rgba(0,0,0,0.2)}
-.slot.rarity-2{box-shadow:0 0 10px rgba(38,217,126,0.06)}
-.slot.rarity-3{box-shadow:0 0 14px rgba(102,179,255,0.08)}
-.slot.rarity-4{box-shadow:0 0 18px rgba(192,148,255,0.12)}
-.slot.rarity-5{box-shadow:0 0 22px rgba(255,209,102,0.14)}
-.xp-bar{width:100%;height:18px;background:#3b2b49;border-radius:8px;overflow:hidden;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.3)}
+.xp-bar{width:100%;height:18px;background:#3b2b49;border-radius:8px;overflow:hidden}
 .xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .6s}
 .tasks{display:flex;flex-direction:column;gap:8px}
 .task{display:flex;justify-content:space-between;align-items:center;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.03));border-radius:8px}
-.badge{padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.04);font-weight:800}
 #loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#0c031a,#260434);color:#fff;z-index:9999;flex-direction:column}
 #loadingBar{width:320px;height:14px;background:#2a2340;border-radius:10px;overflow:hidden;margin-top:12px}
 #loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .4s}
 .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:10000}
 .modal .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));padding:14px;border-radius:12px;width:320px}
-.hamb{position:fixed;right:14px;top:14px;z-index:10001}
-.battle-area{width:100%;height:160px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));border-radius:10px;display:flex;align-items:center;justify-content:space-around;padding:12px}
-.monster-name{position:absolute;top:-18px;font-weight:800;background:rgba(0,0,0,0.35);padding:4px 8px;border-radius:8px}
-.chest{width:60px;height:60px;border-radius:8px;background:linear-gradient(180deg,#5a3b90,#a06cf9);display:flex;align-items:center;justify-content:center;cursor:pointer;transform-origin:center;animation:none}
-.chest.open{animation:chestOpen .9s steps(8) forwards}
-@keyframes chestOpen{0%{transform:scale(1) translateY(0)}50%{transform:scale(1.08) translateY(-6px)}100%{transform:scale(1.02) translateY(0)}}
-.item-drop{position:absolute;top:-30px;opacity:0;transform:translateY(0);transition:all .8s cubic-bezier(.2,.9,.3,1)}
-.item-drop.show{opacity:1;transform:translateY(-80px)}
-/* 8-frame simulated attack animation by toggling classes */
-@keyframes avatarAttack{
-  0%{transform:translateX(0)}
-  12%{transform:translateX(6px) rotate(1deg)}
-  25%{transform:translateX(-4px) rotate(-1deg)}
-  38%{transform:translateX(8px) rotate(2deg)}
-  50%{transform:translateX(-6px) rotate(-2deg)}
-  62%{transform:translateX(10px) rotate(2deg)}
-  75%{transform:translateX(-8px) rotate(-3deg)}
-  100%{transform:translateX(0)}
-}
+.chest{width:60px;height:60px;border-radius:8px;background:linear-gradient(180deg,#5a3b90,#a06cf9);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .avatar-attack{animation:avatarAttack .7s steps(8) forwards}
+@keyframes avatarAttack{0%{transform:translateX(0)}12%{transform:translateX(6px) rotate(1deg)}25%{transform:translateX(-4px) rotate(-1deg)}38%{transform:translateX(8px) rotate(2deg)}50%{transform:translateX(-6px) rotate(-2deg)}62%{transform:translateX(10px) rotate(2deg)}75%{transform:translateX(-8px) rotate(-3deg)}100%{transform:translateX(0)}}
 .monster-hit{animation:monsterHit .36s ease;}
-@keyframes monsterHit{0%{transform:translateX(0)}50%{transform:translateX(-8px)}100%{transform:translateX(0)}
-}
+@keyframes monsterHit{0%{transform:translateX(0)}50%{transform:translateX(-8px)}100%{transform:translateX(0)}}
 .footer{font-size:12px;color:#ccc;text-align:center;margin-top:8px}
 @media (max-width:720px){
-  .app{padding:8px}
   .flex-row{flex-direction:column;align-items:center}
   .left-col,.right-col{width:100%}
   .avatar-rect{width:280px;height:160px}
@@ -78,13 +52,13 @@ html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;back
 <body>
 <!-- Loading / Intro -->
 <div id="loadingScreen">
-  <div id="introLogo" style="font-weight:900;font-size:22px;opacity:0">RPG da Vida</div>
+  <div id="introLogo" style="font-weight:900;font-size:22px;opacity:0">RPG de Tarefas</div>
   <div id="loadingBar"><div id="loadingFill"></div></div>
 </div>
 
 <div class="app" id="app" style="display:none">
   <div class="header">
-    <div class="title">RPG da Vida</div>
+    <div class="title">RPG de Tarefas</div>
     <div class="controls">
       <div class="icon-btn hamb" id="hambBtn" title="Configurações ☰">☰</div>
     </div>
@@ -212,7 +186,7 @@ html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;back
       </div>
     </div>
 
-    <div style="margin-top:8px" class="footer">RPG da Vida • Pixel Glow • Salvo no dispositivo</div>
+    <div style="margin-top:8px" class="footer">RPG de Tarefas • Pixel Glow • Salvo no dispositivo</div>
 
   </div>
 </div>
@@ -239,7 +213,7 @@ html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;back
 
 <button id="playAudioBtn" style="position:fixed;right:14px;top:80px;z-index:10002;padding:8px 10px;border-radius:8px;background:var(--accent);color:#111;border:none;display:none">Ativar Som</button>
 
-<!-- DEBUG alerts for mobile -->
+<!-- debug alerts for mobile -->
 <script>
 window.onerror = function(message, source, lineno, colno, error) {
   try { alert("Erro JS: " + message + "\\nLinha: " + lineno + (colno?(":" + colno):"")); } catch(e){}
@@ -252,75 +226,65 @@ window.addEventListener('unhandledrejection', function(e){
 </script>
 
 <script>
-/* ========= RPG da Vida — single file final (optimized) ========= */
+/* ========= RPG de Tarefas — single file ========= */
 /* Utilities */
 const uid = (p='') => p + Math.random().toString(36).slice(2,9);
 const now = () => Date.now();
-const STORAGE_KEY = 'rpg-da-vida-state-v2';
-/* Initial state */
+const STORAGE_KEY = 'rpg-de-tarefas-state-v2';
+
 let state = {
   character:{name:'Aventureiro',gender:'male',level:1,xp:0,totalXP:0,equipped:{weapon:{id:'stick',name:'Graveto',type:'weapon',rarity:1},armor:null,cos:null},status:'idle'},
   tasks:[], scheduled:[], settings:{mode:'dark',music:'mid',volume:0.6}, monthlyRewardedFor:''
 };
+
 function loadState(){ try{ const r = localStorage.getItem(STORAGE_KEY); if(r) state = JSON.parse(r); }catch(e){} }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-/* XP math */
 function xpToNext(level){ return Math.floor(100 * Math.pow(1.35, level-1)); }
 function xpPercent(){ return (state.character.xp / xpToNext(state.character.level)) * 100; }
+
 function renderCharacter(){
   document.getElementById('levelLabel').textContent = state.character.level;
   document.getElementById('xpLabel').textContent = state.character.xp;
   document.getElementById('xpNext').textContent = xpToNext(state.character.level);
   const pct = Math.max(3, Math.min(100, Math.round(xpPercent())));
   document.getElementById('xpFill').style.width = pct + '%';
-  // equipped visuals
   updateSlots();
-  // avatar style
   updateAvatarSVG();
 }
 
-/* Rarity colors */
 function rarityColor(r){
-  return r===1?getComputedStyle(document.documentElement).getPropertyValue('--rarity-common'):
-         r===2?getComputedStyle(document.documentElement).getPropertyValue('--rarity-uncommon'):
-         r===3?getComputedStyle(document.documentElement).getPropertyValue('--rarity-rare'):
-         r===4?getComputedStyle(document.documentElement).getPropertyValue('--rarity-epic'):
-                getComputedStyle(document.documentElement).getPropertyValue('--rarity-legend');
+  if(r===1) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-common');
+  if(r===2) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-uncommon');
+  if(r===3) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-rare');
+  if(r===4) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-epic');
+  return getComputedStyle(document.documentElement).getPropertyValue('--rarity-legend');
 }
 
-/* Slots update */
 function updateSlots(){
   const we = state.character.equipped.weapon;
   const ar = state.character.equipped.armor;
   const co = state.character.equipped.cos;
-  const sw = (id,el, item) => {
+  const sw = (el, item) => {
     el.innerHTML = item?`<div style="text-align:center"><div style="font-weight:900">${item.name}</div><div style="font-size:11px;color:#fff">R${item.rarity}</div></div>`:'Vazio';
     el.className = 'slot' + (item?(' rarity-'+item.rarity):'');
   };
-  sw('w', document.getElementById('slotWeapon'), we);
-  sw('a', document.getElementById('slotArmor'), ar);
-  sw('c', document.getElementById('slotCos'), co);
+  sw(document.getElementById('slotWeapon'), we);
+  sw(document.getElementById('slotArmor'), ar);
+  sw(document.getElementById('slotCos'), co);
 }
 
-/* Avatar rendering (pijama + equip overlay) */
 function updateAvatarSVG(){
   const svg = document.getElementById('avatarSVG');
-  // clear existing equipment overlays
   const avatarBody = svg.querySelector('#avatarBody');
   if(!avatarBody) return;
-  // change colors based on mode/gender/equips
   const mode = state.settings.mode;
   const gender = state.character.gender;
-  // body/pijama colors
   const bodyColor = (mode==='light')? '#fff8ff' : '#e6d2ff';
   const pajColor = (gender==='male')? '#c7a4ff' : '#ffd8ff';
-  // update rects
   avatarBody.querySelector('rect:nth-child(1)').setAttribute('fill', bodyColor);
   avatarBody.querySelector('rect:nth-child(2)').setAttribute('fill', pajColor);
-  // cosmetic overlay (simple)
   const cos = state.character.equipped.cos;
-  // remove old overlay
   const old = svg.querySelector('#overlay');
   if(old) old.remove();
   if(cos){
@@ -334,7 +298,7 @@ function updateAvatarSVG(){
   }
 }
 
-/* Music + SFX (WebAudio synth) */
+/* Audio (synth) */
 let audioCtx=null, masterGain=null, musicTimer=null;
 function initAudio(){
   try{
@@ -345,29 +309,22 @@ function initAudio(){
 }
 function playSFX(type){
   if(!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
   if(type==='attack'){ o.type='square'; o.frequency.value=520; g.gain.value=0.02; }
   if(type==='win'){ o.type='sine'; o.frequency.value=900; g.gain.value=0.03; }
   if(type==='chest'){ o.type='triangle'; o.frequency.value=420; g.gain.value=0.02; }
   if(type==='penalty'){ o.type='sawtooth'; o.frequency.value=220; g.gain.value=0.04; }
-  o.connect(g); g.connect(masterGain);
-  o.start(); o.stop(audioCtx.currentTime + 0.12);
+  o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + 0.12);
 }
 function startMusic(kind){
-  if(!audioCtx) return;
-  stopMusic();
+  if(!audioCtx) return; stopMusic();
   const tempo = kind==='calm'?2000: kind==='mid'?1400:900;
-  musicTimer = setInterval(()=>{
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.type='sine'; o.frequency.value = kind==='calm'?200: kind==='mid'?270:350; g.gain.value = 0.01;
-    o.connect(g); g.connect(masterGain);
-    o.start(); setTimeout(()=>o.stop(),1200);
-  }, tempo);
+  musicTimer = setInterval(()=>{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value = kind==='calm'?200: kind==='mid'?270:350; g.gain.value = 0.01; o.connect(g); g.connect(masterGain); o.start(); setTimeout(()=>o.stop(),1200); }, tempo);
 }
 function stopMusic(){ if(musicTimer) clearInterval(musicTimer); musicTimer=null; }
+function tryStartAudio(force=false){ if(!audioCtx) initAudio(); if(!audioCtx) return; audioCtx.resume().then(()=> startMusic(state.settings.music || 'mid')).catch(()=>{}); if(!force && audioCtx.state!=='running') document.getElementById('playAudioBtn').style.display='block'; }
 
-/* State helpers */
+/* Task system */
 function addTask(title,type,importance,xp){
   const t = { id: uid('t-'), title, type, importance, xp, created: now(), due: (type==='diaria'? now()+24*3600*1000: type==='semanal'? now()+7*24*3600*1000 : now()+30*24*3600*1000), done:false };
   state.tasks.unshift(t); saveState(); renderTasks();
@@ -375,4 +332,21 @@ function addTask(title,type,importance,xp){
 function renderTasks(){
   const list = document.getElementById('taskList'); list.innerHTML='';
   state.tasks.forEach(t=>{
-    const el = document.createElement('div'); el.className='
+    const el = document.createElement('div'); el.className='task';
+    el.innerHTML = `<div><div style="font-weight:800">${t.title}</div><div style="font-size:12px;color:#ddd">${t.type} • ${t.xp} XP • ${['','Sem muita importância','Importante','Muito importante','Essencial'][t.importance]}</div></div>`;
+    const right = document.createElement('div');
+    const fight = document.createElement('button'); fight.textContent='Lutar'; fight.onclick=()=>completeTask(t.id);
+    const del = document.createElement('button'); del.textContent='Excluir'; del.onclick=()=>{ state.tasks = state.tasks.filter(x=>x.id!==t.id); saveState(); renderTasks(); };
+    right.appendChild(fight); right.appendChild(del);
+    el.appendChild(right); list.appendChild(el);
+  });
+}
+
+function basePenaltyForType(type){ return type==='diaria'?0.10: type==='semanal'?0.20: 0.30; }
+function importanceExtra(imp){ return 0.025 * (imp-1); } // 2.5% per level above 1
+
+function completeTask(id){
+  const task = state.tasks.find(t=>t.id===id); if(!task) return;
+  const mn = document.getElementById('monsterName'); mn.textContent = task.title; mn.style.display='block';
+  const avatarElem = document.getElementById('avatarRect'); avatarElem.classList.add('avatar-attack'); playSFX('attack');
+  se
