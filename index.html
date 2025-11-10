@@ -1,352 +1,153 @@
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>RPG de Tarefas</title>
-<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='100%' height='100%' fill='%232b0b4a'/><g fill='%23d9b3ff'><rect x='12' y='10' width='40' height='44' rx='4' opacity='0.08'/><path d='M18 14 L46 14 L46 22 L18 22 Z' fill='%23924cff'/><rect x='18' y='22' width='28' height='28' fill='%23f3e9ff' rx='2'/></g></svg>"/>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADMklEQVR42u3dv20CMRTAYRO5uAEYgC3SRlDCABkvA6TMdYmUEoZgj+ugTYUOgfyce9/X5887mZ/sKDqvNmV7KYGGYYj88WWapmJ+82ed/6UAaQkACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACABwr+p+dvObP+/8dgDgCAAIACAAgAAAAgAIALA41SN4zMfn6CF05P2w8xDsAAABAAQAEABAAAABAAQABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEAelLdzz5ZBQty73rKvv7tAMARABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAYLYafT959vvZiV1P2de/HQA4AgACAAgAIACAAAACACxO9Qj69rov4zO/32kse08VOwBAAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAgO6lfx/A1++Yat71etnzfR9/Hvr6w1uu1yXYAYAjACAAgL8B0I/zyTv8sAMABAAQAOA5fwOIvp88+n52+Kv15yF6/dsBgCMAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIADAbDX6fvLW97HDLa0/D9Hr3w4AHAEAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQBmq9H3k7e+jx1uaf15iF7/dgDgCAAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIABBqtSnbS+QvEP1OtOzvRDR/7vntAMARABAAQAAAAQAEABAAQAAAAQAEABAA4F+q/hfb/ObPO78dADgCAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIAzHYFwHlgSTjklsQAAAAASUVORK5CYII=" />
 <style>
-:root{
-  --bg-dark1:#0f0424;--bg-dark2:#2b0a44;--accent:#C084FC;
-  --rarity-common:#cfcfcf;--rarity-uncommon:#6fe18a;--rarity-rare:#66b3ff;--rarity-epic:#c084fc;--rarity-legend:#ffd166;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-dark1),var(--bg-dark2));color:#eef2ff}
+:root{--bg-dark1:#0f0424;--bg-dark2:#2b0a44;--accent:#C084FC}
+html,body{height:100%;margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg-dark1),var(--bg-dark2));color:#eef2ff}
 .app{max-width:720px;margin:0 auto;height:100vh;display:flex;flex-direction:column;padding:12px;gap:10px}
 .header{display:flex;justify-content:space-between;align-items:center}
 .title{font-weight:900;font-size:18px}
-.icon-btn{width:44px;height:44px;background:rgba(255,255,255,0.03);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .menu-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:10px}
-.selector{display:flex;align-items:center;gap:10px;justify-content:center}
-.sel-box{min-width:160px;text-align:center;font-weight:800;padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06))}
-.arrow{width:36px;height:36px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer}
-.flex-row{display:flex;gap:12px;align-items:flex-start}
-.left-col{width:160px;display:flex;flex-direction:column;gap:8px}
-.center-col{flex:1;display:flex;flex-direction:column;gap:8px;align-items:center}
-.right-col{width:260px}
 .avatar-rect{width:220px;height:132px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;border:3px solid rgba(192,148,255,0.16);background:linear-gradient(180deg,rgba(76,29,149,0.55),rgba(31,6,74,0.55))}
-.slot{width:72px;height:72px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;position:relative;border:2px solid rgba(255,255,255,0.03)}
-.slot .label{position:absolute;bottom:-16px;font-size:11px;color:#ddd}
+.avatar-rect img{image-rendering:pixelated;width:128px;height:128px}
 .xp-bar{width:100%;height:18px;background:#3b2b49;border-radius:8px;overflow:hidden}
 .xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .6s}
-.tasks{display:flex;flex-direction:column;gap:8px}
-.task{display:flex;justify-content:space-between;align-items:center;padding:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.03));border-radius:8px}
-#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#0c031a,#260434);color:#fff;z-index:9999;flex-direction:column}
-#loadingBar{width:320px;height:14px;background:#2a2340;border-radius:10px;overflow:hidden;margin-top:12px}
-#loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc);transition:width .4s}
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);z-index:10000}
-.modal .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.06));padding:14px;border-radius:12px;width:320px}
-.chest{width:60px;height:60px;border-radius:8px;background:linear-gradient(180deg,#5a3b90,#a06cf9);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.avatar-attack{animation:avatarAttack .7s steps(8) forwards}
-@keyframes avatarAttack{0%{transform:translateX(0)}12%{transform:translateX(6px) rotate(1deg)}25%{transform:translateX(-4px) rotate(-1deg)}38%{transform:translateX(8px) rotate(2deg)}50%{transform:translateX(-6px) rotate(-2deg)}62%{transform:translateX(10px) rotate(2deg)}75%{transform:translateX(-8px) rotate(-3deg)}100%{transform:translateX(0)}}
-.monster-hit{animation:monsterHit .36s ease;}
-@keyframes monsterHit{0%{transform:translateX(0)}50%{transform:translateX(-8px)}100%{transform:translateX(0)}}
+.menu-grid{display:flex;gap:12px}
 .footer{font-size:12px;color:#ccc;text-align:center;margin-top:8px}
-@media (max-width:720px){
-  .flex-row{flex-direction:column;align-items:center}
-  .left-col,.right-col{width:100%}
-  .avatar-rect{width:280px;height:160px}
-}
+@media (max-width:720px){.menu-grid{flex-direction:column}.avatar-rect{width:280px;height:160px}}
 </style>
 </head>
 <body>
-<!-- Loading / Intro -->
-<div id="loadingScreen">
-  <div id="introLogo" style="font-weight:900;font-size:22px;opacity:0">RPG de Tarefas</div>
-  <div id="loadingBar"><div id="loadingFill"></div></div>
-</div>
-
-<div class="app" id="app" style="display:none">
+<div class="app" id="app">
   <div class="header">
     <div class="title">RPG de Tarefas</div>
-    <div class="controls">
-      <div class="icon-btn hamb" id="hambBtn" title="Configurações ☰">☰</div>
-    </div>
+    <div class="icon-btn" id="settingsBtn">☰</div>
   </div>
 
-  <!-- Start menu -->
   <div class="menu-card" id="startMenu">
-    <div class="selector">
-      <div style="flex:1">Gênero</div>
-      <div class="arrow" id="genLeft">◀</div>
-      <div class="sel-box" id="selGender">Masculino</div>
-      <div class="arrow" id="genRight">▶</div>
-    </div>
-    <div class="selector">
-      <div style="flex:1">Modo</div>
-      <div class="arrow" id="modeLeft">◀</div>
-      <div class="sel-box" id="selMode">Escuro</div>
-      <div class="arrow" id="modeRight">▶</div>
-    </div>
-    <div class="selector">
-      <div style="flex:1">Música</div>
-      <div class="arrow" id="musicLeft">◀</div>
-      <div class="sel-box" id="selMusic">Intermediária</div>
-      <div class="arrow" id="musicRight">▶</div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
-      <button id="confirmBtn" style="background:var(--accent);color:#111;font-weight:900;padding:10px 14px;border:none;border-radius:10px">Iniciar Jornada</button>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+      <h2>Bem-vindo</h2>
+      <div style="display:flex;gap:8px">
+        <button id="maleBtn">Masculino</button>
+        <button id="femaleBtn">Feminino</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button id="modeToggle">Modo: Escuro</button>
+        <button id="musicSel">Música: Intermediária</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button id="startBtn" style="background:var(--accent);color:#111">Iniciar</button>
+      </div>
+      <div style="font-size:12px;color:#ccc;margin-top:8px">Áudio será ativado após clicar em Iniciar</div>
     </div>
   </div>
 
-  <!-- Main UI -->
   <div id="gameUI" style="display:none">
-    <div class="flex-row">
-      <div class="left-col">
-        <div style="font-weight:900;margin-bottom:6px">Inventário</div>
-        <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
-          <div class="slot" id="slotWeapon"><div class="label">Arma</div></div>
-          <div class="slot" id="slotArmor"><div class="label">Armadura</div></div>
-          <div class="slot" id="slotCos"><div class="label">Cosmético</div></div>
+    <div class="menu-grid">
+      <div style="width:140px;display:flex;flex-direction:column;gap:8px;align-items:center">
+        <div class="slot" id="slotWeapon" style="width:96px;height:96px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">
+          <img id="slotWeaponImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADQklEQVR42u3dMU7DMBSAYbfyEHES1C6IDlwBxMIZegUkJFYWJlauwcQh2Fgq9SjZysoUpRDlWXnfdwCKg/PLBmSvNuvbUwnUdV3kx5e+74vxG3/W8a8LkJYAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAA56ruZzd+4887fisAsAUABAAQAEAAAAEABABYnOoR/M/7y4eH0JD9052HYAUACAAgAIAAAAIACAAgACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIANCS6n723ixYkHPnU/b5bwUAtgCAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAACj1ej7ybPfz07sfMo+/60AwBYAEABAAAABAAQAEABgcapH0Labx/I55df7eiv3nipWAIAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAzVtdXzycIr+B6HPRD4ertn9Cl6+TngdQjs/OAxiw2x1TzX8rALAFAAQASMWZgK2zZ8cKABAAQACAiX4HEP13yOj72eG3ud+H6PlvBQC2AIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAKPV6PvJ576PHYbM/T5Ez38rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAGK1G308+933sMGTu9yF6/lsBgC0AIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIABAqJr9AWy336GfH30mXPYzIaPHbwUACAAgAIAAAAIACAAgAIAAAAIACAAgAMAfVP+LbvzGn3f8VgBgCwAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIADDaD8czZL0Q9VuCAAAAAElFTkSuQmCC" width="64" height="64"/>
+        </div>
+        <div class="slot" id="slotArmor" style="width:96px;height:96px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">
+          <img id="slotArmorImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADQklEQVR42u3dMU7DMBSAYbfyEHES1C6IDlwBxMIZegUkJFYWJlauwcQh2Fgq9SjZysoUpRDlWXnfdwCKg/PLBmSvNuvbUwnUdV3kx5e+74vxG3/W8a8LkJYAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAA56ruZzd+4887fisAsAUABAAQAEAAAAEABABYnOoR/M/7y4eH0JD9052HYAUACAAgAIAAAAIACAAgACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIANCS6n723ixYkHPnU/b5bwUAtgCAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAACj1ej7ybPfz07sfMo+/60AwBYAEABAAAABAAQAEABgcapH0Labx/I55df7eiv3nipWAIAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAzVtdXzycIr+B6HPRD4ertn9Cl6+TngdQjs/OAxiw2x1TzX8rALAFAAQASMWZgK2zZ8cKABAAQACAiX4HEP13yOj72eG3ud+H6PlvBQC2AIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAKPV6PvJ576PHYbM/T5Ez38rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAGK1G308+933sMGTu9yF6/lsBgC0AIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIABAqJr9AWy336GfH30mXPYzIaPHbwUACAAgAIAAAAIACAAgAIAAAAIACAAgAMAfVP+LbvzGn3f8VgBgCwAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIADDaD8czZL0Q9VuCAAAAAElFTkSuQmCC" width="64" height="64"/>
+        </div>
+        <div class="slot" id="slotCos" style="width:96px;height:96px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">
+          <img id="slotCosImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADQklEQVR42u3dMU7DMBSAYbfyEHES1C6IDlwBxMIZegUkJFYWJlauwcQh2Fgq9SjZysoUpRDlWXnfdwCKg/PLBmSvNuvbUwnUdV3kx5e+74vxG3/W8a8LkJYAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAA56ruZzd+4887fisAsAUABAAQAEAAAAEABABYnOoR/M/7y4eH0JD9052HYAUACAAgAIAAAAIACAAgACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIANCS6n723ixYkHPnU/b5bwUAtgCAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAACj1ej7ybPfz07sfMo+/60AwBYAEABAAAABAAQAEABgcapH0Labx/I55df7eiv3nipWAIAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAzVtdXzycIr+B6HPRD4ertn9Cl6+TngdQjs/OAxiw2x1TzX8rALAFAAQASMWZgK2zZ8cKABAAQACAiX4HEP13yOj72eG3ud+H6PlvBQC2AIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAKPV6PvJ576PHYbM/T5Ez38rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAGK1G308+933sMGTu9yF6/lsBgC0AIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIABAqJr9AWy336GfH30mXPYzIaPHbwUACAAgAIAAAAIACAAgAIAAAAIACAAgAMAfVP+LbvzGn3f8VgBgCwAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIADDaD8czZL0Q9VuCAAAAAElFTkSuQmCC" width="64" height="64"/>
         </div>
       </div>
 
-      <div class="center-col">
-        <div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px">
-          <!-- Avatar rect -->
-          <div style="position:relative">
-            <div class="avatar-rect" id="avatarRect">
-              <!-- SVG avatar placeholder: will be replaced by chosen art variant (pijama) -->
-              <svg id="avatarSVG" width="128" height="128" viewBox="0 0 64 64" style="image-rendering:pixelated">
-                <rect x="0" y="0" width="64" height="64" rx="4" fill="#2b0b4a"></rect>
-                <g id="avatarBody">
-                  <rect x="16" y="20" width="32" height="28" rx="3" fill="#e6d2ff"></rect>
-                  <rect x="22" y="8" width="20" height="14" rx="3" fill="#c7a4ff"></rect>
-                </g>
-              </svg>
-            </div>
-
-            <!-- XP/level small -->
-            <div style="position:absolute;right:-12px;top:-12px;background:rgba(0,0,0,0.3);padding:6px;border-radius:8px;font-weight:800">Nível <span id="levelLabel">1</span></div>
-          </div>
-
-          <!-- XP bar -->
-          <div style="width:100%;max-width:480px">
-            <div style="font-weight:800">XP: <span id="xpLabel">0</span>/<span id="xpNext">100</span></div>
-            <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-          </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px">
+        <div class="avatar-rect" id="avatarRect">
+          <img id="avatarImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADRklEQVR42u3dIVLDQBSA4S2zw/QOlVyiqhwAi4MTIFH0BDhwyCpQaAQ34ADYql4igykW1UknaV7I+z7fks1s/tntMNnZoqz2JdD8fB7550vz0xTjN/6s4z8rQFoCAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIAHKs6n934jT/v+K0AwBYAEABAAAABAAQAEABgcqpb0M3r5tNNGJHr20s3wQoAEABAAAABAAQAEABAAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAGBMqvPZG7NgQo6dT9nnvxUA2AIAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgC0VqPPJ89+Pjux8yn7/LcCAFsAQAAAAQAEABAAQACAyaluwbgtb8pHn9/39Vau3FWsAAABAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEARi/9+wAe7186fX73vT3p9S3LRa/fd+rrjfb8sOn0+fXTnRUAIACAAAB+AyDE+3rrHX5YAQACAAgA0MtvANHnk0efzw5/Df08RM9/KwCwBQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEAGitRp9PPvR57HDI0M9D9Py3AgBbAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAgNZq9PnkQ5/HDocM/TxEz38rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQACDVblNU+8gKi34mW/Z2Ixp97/FYAYAsACAAgAIAAAAIACAAgAIAAAAIACADwL1X/i238xp93/FYAYAsACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACADQ2i8dO2VPUhVUPAAAAABJRU5ErkJggg==" width="128" height="128" />
+        </div>
+        <div style="width:100%;max-width:480px">
+          <div style="font-weight:800">Nível <span id="levelLabel">1</span> — XP: <span id="xpLabel">0</span>/<span id="xpNext">100</span></div>
+          <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
         </div>
       </div>
 
-      <div class="right-col">
+      <div style="width:260px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div style="font-weight:900">Tarefas</div>
           <div class="small">Agendadas: <span id="scheduledCount">0</span></div>
         </div>
-
         <div class="menu-card" style="margin-top:8px">
           <div style="display:flex;gap:8px;align-items:center">
-            <input id="newTitle" placeholder="Nova meta..." style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
-            <select id="newType" style="padding:8px;border-radius:8px">
-              <option value="diaria">Diária (-10%)</option>
-              <option value="semanal">Semanal (-20%)</option>
-              <option value="mensal">Mensal (-30%)</option>
-            </select>
-            <select id="newImportance" style="padding:8px;border-radius:8px">
-              <option value="1">Sem muita importância</option>
-              <option value="2">Importante</option>
-              <option value="3">Muito importante</option>
-              <option value="4">Essencial</option>
-            </select>
-            <input id="newXP" placeholder="XP" style="width:72px;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
-            <button id="addTask" style="background:#7be3ff;border:none;padding:8px;border-radius:8px">+</button>
+            <input id="newTitle" placeholder="Nova tarefa..." style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+            <select id="newType"><option value="diaria">Diária</option><option value="semanal">Semanal</option><option value="mensal">Mensal</option></select>
+            <select id="newImportance"><option value="1">Sem muita importância</option><option value="2">Importante</option><option value="3">Muito importante</option><option value="4">Essencial</option></select>
+            <input id="newXP" placeholder="XP" style="width:70px"/>
+            <button id="addTask">Adicionar</button>
           </div>
-          <div id="taskList" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div>
-        </div>
-
-        <div class="menu-card" style="margin-top:8px">
-          <div style="font-weight:900">Agendar</div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <input id="schedTitle" placeholder="Título agendado" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
-            <input id="schedDate" type="datetime-local" style="padding:8px;border-radius:8px"/>
-            <button id="addSched" style="background:#f5c26b;border:none;padding:8px;border-radius:8px">Agendar</button>
-          </div>
+          <div id="taskList" style="margin-top:8px;display:flex;flex-direction:column;gap:8px"></div>
         </div>
       </div>
     </div>
 
-    <!-- Battle area -->
-    <div style="margin-top:10px" class="menu-card">
+    <div class="menu-card" style="margin-top:10px">
       <div style="font-weight:900">Batalha</div>
-      <div class="battle-area" style="position:relative">
-        <div style="position:relative">
-          <div id="battleAvatar" style="width:96px;height:96px;display:flex;align-items:center;justify-content:center"></div>
-        </div>
-        <div style="position:relative">
-          <div id="battleMonster" style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;position:relative">
-            <div class="monster-name" id="monsterName" style="display:none">Monstro</div>
-            <svg width="96" height="96" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="#6b21a8"/><text x="50%" y="55%" font-size="12" text-anchor="middle" fill="#fff">M</text></svg>
-          </div>
-        </div>
-      </div>
-
       <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
-        <button id="simulateWin" style="background:#10b981;color:#fff;border:none;padding:8px;border-radius:8px">Simular vitória</button>
-        <button id="simulateLoss" style="background:#ef4444;color:#fff;border:none;padding:8px;border-radius:8px">Simular falha</button>
+        <button id="simulateWin" style="background:#10b981;color:#fff">Simular vitória</button>
+        <button id="simulateLoss" style="background:#ef4444;color:#fff">Simular falha</button>
       </div>
     </div>
 
-    <div style="margin-top:8px" class="footer">RPG de Tarefas • Pixel Glow • Salvo no dispositivo</div>
-
+    <div class="footer">RPG de Tarefas • Pixel Glow</div>
   </div>
 </div>
 
-<!-- Modal settings -->
-<div class="modal" id="modal"><div class="card">
-  <div style="font-weight:900;margin-bottom:8px">Configurações</div>
-  <div style="margin-bottom:8px">
-    <div style="font-weight:700">Música</div>
-    <div style="display:flex;gap:8px;margin-top:6px">
-      <button class="musicOpt" data-id="calm">Calma</button>
-      <button class="musicOpt" data-id="mid">Intermediária</button>
-      <button class="musicOpt" data-id="intense">Batalha</button>
-    </div>
-  </div>
-  <div style="margin-bottom:8px">
-    <div style="font-weight:700">Volume</div>
-    <input type="range" id="volRange" min="0" max="1" step="0.01" value="0.6" style="width:100%"/>
-  </div>
-  <div style="display:flex;justify-content:flex-end">
-    <button id="closeModal" style="padding:8px 12px;border-radius:8px">Fechar</button>
-  </div>
-</div></div>
-
-<button id="playAudioBtn" style="position:fixed;right:14px;top:80px;z-index:10002;padding:8px 10px;border-radius:8px;background:var(--accent);color:#111;border:none;display:none">Ativar Som</button>
-
-<!-- debug alerts for mobile -->
 <script>
-window.onerror = function(message, source, lineno, colno, error) {
-  try { alert("Erro JS: " + message + "\\nLinha: " + lineno + (colno?(":" + colno):"")); } catch(e){}
-  console.error("Erro JS:", message, "at", lineno, colno, error);
-};
-window.addEventListener('unhandledrejection', function(e){
-  try{ alert("Promise rejeitada: " + (e.reason && e.reason.message ? e.reason.message : String(e.reason))); }catch(err){}
-  console.error("Unhandled rejection:", e);
-});
-</script>
+const STORAGE_KEY='rpg-de-tarefas-final-v2';
+let state = { character:{gender:'male',level:1,xp:0,totalXP:0,equipped:{weapon:{id:'stick',name:'Graveto',rarity:1},armor:null,cos:null}}, tasks:[], scheduled:[], settings:{mode:'dark',music:'mid',volume:0.6}, monthlyRewardedFor:'' };
 
-<script>
-/* ========= RPG de Tarefas — single file ========= */
-/* Utilities */
-const uid = (p='') => p + Math.random().toString(36).slice(2,9);
-const now = () => Date.now();
-const STORAGE_KEY = 'rpg-de-tarefas-state-v2';
+try{ const s=localStorage.getItem(STORAGE_KEY); if(s) state=JSON.parse(s); }catch(e){}
 
-let state = {
-  character:{name:'Aventureiro',gender:'male',level:1,xp:0,totalXP:0,equipped:{weapon:{id:'stick',name:'Graveto',type:'weapon',rarity:1},armor:null,cos:null},status:'idle'},
-  tasks:[], scheduled:[], settings:{mode:'dark',music:'mid',volume:0.6}, monthlyRewardedFor:''
-};
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function xpToNext(l){ return Math.floor(100*Math.pow(1.35,l-1)); }
+function renderCharacter(){ document.getElementById('levelLabel').textContent=state.character.level; document.getElementById('xpLabel').textContent=state.character.xp; document.getElementById('xpNext').textContent=xpToNext(state.character.level); const pct=Math.max(4,Math.min(100,Math.round((state.character.xp/xpToNext(state.character.level))*100))); document.getElementById('xpFill').style.width=pct+'%'; updateAvatar(); renderTasks(); }
+function updateAvatar(){ const img=document.getElementById('avatarImg'); const g=state.character.gender; const m=state.settings.mode==='light'?'light':'dark'; if(g==='male'){ img.src = (m==='dark'? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADRklEQVR42u3dIVLDQBSA4S2zw/QOlVyiqhwAi4MTIFH0BDhwyCpQaAQ34ADYql4igykW1UknaV7I+z7fks1s/tntMNnZoqz2JdD8fB7550vz0xTjN/6s4z8rQFoCAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIAHKs6n934jT/v+K0AwBYAEABAAAABAAQAEABgcqpb0M3r5tNNGJHr20s3wQoAEABAAAABAAQAEABAAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAGBMqvPZG7NgQo6dT9nnvxUA2AIAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgC0VqPPJ89+Pjux8yn7/LcCAFsAQAAAAQAEABAAQACAyaluwbgtb8pHn9/39Vau3FWsAAABAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEARi/9+wAe7186fX73vT3p9S3LRa/fd+rrjfb8sOn0+fXTnRUAIACAAAB+AyDE+3rrHX5YAQACAAgA0MtvANHnk0efzw5/Df08RM9/KwCwBQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEAGitRp9PPvR57HDI0M9D9Py3AgBbAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAgNZq9PnkQ5/HDocM/TxEz38rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQACDVblNU+8gKi34mW/Z2Ixp97/FYAYAsACAAgAIAAAAIACAAgAIAAAAIACADwL1X/i238xp93/FYAYAsACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACADQ2i8dO2VPUhVUPAAAAABJRU5ErkJggg==' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADT0lEQVR42u3dsU3EMBiAUR/nSGnQlRSUrMAWJwZhIoagvg1Y4yoaEA2IgkgRCl0KkFAOovxW/N4AHDbOJxtQvHl6/BhSoLZtIz8+dV2XjN/4ax3/WQKqJQAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAMCpsvvZjd/46x2/HQA4AgACAAgAIACAAAACAKxONgX/83B/NAkFub65NAl2AIAAAAIACAAgAIAAAAIAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAJcnuZ++sghU5dT3Vvv7tAMARABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAYLIcfT957fezE7ueal//dgDgCAAIACAAgAAAAgAIALA62RSUbX97dZjz6x3ujnuzih0AIAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAEDxNq8vwxD5DUS/F/3ifFv2T2jXzPo+gPTWex/Ar9PTVLX+7QDAEQAQAKAq3glY/qHUmR07AEAAAAEAZvkdQPTfIaPvZ0+ptwoYLf08RK9/OwBwBAAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEAJgsR99PvvR97N/tmq1VwGjp5yF6/dsBgCMAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIADAZDn6fvKl72P/qbcKGC39PESvfzsAcAQABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAIlWufgOf3z9DPj34nXO3vhIwevx0AIACAAAACAAgAIACAAAACAAgAIACAAAB/kP0vuvEbf73jtwMARwBAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAIDJvgBkzG205Q6fBgAAAABJRU5ErkJggg=='); } else { img.src = (m==='dark'? 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADQUlEQVR42u3dMU7DMBSAYRdZqFdAZWMopygjA5dg6qGYysYFGDqyMbMh0blXiFjK2qlKlTQv5H3f3hJHzi+7QvFsUVaHEmh+PY/886X5bYrxG3/W8V8VIC0BAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEAzlWdz278xp93/FYAYAsACAAgAIAAAAIACAAwOdUt6Obna+smjMjt/YObYAUACAAgAIAAAAIACAAgACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIADAm1fnsjVkwIefOp+zz3woAbAEAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQBaq9Hnk2c/n53Y+ZR9/lsBgC0AIACAAAACAAgAIADA5FS3YOSW5b3X7/suT24qVgCAAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAKOX/n0A25dNp8/vPvcXvb675U2v33fp6432sXnr9PnH9bMVACAAgAAAfgMgxO517x1+WAEAAgAIANDLbwDR55NHn88Ox4Z+HqLnvxUA2AIAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgAIACAAgAAAAgC0VqPPJx/6PHY4ZejnIXr+WwGALQAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAEBrNfp88qHPY4dThn4eoue/FQDYAgACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAAgAIACAAAACAISaLcrqEHkB0e9Ey/5OROPPPX4rALAFAAQAEABAAAABAAQAEABAAAABAAQA+Jeq/8U2fuPPO34rALAFAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAaO0PM01lD+0VGRQAAAAASUVORK5CYII=' : 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAADQUlEQVR42u3dMU7DMBSAYQOWyGZ1QjkT5+UkHIEhVGLJUlJFCNaKAaUkykvj79tpecH95VQovnt/+/xOgZqmiXz7NAxDMr/5a53/PgHVEgAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAOBa2fns5jd/vfPbAYBbAEAAAAEABAAQAEAAgN3JLsE8Zezn/fxD8ADjOfb6LTz/8evRorQDAAQAEABAAAABAAQAEAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABAAQAEAAAAEABADYkux89nnzhz/Xn1nrqfb1bwcAbgEAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAmy9Hnk9/8+ezj2SrakGvXU+3r3w4A3AIAAgAIACAAgAAAAgDsTnYJNq4tL4u+Xtc/u6jYAQACAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIAbF71zwMoXbftX7Aty77ex2nXf8+nNG++vm3tAAABAAQA8B0AMV47z/DDDgAQAEAAgEW+A4g+nzz6fHa4tPbnIXr92wGAWwBAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAIDJcvT55Gufx/5bsQa4sPbnIXr92wGAWwBAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAIDJcvT55Gufxw5/WfvzEL3+7QDALQAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAIAAAAIACAAgAECoXPsFOB4Ooe8f/Uy42p8JGT2/HQAgAIAAAAIACAAgAIAAAAIACAAgAIAAAP+Q/S+6+c1f7/x2AOAWABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAQAAAAQAEABAAYLIftM1lLYk2FUcAAAAASUVORK5CYII='); } }
 
-function loadState(){ try{ const r = localStorage.getItem(STORAGE_KEY); if(r) state = JSON.parse(r); }catch(e){} }
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+document.getElementById('addTask').addEventListener('click', ()=>{ const title=document.getElementById('newTitle').value.trim(); if(!title) return alert('Nome da tarefa?'); const type=document.getElementById('newType').value; const imp=Number(document.getElementById('newImportance').value); const xp=Number(document.getElementById('newXP').value)||20; const obj={id:'t-'+Math.random().toString(36).slice(2,9),title,type,importance:imp,xp,created:Date.now(),due:(type==='diaria'?Date.now()+24*3600*1000: type==='semanal'?Date.now()+7*24*3600*1000:Date.now()+30*24*3600*1000),done:false}; state.tasks.unshift(obj); save(); renderCharacter(); document.getElementById('newTitle').value=''; });
 
-function xpToNext(level){ return Math.floor(100 * Math.pow(1.35, level-1)); }
-function xpPercent(){ return (state.character.xp / xpToNext(state.character.level)) * 100; }
+function renderTasks(){ const list=document.getElementById('taskList'); list.innerHTML=''; state.tasks.forEach(t=>{ const el=document.createElement('div'); el.style.display='flex'; el.style.justifyContent='space-between'; el.style.alignItems='center'; el.style.background='rgba(255,255,255,0.02)'; el.style.padding='6px'; el.style.borderRadius='8px'; el.innerHTML=`<div><div style="font-weight:800">${t.title}</div><div style="font-size:12px;color:#ccc">${t.type} • ${t.xp} XP • ${['','Sem muita importância','Importante','Muito importante','Essencial'][t.importance]}</div></div>`; const right=document.createElement('div'); const btn=document.createElement('button'); btn.textContent='Concluir'; btn.onclick=()=>completeTask(t.id); const del=document.createElement('button'); del.textContent='Excluir'; del.onclick=()=>{ state.tasks=state.tasks.filter(x=>x.id!==t.id); save(); renderCharacter(); }; right.appendChild(btn); right.appendChild(del); el.appendChild(right); list.appendChild(el); }); }
 
-function renderCharacter(){
-  document.getElementById('levelLabel').textContent = state.character.level;
-  document.getElementById('xpLabel').textContent = state.character.xp;
-  document.getElementById('xpNext').textContent = xpToNext(state.character.level);
-  const pct = Math.max(3, Math.min(100, Math.round(xpPercent())));
-  document.getElementById('xpFill').style.width = pct + '%';
-  updateSlots();
-  updateAvatarSVG();
-}
+function completeTask(id){ const task=state.tasks.find(t=>t.id===id); if(!task) return; const bonus = 1 + (0.025*(task.importance-1)); const gained = Math.round(task.xp * bonus); state.character.xp += gained; state.character.totalXP += gained; while(state.character.xp >= xpToNext(state.character.level)){ state.character.xp -= xpToNext(state.character.level); state.character.level++; } task.done=true; task.completedAt=Date.now(); save(); renderCharacter(); const chest=document.createElement('div'); chest.style.position='fixed'; chest.style.left='50%'; chest.style.top='50%'; chest.style.transform='translate(-50%,-50%)'; chest.style.width='160px'; chest.style.height='100px'; chest.style.background='linear-gradient(180deg,#c08aff,#ffd166)'; chest.style.display='flex'; chest.style.alignItems='center'; chest.style.justifyContent='center'; chest.style.borderRadius='10px'; chest.style.zIndex=9999; chest.textContent='BAÚ'; document.body.appendChild(chest); setTimeout(()=>{ chest.remove(); },1400); }
 
-function rarityColor(r){
-  if(r===1) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-common');
-  if(r===2) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-uncommon');
-  if(r===3) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-rare');
-  if(r===4) return getComputedStyle(document.documentElement).getPropertyValue('--rarity-epic');
-  return getComputedStyle(document.documentElement).getPropertyValue('--rarity-legend');
-}
+document.getElementById('simulateWin').addEventListener('click', ()=>{ state.character.xp+=25; save(); renderCharacter(); });
+document.getElementById('simulateLoss').addEventListener('click', ()=>{ const loss=Math.round(state.character.xp*0.3); state.character.xp=Math.max(0,state.character.xp-loss); save(); renderCharacter(); alert('Penalidade: -'+loss+' XP'); });
 
-function updateSlots(){
-  const we = state.character.equipped.weapon;
-  const ar = state.character.equipped.armor;
-  const co = state.character.equipped.cos;
-  const sw = (el, item) => {
-    el.innerHTML = item?`<div style="text-align:center"><div style="font-weight:900">${item.name}</div><div style="font-size:11px;color:#fff">R${item.rarity}</div></div>`:'Vazio';
-    el.className = 'slot' + (item?(' rarity-'+item.rarity):'');
-  };
-  sw(document.getElementById('slotWeapon'), we);
-  sw(document.getElementById('slotArmor'), ar);
-  sw(document.getElementById('slotCos'), co);
-}
+document.getElementById('maleBtn').addEventListener('click', ()=>{ state.character.gender='male'; save(); updateAvatar(); });
+document.getElementById('femaleBtn').addEventListener('click', ()=>{ state.character.gender='female'; save(); updateAvatar(); });
+document.getElementById('modeToggle').addEventListener('click', ()=>{ state.settings.mode = state.settings.mode==='dark'?'light':'dark'; document.getElementById('modeToggle').textContent = 'Modo: ' + (state.settings.mode==='dark'?'Escuro':'Claro'); save(); updateAvatar(); });
+document.getElementById('musicSel').addEventListener('click', ()=>{ const order=['calm','mid','intense']; const cur=state.settings.music; const next=order[(order.indexOf(cur)+1)%order.length]; state.settings.music=next; document.getElementById('musicSel').textContent='Música: ' + (next==='calm'?'Tranquila': next==='mid'?'Intermediária':'Batalha'); save(); });
 
-function updateAvatarSVG(){
-  const svg = document.getElementById('avatarSVG');
-  const avatarBody = svg.querySelector('#avatarBody');
-  if(!avatarBody) return;
-  const mode = state.settings.mode;
-  const gender = state.character.gender;
-  const bodyColor = (mode==='light')? '#fff8ff' : '#e6d2ff';
-  const pajColor = (gender==='male')? '#c7a4ff' : '#ffd8ff';
-  avatarBody.querySelector('rect:nth-child(1)').setAttribute('fill', bodyColor);
-  avatarBody.querySelector('rect:nth-child(2)').setAttribute('fill', pajColor);
-  const cos = state.character.equipped.cos;
-  const old = svg.querySelector('#overlay');
-  if(old) old.remove();
-  if(cos){
-    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.setAttribute('id','overlay');
-    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
-    rect.setAttribute('x','12'); rect.setAttribute('y','22'); rect.setAttribute('width','40'); rect.setAttribute('height','8'); rect.setAttribute('rx','2');
-    rect.setAttribute('fill', rarityColor(cos.rarity) || '#fff');
-    g.appendChild(rect);
-    svg.appendChild(g);
-  }
-}
+/* Audio - medieval style using WebAudio synth loops (start after click) */
+let audioCtx=null, masterGain=null, musicInterval=null;
+function initAudio(){ try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); masterGain = audioCtx.createGain(); masterGain.gain.value = state.settings.volume||0.6; masterGain.connect(audioCtx.destination); }catch(e){ console.warn('Audio not supported', e); } }
 
-/* Audio (synth) */
-let audioCtx=null, masterGain=null, musicTimer=null;
-function initAudio(){
-  try{
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = audioCtx.createGain(); masterGain.gain.value = state.settings.volume || 0.6;
-    masterGain.connect(audioCtx.destination);
-  }catch(e){ console.warn('Audio not supported', e); }
-}
-function playSFX(type){
-  if(!audioCtx) return;
-  const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-  if(type==='attack'){ o.type='square'; o.frequency.value=520; g.gain.value=0.02; }
-  if(type==='win'){ o.type='sine'; o.frequency.value=900; g.gain.value=0.03; }
-  if(type==='chest'){ o.type='triangle'; o.frequency.value=420; g.gain.value=0.02; }
-  if(type==='penalty'){ o.type='sawtooth'; o.frequency.value=220; g.gain.value=0.04; }
-  o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + 0.12);
-}
+function playNote(freq, type, dur, vol){ if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=vol; o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + dur); }
+
 function startMusic(kind){
   if(!audioCtx) return; stopMusic();
-  const tempo = kind==='calm'?2000: kind==='mid'?1400:900;
-  musicTimer = setInterval(()=>{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value = kind==='calm'?200: kind==='mid'?270:350; g.gain.value = 0.01; o.connect(g); g.connect(masterGain); o.start(); setTimeout(()=>o.stop(),1200); }, tempo);
+  if(kind==='calm'){ musicInterval = setInterval(()=>{ playNote(220,'sine',1,0.02); setTimeout(()=>playNote(330,'sine',0.8,0.015),300); setTimeout(()=>playNote(440,'sine',0.6,0.012),700); }, 1800); }
+  if(kind==='mid'){ musicInterval = setInterval(()=>{ playNote(196,'triangle',0.6,0.025); setTimeout(()=>playNote(294,'triangle',0.5,0.02),200); setTimeout(()=>playNote(392,'triangle',0.4,0.018),500); }, 1400); }
+  if(kind==='intense'){ musicInterval = setInterval(()=>{ playNote(164,'square',0.35,0.03); setTimeout(()=>playNote(246,'square',0.25,0.02),120); setTimeout(()=>playNote(330,'square',0.22,0.018),240); }, 900); }
 }
-function stopMusic(){ if(musicTimer) clearInterval(musicTimer); musicTimer=null; }
-function tryStartAudio(force=false){ if(!audioCtx) initAudio(); if(!audioCtx) return; audioCtx.resume().then(()=> startMusic(state.settings.music || 'mid')).catch(()=>{}); if(!force && audioCtx.state!=='running') document.getElementById('playAudioBtn').style.display='block'; }
+function stopMusic(){ if(musicInterval) clearInterval(musicInterval); musicInterval=null; }
+function tryStartMusic(){ startMusic(state.settings.music||'mid'); }
 
-/* Task system */
-function addTask(title,type,importance,xp){
-  const t = { id: uid('t-'), title, type, importance, xp, created: now(), due: (type==='diaria'? now()+24*3600*1000: type==='semanal'? now()+7*24*3600*1000 : now()+30*24*3600*1000), done:false };
-  state.tasks.unshift(t); saveState(); renderTasks();
-}
-function renderTasks(){
-  const list = document.getElementById('taskList'); list.innerHTML='';
-  state.tasks.forEach(t=>{
-    const el = document.createElement('div'); el.className='task';
-    el.innerHTML = `<div><div style="font-weight:800">${t.title}</div><div style="font-size:12px;color:#ddd">${t.type} • ${t.xp} XP • ${['','Sem muita importância','Importante','Muito importante','Essencial'][t.importance]}</div></div>`;
-    const right = document.createElement('div');
-    const fight = document.createElement('button'); fight.textContent='Lutar'; fight.onclick=()=>completeTask(t.id);
-    const del = document.createElement('button'); del.textContent='Excluir'; del.onclick=()=>{ state.tasks = state.tasks.filter(x=>x.id!==t.id); saveState(); renderTasks(); };
-    right.appendChild(fight); right.appendChild(del);
-    el.appendChild(right); list.appendChild(el);
-  });
-}
+/* Service Worker dynamic registration */
+function registerSW(){ if(!('serviceWorker' in navigator)) return; const precache=[location.href, location.pathname]; const swCode = "const CACHE_NAME='rpg-de-tarefas-final-cache-v2';const PRECACHE="+JSON.stringify(precache)+";self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(PRECACHE)).then(()=>self.skipWaiting()));});self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{try{ if(e.request.method==='GET'&&res&&res.status===200){ const c=res.clone(); caches.open(CACHE_NAME).then(cache=>cache.put(e.request,c)).catch(()=>{});} }catch(er){} return res; }).catch(()=>caches.match(location.pathname))));});"; const blob=new Blob([swCode],{type:'application/javascript'}); const url=URL.createObjectURL(blob); navigator.serviceWorker.register(url).then(r=>console.log('SW registered',r)).catch(err=>console.warn(err)); }
 
-function basePenaltyForType(type){ return type==='diaria'?0.10: type==='semanal'?0.20: 0.30; }
-function importanceExtra(imp){ return 0.025 * (imp-1); } // 2.5% per level above 1
+/* Start */
+document.getElementById('startBtn').addEventListener('click', ()=>{ document.getElementById('startMenu').style.display='none'; document.getElementById('gameUI').style.display='block'; initAudio(); tryStartMusic(); registerSW(); renderCharacter(); save(); });
 
-function completeTask(id){
-  const task = state.tasks.find(t=>t.id===id); if(!task) return;
-  const mn = document.getElementById('monsterName'); mn.textContent = task.title; mn.style.display='block';
-  const avatarElem = document.getElementById('avatarRect'); avatarElem.classList.add('avatar-attack'); playSFX('attack');
-  se
+updateAvatar(); renderCharacter();
+</script>
+</body>
+</html>
