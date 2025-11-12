@@ -3,108 +3,54 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Grimório — Estante de Artes (preview)</title>
+<title>Grimório das Artes do RPG de Tarefas — Preview</title>
 <style>
   :root{
-    --bg-wood-top:#2b1a10;
-    --bg-wood-bottom:#1a0f07;
-    --glow: rgba(138,78,237,0.12);
+    --wood-top:#2b1a10; --wood-bottom:#1a0f07;
+    --glow: rgba(138,78,237,0.14);
     --paper:#f0d88a;
-    --text:#efe9ff;
+    --text-dark:#231b20; --text-light:#efe9ff;
     --muted:#cfc6e8;
-    --rar-common:#9e9e9e;
-    --rar-rare:#4aa3ff;
-    --rar-epic:#8a4efd;
-    --rar-legend:#d4af37;
-    --shelf-h:#14px;
+    --rar-common:#9e9e9e; --rar-rare:#4aa3ff; --rar-epic:#8a4efd; --rar-legend:#d4af37;
+    --panel: rgba(255,255,255,0.02);
   }
-  html,body{height:100%;margin:0}
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial}
   body{
-    background:
-      radial-gradient(1200px 400px at 10% 10%, rgba(138,78,237,0.06), transparent 6%),
-      radial-gradient(800px 300px at 90% 90%, rgba(138,78,237,0.04), transparent 6%),
-      linear-gradient(180deg,var(--bg-wood-top),var(--bg-wood-bottom));
-    color:var(--text);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--wood-top),var(--wood-bottom));
+    color:var(--text-light);
     -webkit-font-smoothing:antialiased;
     padding:18px;
   }
-
   .container{max-width:1200px;margin:0 auto}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px}
-  h1{margin:0;font-size:20px;color:var(--text);letter-spacing:0.6px}
-  .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-
-  /* shelf look */
-  .shelf{
-    margin-top:18px;
-    border-radius:10px;
-    padding:18px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06));
-    box-shadow: 0 6px 30px rgba(0,0,0,0.6) inset;
-  }
-
-  .sectionTitle{
-    color: #cdb9ff;
-    font-weight:800;
-    margin-top:6px;
-    margin-bottom:12px;
-    font-size:16px;
-  }
-
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
-    gap:14px;
-  }
-
-  .card{
-    display:flex;
-    gap:12px;
-    align-items:flex-start;
-    padding:12px;
-    border-radius:10px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
-    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.03);
-  }
-
-  .frame{
-    width:96px; height:96px; /* visual frame - includes padding around 64px sprite */
-    border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
-    box-shadow: 0 4px 10px rgba(0,0,0,0.6) inset;
-    position:relative;
-  }
-
-  .canvasWrap{ width:80px;height:80px; display:flex;align-items:center;justify-content:center; padding:8px; }
-  canvas.pixel{ width:64px; height:64px; image-rendering: pixelated; border-radius:4px; background:rgba(255,255,255,0.03) }
-
+  h1{margin:0;font-size:20px;color:var(--text-light);letter-spacing:0.6px}
+  .controls{display:flex;gap:8px;align-items:center}
+  .btn{background:var(--text-light);color:#13072a;border-radius:8px;padding:8px 10px;border:none;font-weight:700;cursor:pointer}
+  .small{color:var(--muted);font-size:13px}
+  .shelf{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.06));box-shadow:0 8px 40px rgba(0,0,0,0.6) inset;position:relative}
+  .sectionTitle{color:#d9c8ff;font-weight:800;margin-top:6px;margin-bottom:12px;font-size:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .card{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:var(--panel);border:1px solid rgba(255,255,255,0.03)}
+  .frame{width:96px;height:96px;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative}
+  .canvasWrap{width:80px;height:80px;padding:6px;display:flex;align-items:center;justify-content:center}
+  canvas.pixel{width:64px;height:64px;image-rendering:pixelated;border-radius:4px}
   .meta{flex:1}
-  .name{font-weight:800;color:var(--text)}
-  .rarity{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:8px;font-weight:800;color:#111;margin-bottom:6px}
+  .name{font-weight:900;font-size:15px}
+  .rarity{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:8px;font-weight:900;color:#111;margin-bottom:6px}
   .desc{color:var(--muted);font-style:italic;margin-top:6px}
-
-  /* rarity badges colors */
-  .r-common{background:var(--rar-common)}
-  .r-rare{background:var(--rar-rare)}
-  .r-epic{background:var(--rar-epic)}
-  .r-legend{background:var(--rar-legend)}
-
-  /* wooden shelf separators */
-  .shelf::before{
-    content:'';
-    position:absolute;
-    left:0;right:0;
-    height:6px;
-    background:linear-gradient(90deg, rgba(0,0,0,0.4), rgba(255,255,255,0.02), rgba(0,0,0,0.3));
-    transform:translateY(-12px);
-    border-radius:6px;
+  .controlsTop{display:flex;gap:8px;align-items:center}
+  .toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light);cursor:pointer}
+  .avatarPreview{display:flex;gap:12px;align-items:center}
+  .avatarCanvas{width:120px;height:120px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.04)}
+  footer{color:var(--muted);text-align:center;margin-top:18px}
+  @media(max-width:760px){ .grid{grid-template-columns:1fr} .avatarCanvas{width:96px;height:96px} }
+  /* light theme toggles */
+  body.light{
+    background: linear-gradient(180deg,#efe6d0,#e6d4a0);
+    color:var(--text-dark);
   }
-
-  footer{color:var(--muted);text-align:center;margin-top:18px;font-size:13px}
-  @media(max-width:720px){ .grid{grid-template-columns:1fr} .frame{width:84px;height:84px} .canvasWrap{width:64px;height:64px;padding:6px}}
+  body.light .btn{background:var(--text-dark);color:var(--text-light)}
+  body.light .rarity{color:#111}
 </style>
 </head>
 <body>
@@ -112,119 +58,65 @@
     <header>
       <div>
         <h1>Grimório das Artes do RPG de Tarefas</h1>
-        <div class="subtitle">Estante de visualização — artes em pixel 64×64 (fantasia vívida)</div>
+        <div class="small">Estante mágica — preview de artes 64×64 (fantasia vívida)</div>
       </div>
-      <div style="text-align:right;color:var(--muted);font-size:13px">Preview — imagens geradas automaticamente</div>
+
+      <div class="controlsTop">
+        <div class="avatarPreview" title="Avatar atual">
+          <div id="avatarCanvas" class="avatarCanvas"></div>
+        </div>
+        <div class="controls">
+          <button id="btnGender" class="toggle">Masculino</button>
+          <button id="btnTheme" class="toggle">Tema Claro</button>
+          <button id="btnExport" class="btn">Exportar PNGs (ZIP)</button>
+        </div>
+      </div>
     </header>
 
-    <div class="shelf" id="shelfRoot" style="position:relative;margin-top:14px">
-      <!-- Sections will be injected here -->
-    </div>
+    <div class="shelf" id="shelfRoot" style="margin-top:14px"></div>
 
-    <footer>RPG de Tarefas — Grimório (visual preview)</footer>
+    <footer>RPG de Tarefas — Grimório das Artes — Visualização</footer>
   </div>
 
 <script>
-/* ========= Data: items to render =========
-   We will draw 64x64 pixel sprites on canvas for each item.
-*/
-
-const SECTIONS_ORDER = [
-  {key:'Equipamento Inicial', title:'Equipamento Inicial'},
-  {key:'Armas', title:'Armas'},
-  {key:'Armaduras', title:'Armaduras'},
-  {key:'Cosmeticos', title:'Cosméticos'}
-];
-
+/* ========== Data (items) ========== */
 const ITEMS = [];
-
-/* helper to push variants for weapons and armors */
-function pushWeaponVariants(baseName, shortKey){
-  const rarities = [
-    {k:'common', label:'Comum'},
-    {k:'rare', label:'Raro'},
-    {k:'epic', label:'Épica'},
-    {k:'legend', label:'Lendária'}
-  ];
-  rarities.forEach(r=>{
-    ITEMS.push({
-      section: 'Armas',
-      key: shortKey,
-      name: `${baseName} — ${r.label}`,
-      rarity: r.k,
-      rarityLabel: r.label,
-      desc: poeticDesc(shortKey, r.k)
+function addInitial(){
+  ITEMS.push({section:'Equipamento Inicial', key:'pijama', name:'Pijama do Herói — Comum', rarity:'common', desc:'Traje lilás justo ao corpo. A veste do início, onde toda jornada começa.'});
+  ITEMS.push({section:'Equipamento Inicial', key:'graveto', name:'Graveto Inicial — Comum', rarity:'common', desc:'Graveto simples que guiará o primeiro golpe do herói.'});
+}
+function addWeapons(){
+  const list = ['Espada','Cajado','Machado','Arco','Foice','Lança'];
+  list.forEach(base=>{
+    ['common','rare','epic','legend'].forEach(r=>{
+      ITEMS.push({section:'Armas', key:base.toLowerCase(), name:`${base} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc(base.toLowerCase(), r)});
     });
   });
 }
-
-function pushArmorVariants(baseName, key){
-  const rarities = [
-    {k:'common', label:'Comum'},
-    {k:'rare', label:'Raro'},
-    {k:'epic', label:'Épica'},
-    {k:'legend', label:'Lendária'}
-  ];
-  rarities.forEach(r=>{
-    ITEMS.push({
-      section: 'Armaduras',
-      key: key,
-      name: `${baseName} — ${r.label}`,
-      rarity: r.k,
-      rarityLabel: r.label,
-      desc: poeticDesc('armadura', r.k)
+function addArmors(){
+  const models=['Túnica do Aventureiro','Armadura do Guardião','Armadura do Caçador','Armadura do Feiticeiro','Couraça Estelar'];
+  models.forEach(m=>{
+    ['common','rare','epic','legend'].forEach(r=>{
+      ITEMS.push({section:'Armaduras', key:'armadura', name:`${m} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc('armadura', r)});
     });
   });
 }
-
-/* initial equipment */
-ITEMS.push({ section:'Equipamento Inicial', key:'pijama', name:'Pijama do Herói — Comum', rarity:'common', rarityLabel:'Comum', desc:'Traje lilás justo ao corpo. A veste do início, onde toda jornada começa.'});
-ITEMS.push({ section:'Equipamento Inicial', key:'graveto', name:'Graveto Inicial — Comum', rarity:'common', rarityLabel:'Comum', desc:'Graveto simples que guiará o primeiro golpe do herói.'});
-
-/* weapons */
-pushWeaponVariants('Espada','espada');
-pushWeaponVariants('Cajado','cajado');
-pushWeaponVariants('Machado','machado');
-pushWeaponVariants('Arco','arco');
-pushWeaponVariants('Foice','foice');
-pushWeaponVariants('Lança','lança');
-
-/* armors - examples inspired by weapons */
-const ARMOR_MODELS = [
-  {name:'Túnica do Aventureiro', key:'tunica'},
-  {name:'Armadura do Guardião', key:'guardiao'},
-  {name:'Armadura do Caçador', key:'cacador'},
-  {name:'Armadura do Feiticeiro', key:'feiticeiro'},
-  {name:'Couraça Estelar', key:'couraca'}
-];
-ARMOR_MODELS.forEach(a=> pushArmorVariants(a.name,a.key));
-
-/* cosmetics */
-const COS = [
-  {cat:'Capa', key:'capa', name:'Capa (Curta)'},
-  {cat:'Capa', key:'capa_long', name:'Capa (Longa)'},
-  {cat:'Chapéu', key:'chap_advent', name:'Chapéu (Aventureiro)'},
-  {cat:'Chapéu', key:'chap_mage', name:'Chapéu (Mago)'}
-];
-COS.forEach(c=>{
-  ['common','rare','epic','legend'].forEach(r=>{
-    ITEMS.push({
-      section:'Cosmeticos',
-      key:c.key,
-      name:`${c.name} — ${labelFromRarity(r)}`,
-      rarity:r,
-      rarityLabel: labelFromRarity(r).replace(/[()]/g,''),
-      desc: poeticDesc(c.key, r)
+function addCosmetics(){
+  const cos=[{k:'capa',n:'Capa (Curta)'},{k:'capa_long',n:'Capa (Longa)'},{k:'chap_advent',n:'Chapéu (Aventureiro)'},{k:'chap_mage',n:'Chapéu (Mago)'}];
+  cos.forEach(c=>{
+    ['common','rare','epic','legend'].forEach(r=>{
+      ITEMS.push({section:'Cosméticos', key:c.k, name:`${c.n} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc(c.k, r)});
     });
   });
-});
+}
+addInitial(); addWeapons(); addArmors(); addCosmetics();
 
-/* small utility functions */
+/* ========= Helpers ========= */
 function labelFromRarity(k){
-  if(k==='common') return '(Comum)';
-  if(k==='rare') return '(Raro)';
-  if(k==='epic') return '(Épica)';
-  if(k==='legend') return '(Lendária)';
+  if(k==='common') return 'Comum';
+  if(k==='rare') return 'Raro';
+  if(k==='epic') return 'Épica';
+  if(k==='legend') return 'Lendária';
   return '';
 }
 function poeticDesc(kind, rarity){
@@ -242,7 +134,7 @@ function poeticDesc(kind, rarity){
     'chap_advent':'Um chapéu gasto que já viu muitas estradas.',
     'chap_mage':'Chapéu trançado com fios encantados.'
   };
-  const base = map[kind] || 'Um vestígio encantado, gravado em runas suaves.';
+  const base = map[kind.toLowerCase()] || 'Um vestígio encantado, gravado em runas suaves.';
   let extra = '';
   if(rarity==='rare') extra = ' Uma luz tenue adorna o contorno.';
   if(rarity==='epic') extra = ' Runas suaves cintilam, despertando poder.';
@@ -250,189 +142,230 @@ function poeticDesc(kind, rarity){
   return base + extra;
 }
 
-/* ---------- DRAWING: pixel-art 64x64 generation on canvas ---------- */
-
-function drawPixelSprite(ctx, key, rarity){
-  // ctx is 64x64 canvas context; draw in "logical pixels" grid for crispness
-  const W = 64, H = 64;
-  const px = 4; // grid pixel size (16x16 grid)
-  ctx.clearRect(0,0,W,H);
-  // background faint
-  ctx.fillStyle = 'rgba(0,0,0,0.06)';
-  ctx.fillRect(0,0,W,H);
-
-  // choose palette by rarity
-  const palettes = {
-    common: ['#cfcfcf','#8e6f4a','#bfa58a','#a07a50'], 
-    rare:   ['#9fd2ff','#5a8fff','#4aa3ff','#2b6fb8'],
-    epic:   ['#c9a6ff','#8a4efd','#6b2fb0','#3b1c5f'],
-    legend: ['#ffe59a','#ffd166','#ffb84d','#b07a1f']
-  };
-  const pal = palettes[rarity] || palettes.common;
-
-  // Draw different icons per key family
-  if(['espada','cajado','machado','arco','foice','lança'].includes(key)){
-    drawWeaponIcon(ctx, key, pal, px);
-    drawGlow(ctx, pal[1], key, rarity);
-    return;
-  }
-  if(['tunica','guardiao','cacador','feiticeiro','couraca'].includes(key)){
-    drawArmorIcon(ctx, key, pal, px);
-    drawGlow(ctx, pal[2], key, rarity);
-    return;
-  }
-  if(key==='pijama'){
-    drawPijama(ctx, pal, px);
-    return;
-  }
-  if(key==='graveto'){
-    drawGraveto(ctx, pal, px);
-    return;
-  }
-  if(key.startsWith('capa') || key.startsWith('chap')){
-    drawCosmeticIcon(ctx, key, pal, px);
-    drawGlow(ctx, pal[1], key, rarity);
-    return;
-  }
-  // fallback
-  ctx.fillStyle = pal[0];
-  ctx.fillRect(12,12,40,40);
-}
-
-/* weapon icon painters */
-function drawWeaponIcon(ctx, key, pal, px){
-  // use pixel rectangles to create simple but recognisable shapes
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = pal[1];
-  if(key==='espada'){
-    // blade
-    ctx.fillStyle = pal[0]; ctx.fillRect(28,8,8,28);
-    ctx.fillStyle = pal[2]; ctx.fillRect(26,6,12,4);
-    ctx.fillStyle = pal[3]; ctx.fillRect(30,36,4,12);
-  } else if(key==='cajado'){
-    ctx.fillStyle = pal[1]; ctx.fillRect(30,6,4,38);
-    ctx.fillStyle = pal[2]; ctx.beginPath(); ctx.arc(32,8,8,0,Math.PI*2); ctx.fill();
-  } else if(key==='machado'){
-    ctx.fillStyle = pal[2]; ctx.fillRect(30,10,6,36);
-    ctx.fillStyle = pal[0]; ctx.fillRect(18,10,18,12);
-  } else if(key==='arco'){
-    ctx.strokeStyle = pal[1]; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.arc(36,32,18,-0.5,0.5); ctx.stroke();
-    ctx.fillStyle=pal[3]; ctx.fillRect(30,30,18,3);
-  } else if(key==='foice'){
-    ctx.fillStyle = pal[0]; ctx.beginPath(); ctx.arc(36,24,18,0.2,3.0); ctx.fill();
-    ctx.fillStyle = pal[2]; ctx.fillRect(28,34,6,18);
-  } else if(key==='lança'){
-    ctx.fillStyle = pal[0]; ctx.fillRect(30,6,4,40);
-    ctx.fillStyle = pal[2]; ctx.beginPath(); ctx.moveTo(32,4); ctx.lineTo(44,14); ctx.lineTo(20,14); ctx.fill();
-  }
-}
-
-/* armor icon painters */
-function drawArmorIcon(ctx, key, pal, px){
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = pal[0];
-  ctx.fillRect(20,12,24,36); // base torso
-  ctx.fillStyle = pal[2];
-  ctx.fillRect(22,20,20,18); // central plate
-  // shoulders
-  ctx.fillStyle = pal[1];
-  ctx.fillRect(16,10,12,8);
-  ctx.fillRect(36,10,12,8);
-}
-
-/* cosmetic painters */
-function drawCosmeticIcon(ctx, key, pal, px){
-  ctx.imageSmoothingEnabled = false;
-  if(key.startsWith('capa')){
-    ctx.fillStyle = pal[1]; ctx.fillRect(18,10,28,44);
-    ctx.fillStyle = pal[2]; ctx.fillRect(22,14,20,36);
-  } else {
-    // hat
-    ctx.fillStyle = pal[2]; ctx.fillRect(22,8,20,12);
-    ctx.fillStyle = pal[1]; ctx.fillRect(20,18,24,12);
-  }
-}
-
-/* pijama and graveto */
-function drawPijama(ctx, pal, px){
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = pal[2];
-  ctx.fillRect(20,16,24,36);
-  ctx.fillStyle = pal[1];
-  ctx.beginPath(); ctx.arc(32,24,8,0,Math.PI*2); ctx.fill(); // head area
-}
-function drawGraveto(ctx, pal, px){
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = pal[2];
-  ctx.fillRect(30,10,4,44);
-  ctx.fillStyle = pal[3]; ctx.fillRect(28,8,8,4);
-}
-
-/* glow effect for higher rarities */
-function drawGlow(ctx, color, key, rarity){
-  if(rarity==='common') return;
-  const g = ctx.createLinearGradient(0,0,64,64);
-  g.addColorStop(0, hexToRgba(color, 0.18));
-  g.addColorStop(1, hexToRgba(color, 0.06));
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,64,64);
-}
-
-/* tiny helper to convert hex to rgba */
+/* ========= Drawing pixel sprites (64x64) ========== */
 function hexToRgba(hex, alpha){
-  // accept #rrggbb
   const c = hex.replace('#','');
   const r = parseInt(c.substring(0,2),16);
   const g = parseInt(c.substring(2,4),16);
   const b = parseInt(c.substring(4,6),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
+const PALETTES = {
+  common: ['#cfcfcf','#8e6f4a','#bfa58a','#a07a50'],
+  rare: ['#9fd2ff','#5a8fff','#4aa3ff','#2b6fb8'],
+  epic: ['#c9a6ff','#8a4efd','#6b2fb0','#3b1c5f'],
+  legend: ['#ffe59a','#ffd166','#ffb84d','#b07a1f']
+};
 
-/* ---------- Render UI ---------- */
+function drawSprite64(ctx, key, rarity, gender='male', equipped=null){
+  // ctx: 64x64 context
+  ctx.clearRect(0,0,64,64);
+  ctx.imageSmoothingEnabled = false;
+  // subtle background
+  ctx.fillStyle = 'rgba(0,0,0,0.06)';
+  ctx.fillRect(0,0,64,64);
+
+  const pal = PALETTES[rarity] || PALETTES.common;
+
+  // draw avatar base (head + torso) on left or center depending on item type
+  // simplified: draw small avatar as part of sprite if item is armor or cosmetic, else draw item icon
+  if(['pijama','graveto'].includes(key) || key==='armadura' || key.startsWith('capa') || key.startsWith('chap')){
+    drawAvatar(ctx, gender, pal);
+    // overlay item if graveto or pijama
+    if(key==='graveto') drawGravetoSmall(ctx, pal);
+    if(key==='pijama') drawPijamaSmall(ctx, pal);
+    if(key.startsWith('capa')) drawCapaSmall(ctx, pal);
+    if(key.startsWith('chap')) drawChapSmall(ctx, pal);
+    if(key==='armadura') drawArmorSmall(ctx, pal);
+  } else if(['espada','cajado','machado','arco','foice','lança'].includes(key)){
+    drawAvatarWithWeapon(ctx, gender, key, pal);
+  } else {
+    // generic
+    ctx.fillStyle = pal[0]; ctx.fillRect(12,12,40,40);
+  }
+
+  // glow overlay for rare-epic-legend
+  if(rarity!=='common'){
+    const g = ctx.createLinearGradient(0,0,64,64); g.addColorStop(0, hexToRgba(pal[1],0.16)); g.addColorStop(1, hexToRgba(pal[2],0.06));
+    ctx.fillStyle = g; ctx.fillRect(0,0,64,64);
+  }
+}
+
+/* sub-draw helpers (pixel-ish shapes) */
+function drawAvatar(ctx, gender, pal){
+  // head
+  ctx.fillStyle = pal[1];
+  ctx.fillRect(22,8,20,18); // head block
+  // eyes/mask
+  ctx.fillStyle = pal[0];
+  ctx.fillRect(28,14,4,3); ctx.fillRect(36,14,4,3);
+  // torso
+  ctx.fillStyle = pal[2];
+  ctx.fillRect(18,28,28,26);
+  // dress/pijama details
+  ctx.fillStyle = pal[3];
+  ctx.fillRect(24,34,16,12);
+}
+function drawAvatarWithWeapon(ctx, gender, key, pal){
+  drawAvatar(ctx, gender, pal);
+  // weapon overlay to right
+  ctx.fillStyle = pal[0];
+  if(key==='espada'){
+    ctx.fillRect(44,10,6,34); ctx.fillRect(42,8,10,4);
+  } else if(key==='cajado'){
+    ctx.fillRect(46,8,4,40); ctx.beginPath(); ctx.arc(48,6,6,0,Math.PI*2); ctx.fill();
+  } else if(key==='machado'){
+    ctx.fillRect(44,14,14,8); ctx.fillRect(46,8,6,36);
+  } else if(key==='arco'){
+    ctx.strokeStyle = pal[2]; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(48,28,14,-0.6,0.6); ctx.stroke();
+  } else if(key==='foice'){
+    ctx.beginPath(); ctx.fillStyle=pal[0]; ctx.arc(50,18,18,0.5,3.0); ctx.fill();
+  } else if(key==='lança'){
+    ctx.fillRect(48,6,4,40); ctx.beginPath(); ctx.moveTo(50,4); ctx.lineTo(60,14); ctx.lineTo(40,14); ctx.fill();
+  }
+}
+function drawGravetoSmall(ctx, pal){
+  ctx.fillStyle = pal[2]; ctx.fillRect(30,10,6,40); ctx.fillStyle=pal[1]; ctx.fillRect(28,8,10,4);
+}
+function drawPijamaSmall(ctx, pal){
+  ctx.fillStyle = pal[2]; ctx.fillRect(24,28,16,18); ctx.fillStyle=pal[1]; ctx.fillRect(24,18,16,10);
+}
+function drawArmorSmall(ctx, pal){
+  ctx.fillStyle = pal[0]; ctx.fillRect(18,26,28,26); ctx.fillStyle=pal[2]; ctx.fillRect(22,32,20,14);
+}
+function drawCapaSmall(ctx,pal){
+  ctx.fillStyle = pal[1]; ctx.beginPath(); ctx.moveTo(18,22); ctx.lineTo(46,22); ctx.lineTo(36,54); ctx.lineTo(28,54); ctx.fill();
+}
+function drawChapSmall(ctx,pal){
+  ctx.fillStyle = pal[2]; ctx.fillRect(22,10,20,8); ctx.fillStyle=pal[1]; ctx.fillRect(18,18,28,10);
+}
+
+/* ========= UI rendering ========= */
+const shelfRoot = document.getElementById('shelfRoot');
+const avatarCanvasEl = document.getElementById('avatarCanvas');
+let currentGender = 'male';
+let lightMode = false;
 
 function createCard(item){
-  const el = document.createElement('div'); el.className='card';
+  const card = document.createElement('div'); card.className='card';
   const frame = document.createElement('div'); frame.className='frame';
   const canvasWrap = document.createElement('div'); canvasWrap.className='canvasWrap';
-  const canvas = document.createElement('canvas');
-  canvas.width=64; canvas.height=64; canvas.className='pixel';
-  canvasWrap.appendChild(canvas);
-  frame.appendChild(canvasWrap);
+  const canvas = document.createElement('canvas'); canvas.width=64; canvas.height=64; canvas.className='pixel';
+  canvasWrap.appendChild(canvas); frame.appendChild(canvasWrap);
+
   const meta = document.createElement('div'); meta.className='meta';
   const name = document.createElement('div'); name.className='name'; name.textContent = item.name;
-  const badge = document.createElement('div'); badge.className='rarity r-'+item.rarity;
-  // set badge color
+  const badge = document.createElement('div'); badge.className='rarity';
   badge.classList.add(item.rarity==='common'?'r-common': item.rarity==='rare'?'r-rare': item.rarity==='epic'?'r-epic':'r-legend');
-  badge.textContent = item.rarityLabel;
+  badge.textContent = labelFromRarity(item.rarity);
   const desc = document.createElement('div'); desc.className='desc'; desc.textContent = item.desc;
+
   meta.appendChild(name); meta.appendChild(badge); meta.appendChild(desc);
-  el.appendChild(frame); el.appendChild(meta);
+  card.appendChild(frame); card.appendChild(meta);
+
   // draw sprite
   const ctx = canvas.getContext('2d');
-  drawPixelSprite(ctx, item.key, item.rarity);
-  // border color according to rarity
-  const borderColor = window.getComputedStyle(document.documentElement).getPropertyValue('--' + (item.rarity==='legend'?'rar-legend': item.rarity==='epic'?'rar-epic': item.rarity==='rare'?'rar-rare':'rar-common')).trim() || '#9e9e9e';
+  drawSprite64(ctx, item.key, item.rarity, currentGender);
+
+  // frame border color by rarity
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--rar-' + (item.rarity==='legend'?'legend': item.rarity==='epic'?'epic': item.rarity==='rare'?'rare':'common')).trim() || '#9e9e9e';
   frame.style.boxShadow = `0 6px 18px rgba(0,0,0,0.6), inset 0 0 0 4px ${borderColor}`;
-  return el;
+
+  // click to "equip" in avatar preview
+  card.addEventListener('click', ()=>{
+    equipPreview(item);
+  });
+
+  return card;
 }
 
 function buildShelf(){
-  const root = document.getElementById('shelfRoot');
-  SECTIONS_ORDER.forEach(sec=>{
-    const title = document.createElement('div'); title.className='sectionTitle'; title.textContent = sec.title;
-    root.appendChild(title);
-    const sectionGrid = document.createElement('div'); sectionGrid.className='grid';
-    const items = ITEMS.filter(i=> i.section === sec.key);
-    items.forEach(it=>{
-      sectionGrid.appendChild(createCard(it));
+  shelfRoot.innerHTML = '';
+  const sections = ['Equipamento Inicial','Armas','Armaduras','Cosméticos'];
+  sections.forEach(sec=>{
+    const title = document.createElement('div'); title.className='sectionTitle'; title.textContent = sec;
+    shelfRoot.appendChild(title);
+    const grid = document.createElement('div'); grid.className='grid';
+    ITEMS.filter(i=>i.section===sec).forEach(it=>{
+      grid.appendChild(createCard(it));
     });
-    root.appendChild(sectionGrid);
+    shelfRoot.appendChild(grid);
   });
 }
 
+/* avatar preview */
+function drawAvatarPreview(gender, equippedItem=null){
+  avatarCanvasEl.innerHTML = '';
+  const c = document.createElement('canvas'); c.width=120; c.height=120; c.style.width='120px'; c.style.height='120px';
+  avatarCanvasEl.appendChild(c);
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,120,120);
+  ctx.imageSmoothingEnabled = false;
+  // background subtle
+  ctx.fillStyle = lightMode? '#efe6d0' : '#1e1020';
+  ctx.fillRect(0,0,120,120);
+  // draw larger avatar (scaled)
+  // draw base
+  ctx.fillStyle = lightMode? '#d7b6f2' : '#c9a6ff';
+  ctx.fillRect(36,18,48,60); // torso
+  ctx.fillStyle = lightMode? '#a084c9' : '#6b2fb0';
+  ctx.fillRect(44,10,32,20); // head
+  // draw equipment overlay if any
+  if(equippedItem){
+    // render weapon/armor scaled
+    ctx.fillStyle = '#fff8';
+    if(['espada','machado','foice','lança','arco','cajado'].includes(equippedItem.key)){
+      // weapon
+      ctx.fillRect(84,22,8,64);
+    } else if(equippedItem.key==='armadura' || equippedItem.section==='Armaduras'){
+      ctx.fillStyle = '#ffffff22';
+      ctx.fillRect(36,38,48,40);
+    } else if(equippedItem.key.startsWith('capa') || equippedItem.key.startsWith('chap')){
+      ctx.fillStyle = '#ffffff22';
+      ctx.beginPath(); ctx.moveTo(36,34); ctx.lineTo(84,34); ctx.lineTo(76,86); ctx.lineTo(44,86); ctx.fill();
+    } else if(equippedItem.key==='pijama' || equippedItem.key==='graveto'){
+      // minor overlay
+    }
+  }
+}
+
+/* equip preview when clicking an item */
+function equipPreview(item){
+  drawAvatarPreview(currentGender, item);
+}
+
+/* toggles */
+document.getElementById('btnGender').addEventListener('click', ()=>{
+  currentGender = currentGender === 'male' ? 'female' : 'male';
+  document.getElementById('btnGender').textContent = currentGender === 'male' ? 'Masculino' : 'Feminino';
+  // redraw all sprites to reflect gender
+  document.querySelectorAll('canvas.pixel').forEach(cv=>{
+    const ctx = cv.getContext('2d');
+    // find item by matching near text name in meta (simple approach)
+    const card = cv.closest('.card'); const name = card.querySelector('.name').textContent;
+    const it = ITEMS.find(x=>x.name===name);
+    if(it) drawSprite64(ctx, it.key, it.rarity, currentGender);
+  });
+  drawAvatarPreview(currentGender, null);
+});
+
+document.getElementById('btnTheme').addEventListener('click', ()=>{
+  lightMode = !lightMode;
+  document.body.classList.toggle('light', lightMode);
+  document.getElementById('btnTheme').textContent = lightMode ? 'Tema Escuro' : 'Tema Claro';
+  // rebuild shelf to pick up CSS var changes used in frame border (if any)
+  buildShelf();
+  drawAvatarPreview(currentGender, null);
+});
+
+/* optional: export PNGs zip (placeholder) */
+document.getElementById('btnExport').addEventListener('click', ()=>{
+  alert('Exportação em ZIP não disponível nesta demo — você pode salvar manualmente as imagens geradas.');
+});
+
 /* initial render */
 buildShelf();
+drawAvatarPreview(currentGender, null);
 
 </script>
 </body>
