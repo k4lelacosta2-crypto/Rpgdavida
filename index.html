@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Grimório das Artes do RPG de Tarefas — Preview</title>
+<title>Grimório — Estante de Artes (SVG 128×128)</title>
 <style>
   :root{
     --wood-top:#2b1a10; --wood-bottom:#1a0f07;
@@ -21,36 +21,44 @@
     -webkit-font-smoothing:antialiased;
     padding:18px;
   }
-  .container{max-width:1200px;margin:0 auto}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .container{max-width:1280px;margin:0 auto}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   h1{margin:0;font-size:20px;color:var(--text-light);letter-spacing:0.6px}
-  .controls{display:flex;gap:8px;align-items:center}
+  .controlsTop{display:flex;gap:8px;align-items:center}
   .btn{background:var(--text-light);color:#13072a;border-radius:8px;padding:8px 10px;border:none;font-weight:700;cursor:pointer}
+  .toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light);cursor:pointer}
   .small{color:var(--muted);font-size:13px}
   .shelf{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.06));box-shadow:0 8px 40px rgba(0,0,0,0.6) inset;position:relative}
   .sectionTitle{color:#d9c8ff;font-weight:800;margin-top:6px;margin-bottom:12px;font-size:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px}
   .card{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:var(--panel);border:1px solid rgba(255,255,255,0.03)}
-  .frame{width:96px;height:96px;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative}
-  .canvasWrap{width:80px;height:80px;padding:6px;display:flex;align-items:center;justify-content:center}
-  canvas.pixel{width:64px;height:64px;image-rendering:pixelated;border-radius:4px}
+  .artWrap{width:140px;height:140px;display:flex;align-items:center;justify-content:center;border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)); box-shadow:inset 0 4px 12px rgba(0,0,0,0.5)}
+  svg.asset{width:128px;height:128px;display:block}
   .meta{flex:1}
   .name{font-weight:900;font-size:15px}
   .rarity{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:8px;font-weight:900;color:#111;margin-bottom:6px}
   .desc{color:var(--muted);font-style:italic;margin-top:6px}
-  .controlsTop{display:flex;gap:8px;align-items:center}
-  .toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light);cursor:pointer}
   .avatarPreview{display:flex;gap:12px;align-items:center}
-  .avatarCanvas{width:120px;height:120px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.04)}
+  .avatarBox{width:140px;height:140px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));display:flex;align-items:center;justify-content:center}
   footer{color:var(--muted);text-align:center;margin-top:18px}
-  @media(max-width:760px){ .grid{grid-template-columns:1fr} .avatarCanvas{width:96px;height:96px} }
-  /* light theme toggles */
+
+  /* light theme */
   body.light{
     background: linear-gradient(180deg,#efe6d0,#e6d4a0);
     color:var(--text-dark);
   }
+  body.light .toggle{color:var(--text-dark)}
   body.light .btn{background:var(--text-dark);color:var(--text-light)}
   body.light .rarity{color:#111}
+
+  /* subtle animations for demo */
+  @keyframes pulse {
+    0% { filter: drop-shadow(0 0 0 rgba(138,78,237,0)); transform: translateY(0); }
+    50% { filter: drop-shadow(0 0 8px rgba(138,78,237,0.5)); transform: translateY(-1px); }
+    100% { filter: drop-shadow(0 0 0 rgba(138,78,237,0)); transform: translateY(0); }
+  }
+  .glowPulse { animation: pulse 2.2s ease-in-out infinite; }
+  @media(max-width:760px){ .grid{grid-template-columns:1fr} .artWrap{width:120px;height:120px} .avatarBox{width:96px;height:96px} }
 </style>
 </head>
 <body>
@@ -58,315 +66,305 @@
     <header>
       <div>
         <h1>Grimório das Artes do RPG de Tarefas</h1>
-        <div class="small">Estante mágica — preview de artes 64×64 (fantasia vívida)</div>
+        <div class="small">Estante mágica — SVGs 128×128 com animações leves (transparentes)</div>
       </div>
-
       <div class="controlsTop">
-        <div class="avatarPreview" title="Avatar atual">
-          <div id="avatarCanvas" class="avatarCanvas"></div>
+        <div class="avatarPreview">
+          <div class="avatarBox" id="avatarBox" title="Preview do avatar"></div>
         </div>
-        <div class="controls">
-          <button id="btnGender" class="toggle">Masculino</button>
-          <button id="btnTheme" class="toggle">Tema Claro</button>
-          <button id="btnExport" class="btn">Exportar PNGs (ZIP)</button>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          <div>
+            <button id="btnGender" class="toggle">Masculino</button>
+            <button id="btnTheme" class="toggle">Tema Claro</button>
+            <button id="btnExport" class="btn">Exportar (ZIP)</button>
+          </div>
+          <div class="small" style="text-align:right">Clique em um item para equipar no avatar</div>
         </div>
       </div>
     </header>
 
-    <div class="shelf" id="shelfRoot" style="margin-top:14px"></div>
+    <div class="shelf" id="shelfRoot"></div>
 
     <footer>RPG de Tarefas — Grimório das Artes — Visualização</footer>
   </div>
 
 <script>
-/* ========== Data (items) ========== */
-const ITEMS = [];
-function addInitial(){
-  ITEMS.push({section:'Equipamento Inicial', key:'pijama', name:'Pijama do Herói — Comum', rarity:'common', desc:'Traje lilás justo ao corpo. A veste do início, onde toda jornada começa.'});
-  ITEMS.push({section:'Equipamento Inicial', key:'graveto', name:'Graveto Inicial — Comum', rarity:'common', desc:'Graveto simples que guiará o primeiro golpe do herói.'});
-}
-function addWeapons(){
-  const list = ['Espada','Cajado','Machado','Arco','Foice','Lança'];
-  list.forEach(base=>{
-    ['common','rare','epic','legend'].forEach(r=>{
-      ITEMS.push({section:'Armas', key:base.toLowerCase(), name:`${base} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc(base.toLowerCase(), r)});
-    });
-  });
-}
-function addArmors(){
-  const models=['Túnica do Aventureiro','Armadura do Guardião','Armadura do Caçador','Armadura do Feiticeiro','Couraça Estelar'];
-  models.forEach(m=>{
-    ['common','rare','epic','legend'].forEach(r=>{
-      ITEMS.push({section:'Armaduras', key:'armadura', name:`${m} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc('armadura', r)});
-    });
-  });
-}
-function addCosmetics(){
-  const cos=[{k:'capa',n:'Capa (Curta)'},{k:'capa_long',n:'Capa (Longa)'},{k:'chap_advent',n:'Chapéu (Aventureiro)'},{k:'chap_mage',n:'Chapéu (Mago)'}];
-  cos.forEach(c=>{
-    ['common','rare','epic','legend'].forEach(r=>{
-      ITEMS.push({section:'Cosméticos', key:c.k, name:`${c.n} — ${labelFromRarity(r)}`, rarity:r, desc:poeticDesc(c.k, r)});
-    });
-  });
-}
-addInitial(); addWeapons(); addArmors(); addCosmetics();
+/* ========== Config & list of assets to create ========== */
 
-/* ========= Helpers ========= */
-function labelFromRarity(k){
-  if(k==='common') return 'Comum';
-  if(k==='rare') return 'Raro';
-  if(k==='epic') return 'Épica';
-  if(k==='legend') return 'Lendária';
-  return '';
+/* items definitions: weapons, armors, cosmetics, chests, monsters (daily/weekly/monthly with importance levels) */
+const ASSETS = [];
+const rarities = [
+  {k:'common', label:'Comum', color:'var(--rar-common)'},
+  {k:'rare', label:'Raro', color:'var(--rar-rare)'},
+  {k:'epic', label:'Épica', color:'var(--rar-epic)'},
+  {k:'legend', label:'Lendária', color:'var(--rar-legend)'}
+];
+
+function pushWeapon(base){
+  rarities.forEach(r=> ASSETS.push({category:'Armas', type:'weapon', key:base.toLowerCase(), name:`${base} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
 }
-function poeticDesc(kind, rarity){
-  const map = {
-    'espada':'A lâmina canta com ecos de dias antigos.',
-    'cajado':'O cetro murmura versos de vento e estrelas.',
-    'machado':'O corte ressoa como batida de martelo ancestral.',
-    'arco':'A corda vibra com segredos de florestas antigas.',
-    'foice':'A lâmina sussurra colheitas e despedidas.',
-    'lança':'A ponta corta o ar, perfurando o destino.',
-    'armadura':'As placas guardam memórias de batalhas e juramentos.',
-    'pijama':'Tecido lilás que envolve o corpo em promessas de aurora.',
-    'graveto':'Um começo humilde que guarda grande vontade.',
-    'capa':'Símbolo de vigília e presença sutil.',
-    'chap_advent':'Um chapéu gasto que já viu muitas estradas.',
-    'chap_mage':'Chapéu trançado com fios encantados.'
-  };
-  const base = map[kind.toLowerCase()] || 'Um vestígio encantado, gravado em runas suaves.';
-  let extra = '';
-  if(rarity==='rare') extra = ' Uma luz tenue adorna o contorno.';
-  if(rarity==='epic') extra = ' Runas suaves cintilam, despertando poder.';
-  if(rarity==='legend') extra = ' Uma aura eterna pulsa, como estrela aprisionada.';
-  return base + extra;
+function pushArmor(baseKey, baseName){
+  rarities.forEach(r=> ASSETS.push({category:'Armaduras', type:'armor', key:baseKey, name:`${baseName} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
 }
-
-/* ========= Drawing pixel sprites (64x64) ========== */
-function hexToRgba(hex, alpha){
-  const c = hex.replace('#','');
-  const r = parseInt(c.substring(0,2),16);
-  const g = parseInt(c.substring(2,4),16);
-  const b = parseInt(c.substring(4,6),16);
-  return `rgba(${r},${g},${b},${alpha})`;
+function pushCosmetic(key, name){
+  rarities.forEach(r=> ASSETS.push({category:'Cosméticos', type:'cosmetic', key:key, name:`${name} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
 }
-const PALETTES = {
-  common: ['#cfcfcf','#8e6f4a','#bfa58a','#a07a50'],
-  rare: ['#9fd2ff','#5a8fff','#4aa3ff','#2b6fb8'],
-  epic: ['#c9a6ff','#8a4efd','#6b2fb0','#3b1c5f'],
-  legend: ['#ffe59a','#ffd166','#ffb84d','#b07a1f']
-};
-
-function drawSprite64(ctx, key, rarity, gender='male', equipped=null){
-  // ctx: 64x64 context
-  ctx.clearRect(0,0,64,64);
-  ctx.imageSmoothingEnabled = false;
-  // subtle background
-  ctx.fillStyle = 'rgba(0,0,0,0.06)';
-  ctx.fillRect(0,0,64,64);
-
-  const pal = PALETTES[rarity] || PALETTES.common;
-
-  // draw avatar base (head + torso) on left or center depending on item type
-  // simplified: draw small avatar as part of sprite if item is armor or cosmetic, else draw item icon
-  if(['pijama','graveto'].includes(key) || key==='armadura' || key.startsWith('capa') || key.startsWith('chap')){
-    drawAvatar(ctx, gender, pal);
-    // overlay item if graveto or pijama
-    if(key==='graveto') drawGravetoSmall(ctx, pal);
-    if(key==='pijama') drawPijamaSmall(ctx, pal);
-    if(key.startsWith('capa')) drawCapaSmall(ctx, pal);
-    if(key.startsWith('chap')) drawChapSmall(ctx, pal);
-    if(key==='armadura') drawArmorSmall(ctx, pal);
-  } else if(['espada','cajado','machado','arco','foice','lança'].includes(key)){
-    drawAvatarWithWeapon(ctx, gender, key, pal);
-  } else {
-    // generic
-    ctx.fillStyle = pal[0]; ctx.fillRect(12,12,40,40);
-  }
-
-  // glow overlay for rare-epic-legend
-  if(rarity!=='common'){
-    const g = ctx.createLinearGradient(0,0,64,64); g.addColorStop(0, hexToRgba(pal[1],0.16)); g.addColorStop(1, hexToRgba(pal[2],0.06));
-    ctx.fillStyle = g; ctx.fillRect(0,0,64,64);
-  }
+function pushChest(){
+  const names = ['Baú — Comum','Baú — Raro','Baú — Épico','Baú — Lendário'];
+  rarities.forEach((r,i)=> ASSETS.push({category:'Baús', type:'chest', key:'chest', name:names[i], rarity:r.k, rarityLabel:r.label}));
 }
-
-/* sub-draw helpers (pixel-ish shapes) */
-function drawAvatar(ctx, gender, pal){
-  // head
-  ctx.fillStyle = pal[1];
-  ctx.fillRect(22,8,20,18); // head block
-  // eyes/mask
-  ctx.fillStyle = pal[0];
-  ctx.fillRect(28,14,4,3); ctx.fillRect(36,14,4,3);
-  // torso
-  ctx.fillStyle = pal[2];
-  ctx.fillRect(18,28,28,26);
-  // dress/pijama details
-  ctx.fillStyle = pal[3];
-  ctx.fillRect(24,34,16,12);
-}
-function drawAvatarWithWeapon(ctx, gender, key, pal){
-  drawAvatar(ctx, gender, pal);
-  // weapon overlay to right
-  ctx.fillStyle = pal[0];
-  if(key==='espada'){
-    ctx.fillRect(44,10,6,34); ctx.fillRect(42,8,10,4);
-  } else if(key==='cajado'){
-    ctx.fillRect(46,8,4,40); ctx.beginPath(); ctx.arc(48,6,6,0,Math.PI*2); ctx.fill();
-  } else if(key==='machado'){
-    ctx.fillRect(44,14,14,8); ctx.fillRect(46,8,6,36);
-  } else if(key==='arco'){
-    ctx.strokeStyle = pal[2]; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(48,28,14,-0.6,0.6); ctx.stroke();
-  } else if(key==='foice'){
-    ctx.beginPath(); ctx.fillStyle=pal[0]; ctx.arc(50,18,18,0.5,3.0); ctx.fill();
-  } else if(key==='lança'){
-    ctx.fillRect(48,6,4,40); ctx.beginPath(); ctx.moveTo(50,4); ctx.lineTo(60,14); ctx.lineTo(40,14); ctx.fill();
-  }
-}
-function drawGravetoSmall(ctx, pal){
-  ctx.fillStyle = pal[2]; ctx.fillRect(30,10,6,40); ctx.fillStyle=pal[1]; ctx.fillRect(28,8,10,4);
-}
-function drawPijamaSmall(ctx, pal){
-  ctx.fillStyle = pal[2]; ctx.fillRect(24,28,16,18); ctx.fillStyle=pal[1]; ctx.fillRect(24,18,16,10);
-}
-function drawArmorSmall(ctx, pal){
-  ctx.fillStyle = pal[0]; ctx.fillRect(18,26,28,26); ctx.fillStyle=pal[2]; ctx.fillRect(22,32,20,14);
-}
-function drawCapaSmall(ctx,pal){
-  ctx.fillStyle = pal[1]; ctx.beginPath(); ctx.moveTo(18,22); ctx.lineTo(46,22); ctx.lineTo(36,54); ctx.lineTo(28,54); ctx.fill();
-}
-function drawChapSmall(ctx,pal){
-  ctx.fillStyle = pal[2]; ctx.fillRect(22,10,20,8); ctx.fillStyle=pal[1]; ctx.fillRect(18,18,28,10);
-}
-
-/* ========= UI rendering ========= */
-const shelfRoot = document.getElementById('shelfRoot');
-const avatarCanvasEl = document.getElementById('avatarCanvas');
-let currentGender = 'male';
-let lightMode = false;
-
-function createCard(item){
-  const card = document.createElement('div'); card.className='card';
-  const frame = document.createElement('div'); frame.className='frame';
-  const canvasWrap = document.createElement('div'); canvasWrap.className='canvasWrap';
-  const canvas = document.createElement('canvas'); canvas.width=64; canvas.height=64; canvas.className='pixel';
-  canvasWrap.appendChild(canvas); frame.appendChild(canvasWrap);
-
-  const meta = document.createElement('div'); meta.className='meta';
-  const name = document.createElement('div'); name.className='name'; name.textContent = item.name;
-  const badge = document.createElement('div'); badge.className='rarity';
-  badge.classList.add(item.rarity==='common'?'r-common': item.rarity==='rare'?'r-rare': item.rarity==='epic'?'r-epic':'r-legend');
-  badge.textContent = labelFromRarity(item.rarity);
-  const desc = document.createElement('div'); desc.className='desc'; desc.textContent = item.desc;
-
-  meta.appendChild(name); meta.appendChild(badge); meta.appendChild(desc);
-  card.appendChild(frame); card.appendChild(meta);
-
-  // draw sprite
-  const ctx = canvas.getContext('2d');
-  drawSprite64(ctx, item.key, item.rarity, currentGender);
-
-  // frame border color by rarity
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--rar-' + (item.rarity==='legend'?'legend': item.rarity==='epic'?'epic': item.rarity==='rare'?'rare':'common')).trim() || '#9e9e9e';
-  frame.style.boxShadow = `0 6px 18px rgba(0,0,0,0.6), inset 0 0 0 4px ${borderColor}`;
-
-  // click to "equip" in avatar preview
-  card.addEventListener('click', ()=>{
-    equipPreview(item);
-  });
-
-  return card;
-}
-
-function buildShelf(){
-  shelfRoot.innerHTML = '';
-  const sections = ['Equipamento Inicial','Armas','Armaduras','Cosméticos'];
-  sections.forEach(sec=>{
-    const title = document.createElement('div'); title.className='sectionTitle'; title.textContent = sec;
-    shelfRoot.appendChild(title);
-    const grid = document.createElement('div'); grid.className='grid';
-    ITEMS.filter(i=>i.section===sec).forEach(it=>{
-      grid.appendChild(createCard(it));
-    });
-    shelfRoot.appendChild(grid);
-  });
-}
-
-/* avatar preview */
-function drawAvatarPreview(gender, equippedItem=null){
-  avatarCanvasEl.innerHTML = '';
-  const c = document.createElement('canvas'); c.width=120; c.height=120; c.style.width='120px'; c.style.height='120px';
-  avatarCanvasEl.appendChild(c);
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,120,120);
-  ctx.imageSmoothingEnabled = false;
-  // background subtle
-  ctx.fillStyle = lightMode? '#efe6d0' : '#1e1020';
-  ctx.fillRect(0,0,120,120);
-  // draw larger avatar (scaled)
-  // draw base
-  ctx.fillStyle = lightMode? '#d7b6f2' : '#c9a6ff';
-  ctx.fillRect(36,18,48,60); // torso
-  ctx.fillStyle = lightMode? '#a084c9' : '#6b2fb0';
-  ctx.fillRect(44,10,32,20); // head
-  // draw equipment overlay if any
-  if(equippedItem){
-    // render weapon/armor scaled
-    ctx.fillStyle = '#fff8';
-    if(['espada','machado','foice','lança','arco','cajado'].includes(equippedItem.key)){
-      // weapon
-      ctx.fillRect(84,22,8,64);
-    } else if(equippedItem.key==='armadura' || equippedItem.section==='Armaduras'){
-      ctx.fillStyle = '#ffffff22';
-      ctx.fillRect(36,38,48,40);
-    } else if(equippedItem.key.startsWith('capa') || equippedItem.key.startsWith('chap')){
-      ctx.fillStyle = '#ffffff22';
-      ctx.beginPath(); ctx.moveTo(36,34); ctx.lineTo(84,34); ctx.lineTo(76,86); ctx.lineTo(44,86); ctx.fill();
-    } else if(equippedItem.key==='pijama' || equippedItem.key==='graveto'){
-      // minor overlay
+function pushMonsters(){
+  // for each mission type: daily, weekly, monthly and for each importance (1..4)
+  const missions = ['Diária','Semanal','Mensal'];
+  for(const m of missions){
+    for(let imp=1; imp<=4; imp++){
+      const lbl = `(${m} - Importância ${imp})`;
+      ASSETS.push({category:'Monstros', type:'monster', key:m.toLowerCase(), name:`${m} — ${labelImportance(imp)}`, rarity:importanceToRarity(imp), rarityLabel: labelImportance(imp), importance:imp});
     }
   }
 }
-
-/* equip preview when clicking an item */
-function equipPreview(item){
-  drawAvatarPreview(currentGender, item);
+function labelImportance(i){
+  if(i===1) return 'Sem muita importância';
+  if(i===2) return 'Importante';
+  if(i===3) return 'Muito importante';
+  return 'Essencial';
+}
+function importanceToRarity(i){
+  // map importance to visual intensity: 1->common,2->rare,3->epic,4->legend
+  if(i===1) return 'common';
+  if(i===2) return 'rare';
+  if(i===3) return 'epic';
+  return 'legend';
 }
 
-/* toggles */
-document.getElementById('btnGender').addEventListener('click', ()=>{
-  currentGender = currentGender === 'male' ? 'female' : 'male';
-  document.getElementById('btnGender').textContent = currentGender === 'male' ? 'Masculino' : 'Feminino';
-  // redraw all sprites to reflect gender
-  document.querySelectorAll('canvas.pixel').forEach(cv=>{
-    const ctx = cv.getContext('2d');
-    // find item by matching near text name in meta (simple approach)
-    const card = cv.closest('.card'); const name = card.querySelector('.name').textContent;
-    const it = ITEMS.find(x=>x.name===name);
-    if(it) drawSprite64(ctx, it.key, it.rarity, currentGender);
-  });
-  drawAvatarPreview(currentGender, null);
-});
+/* Basic lists */
+const weapons = ['Espada','Cajado','Machado','Arco','Foice','Lança'];
+weapons.forEach(w=> pushWeapon(w));
+const armorModels = [
+  {k:'tunica',n:'Túnica do Aventureiro'},
+  {k:'guardiao',n:'Armadura do Guardião'},
+  {k:'cacador',n:'Armadura do Caçador'},
+  {k:'feiticeiro',n:'Armadura do Feiticeiro'},
+  {k:'couraca',n:'Couraça Estelar'}
+];
+armorModels.forEach(a=> pushArmor(a.k,a.n));
+pushCosmetic('capa','Capa (Curta)');
+pushCosmetic('capa_long','Capa (Longa)');
+pushCosmetic('chap_advent','Chapéu (Aventureiro)');
+pushCosmetic('chap_mage','Chapéu (Mago)');
+pushChest();
+pushMonsters();
 
-document.getElementById('btnTheme').addEventListener('click', ()=>{
-  lightMode = !lightMode;
-  document.body.classList.toggle('light', lightMode);
-  document.getElementById('btnTheme').textContent = lightMode ? 'Tema Escuro' : 'Tema Claro';
-  // rebuild shelf to pick up CSS var changes used in frame border (if any)
-  buildShelf();
-  drawAvatarPreview(currentGender, null);
-});
+/* Add initial equipment (pijama + graveto) */
+ASSETS.unshift({category:'Equipamento Inicial', type:'initial', key:'pijama', name:'Pijama do Herói — Comum', rarity:'common',rarityLabel:'Comum'});
+ASSETS.unshift({category:'Equipamento Inicial', type:'initial', key:'graveto', name:'Graveto Inicial — Comum', rarity:'common',rarityLabel:'Comum'});
 
-/* optional: export PNGs zip (placeholder) */
-document.getElementById('btnExport').addEventListener('click', ()=>{
-  alert('Exportação em ZIP não disponível nesta demo — você pode salvar manualmente as imagens geradas.');
-});
+/* ========== helpers for creating SVG assets ========== */
 
-/* initial render */
-buildShelf();
-drawAvatarPreview(currentGender, null);
+function rarityColor(r){
+  if(r==='common') return getComputedStyle(document.documentElement).getPropertyValue('--rar-common').trim();
+  if(r==='rare') return getComputedStyle(document.documentElement).getPropertyValue('--rar-rare').trim();
+  if(r==='epic') return getComputedStyle(document.documentElement).getPropertyValue('--rar-epic').trim();
+  if(r==='legend') return getComputedStyle(document.documentElement).getPropertyValue('--rar-legend').trim();
+  return '#9e9e9e';
+}
 
-</script>
-</body>
-</html>
+/* Create an SVG element 128x128 with transparent background, animated depending on type and rarity */
+function createAssetSVG(asset, gender='male'){
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS,'svg');
+  svg.setAttribute('viewBox','0 0 128 128');
+  svg.setAttribute('width','128'); svg.setAttribute('height','128');
+  svg.classList.add('asset');
+
+  // defs: glow filter & gentle noise-like pattern for texture
+  const defs = document.createElementNS(NS,'defs');
+  defs.innerHTML = `
+    <filter id="glow-${asset.rarity}" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="${asset.rarity==='common'?0: asset.rarity==='rare'?2: asset.rarity==='epic'?4:6}" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="lg-${asset.rarity}" x1="0" x2="1">
+      <stop offset="0" stop-color="${rarityGradientStart(asset.rarity)}" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="${rarityGradientEnd(asset.rarity)}" stop-opacity="0.02"/>
+    </linearGradient>
+    <radialGradient id="core-${asset.rarity}" cx="30%" cy="20%" r="60%">
+      <stop offset="0" stop-color="${rarityGradientEnd(asset.rarity)}" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="${rarityGradientStart(asset.rarity)}" stop-opacity="0"/>
+    </radialGradient>
+  `;
+  svg.appendChild(defs);
+
+  // base group
+  const g = document.createElementNS(NS,'g');
+  // draw a soft backdrop (so transparent assets still read over wood)
+  const bg = document.createElementNS(NS,'rect');
+  bg.setAttribute('x','6'); bg.setAttribute('y','6'); bg.setAttribute('width','116'); bg.setAttribute('height','116');
+  bg.setAttribute('rx','12'); bg.setAttribute('fill','url(#lg-'+asset.rarity+')');
+  bg.setAttribute('opacity','0.9');
+  g.appendChild(bg);
+
+  // draw central artwork depending on type
+  if(asset.type==='weapon'){
+    drawWeaponSVG(svg,g,asset);
+  } else if(asset.type==='armor'){
+    drawArmorSVG(svg,g,asset);
+  } else if(asset.type==='cosmetic'){
+    drawCosmeticSVG(svg,g,asset);
+  } else if(asset.type==='chest'){
+    drawChestSVG(svg,g,asset);
+  } else if(asset.type==='monster'){
+    drawMonsterSVG(svg,g,asset);
+  } else if(asset.type==='initial'){
+    drawInitialSVG(svg,g,asset);
+  } else {
+    // fallback box
+    const r = document.createElementNS(NS,'rect'); r.setAttribute('x',34); r.setAttribute('y',34); r.setAttribute('width',60); r.setAttribute('height',60); r.setAttribute('fill',rarityColor(asset.rarity)); g.appendChild(r);
+  }
+
+  svg.appendChild(g);
+  return svg;
+}
+
+/* SIMPLE color helpers for gradient ends */
+function rarityGradientStart(r){
+  if(r==='common') return '#ffffff';
+  if(r==='rare') return '#8ecbff';
+  if(r==='epic') return '#cfa6ff';
+  if(r==='legend') return '#ffe59a';
+  return '#ffffff';
+}
+function rarityGradientEnd(r){
+  if(r==='common') return '#d1d1d1';
+  if(r==='rare') return '#4aa3ff';
+  if(r==='epic') return '#8a4efd';
+  if(r==='legend') return '#ffd166';
+  return '#ffffff';
+}
+
+/* DRAWING primitive implementations: each makes shapes and adds light animation if rarity>common */
+
+function drawWeaponSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const col = rarityColor(asset.rarity);
+
+  // sword-like stylized shape depending on key
+  const key = asset.key;
+  // base handle
+  const handle = document.createElementNS(NS,'rect'); handle.setAttribute('x',56); handle.setAttribute('y',36); handle.setAttribute('width',8); handle.setAttribute('height',48); handle.setAttribute('rx',3);
+  handle.setAttribute('fill','#2c1b2a');
+  g.appendChild(handle);
+
+  if(key==='espada'){
+    const blade = document.createElementNS(NS,'path'); blade.setAttribute('d','M64 12 L84 44 L64 52 L44 44 Z'); blade.setAttribute('fill',col); blade.setAttribute('stroke','#2a1624'); blade.setAttribute('stroke-width','1.5');
+    g.appendChild(blade);
+    addRunes(svg,g,asset);
+  } else if(key==='cajado'){
+    const shaft = document.createElementNS(NS,'rect'); shaft.setAttribute('x',62); shaft.setAttribute('y',20); shaft.setAttribute('width',6); shaft.setAttribute('height',72); shaft.setAttribute('rx',3); shaft.setAttribute('fill',col);
+    g.appendChild(shaft);
+    const orb = document.createElementNS(NS,'circle'); orb.setAttribute('cx',65); orb.setAttribute('cy',18); orb.setAttribute('r',12); orb.setAttribute('fill', 'url(#core-'+asset.rarity+')');
+    g.appendChild(orb);
+    if(asset.rarity!=='common') animateOrb(svg,orb,asset);
+  } else if(key==='machado'){
+    const head = document.createElementNS(NS,'rect'); head.setAttribute('x',48); head.setAttribute('y',26); head.setAttribute('width',28); head.setAttribute('height',20); head.setAttribute('rx',4); head.setAttribute('fill',col);
+    g.appendChild(head);
+    addSparks(svg,g,asset);
+  } else if(key==='arco'){
+    const path = document.createElementNS(NS,'path'); path.setAttribute('d','M40 24 q24 -18 48 0 q-6 6 -48 0 z'); path.setAttribute('fill','none'); path.setAttribute('stroke',col); path.setAttribute('stroke-width','3');
+    g.appendChild(path);
+    if(asset.rarity!=='common') animateCurve(svg,path);
+  } else if(key==='foice'){
+    const curve = document.createElementNS(NS,'path'); curve.setAttribute('d','M44 24 q32 6 28 36 q-18 -6 -28 -10 z'); curve.setAttribute('fill',col); g.appendChild(curve);
+    addMist(svg,g,asset);
+  } else if(key==='lança'){
+    const tip = document.createElementNS(NS,'polygon'); tip.setAttribute('points','64,12 74,36 54,36'); tip.setAttribute('fill',col); g.appendChild(tip);
+    const shaft = document.createElementNS(NS,'rect'); shaft.setAttribute('x',62); shaft.setAttribute('y',36); shaft.setAttribute('width',4); shaft.setAttribute('height',64); shaft.setAttribute('fill','#3b2a2a'); g.appendChild(shaft);
+    if(asset.rarity!=='common') animateTip(svg,g,asset);
+  }
+
+  if(asset.rarity!=='common') {
+    // add glow filter to group (subtle)
+    g.setAttribute('filter','url(#glow-'+asset.rarity+')');
+    g.classList.add('glowPulse');
+  }
+}
+
+function drawArmorSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const col = rarityColor(asset.rarity);
+  // chest plate stylized
+  const plate = document.createElementNS(NS,'rect'); plate.setAttribute('x',36); plate.setAttribute('y',30); plate.setAttribute('width',56); plate.setAttribute('height',60); plate.setAttribute('rx',10); plate.setAttribute('fill',col); plate.setAttribute('stroke','#201020'); plate.setAttribute('stroke-width','1.5');
+  g.appendChild(plate);
+  const lines = document.createElementNS(NS,'path'); lines.setAttribute('d','M46 42 L86 42 M46 64 L86 64'); lines.setAttribute('stroke','#2b1b2b'); lines.setAttribute('stroke-width','1');
+  g.appendChild(lines);
+  if(asset.rarity!=='common'){
+    g.setAttribute('filter','url(#glow-'+asset.rarity+')');
+    addRunes(svg,g,asset);
+  }
+}
+
+function drawCosmeticSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const col = rarityColor(asset.rarity);
+  if(asset.key.startsWith('capa')){
+    const cape = document.createElementNS(NS,'path'); cape.setAttribute('d','M34 24 q30 14 60 0 v70 h-60 z'); cape.setAttribute('fill',col); cape.setAttribute('stroke','#1f0f1f'); g.appendChild(cape);
+    if(asset.rarity!=='common') animateFlow(svg,g,asset);
+  } else {
+    const hat = document.createElementNS(NS,'ellipse'); hat.setAttribute('cx','64'); hat.setAttribute('cy','34'); hat.setAttribute('rx','32'); hat.setAttribute('ry','14'); hat.setAttribute('fill',col); hat.setAttribute('stroke','#241422');
+    g.appendChild(hat);
+    if(asset.rarity!=='common') animateHatSpark(svg,g,asset);
+  }
+}
+
+function drawChestSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const col = rarityColor(asset.rarity);
+  const box = document.createElementNS(NS,'rect'); box.setAttribute('x','28'); box.setAttribute('y','40'); box.setAttribute('width','72'); box.setAttribute('height','48'); box.setAttribute('rx','6'); box.setAttribute('fill', '#5b3b2b');
+  box.setAttribute('stroke','#2b1a18'); g.appendChild(box);
+  const lid = document.createElementNS(NS,'rect'); lid.setAttribute('x','24'); lid.setAttribute('y','26'); lid.setAttribute('width','80'); lid.setAttribute('height','24'); lid.setAttribute('rx','6'); lid.setAttribute('fill',col); lid.setAttribute('stroke','#241511'); g.appendChild(lid);
+
+  if(asset.rarity!=='common') {
+    // animate lid glow (runic)
+    const runes = document.createElementNS(NS,'g'); runes.setAttribute('fill', 'url(#core-'+asset.rarity+')');
+    const r1 = document.createElementNS(NS,'circle'); r1.setAttribute('cx','64'); r1.setAttribute('cy','38'); r1.setAttribute('r','6'); runes.appendChild(r1);
+    g.appendChild(runes);
+    // small up-down animate on lid
+    const animate = document.createElementNS(NS,'animateTransform');
+    animate.setAttribute('attributeName','transform'); animate.setAttribute('type','translate'); animate.setAttribute('values','0 0; 0 -2; 0 0'); animate.setAttribute('dur','2.6s');
+    animate.setAttribute('repeatCount','indefinite');
+    runes.appendChild(animate);
+    g.setAttribute('filter','url(#glow-'+asset.rarity+')');
+  }
+}
+
+function drawMonsterSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const col = rarityColor(asset.rarity);
+  // stylized monster body
+  const body = document.createElementNS(NS,'ellipse'); body.setAttribute('cx','64'); body.setAttribute('cy','64'); body.setAttribute('rx','36'); body.setAttribute('ry','28'); body.setAttribute('fill',col); body.setAttribute('opacity','0.9'); g.appendChild(body);
+  const eye = document.createElementNS(NS,'circle'); eye.setAttribute('cx','64'); eye.setAttribute('cy','58'); eye.setAttribute('r','6'); eye.setAttribute('fill','#140b14'); g.appendChild(eye);
+  // aura for stronger monsters
+  if(asset.rarity!=='common'){
+    const aura = document.createElementNS(NS,'circle'); aura.setAttribute('cx','64'); aura.setAttribute('cy','64'); aura.setAttribute('r','44'); aura.setAttribute('fill','none'); aura.setAttribute('stroke',rarityColor(asset.rarity)); aura.setAttribute('stroke-width','3'); aura.setAttribute('opacity','0.22'); g.appendChild(aura);
+    addMonsterPulse(svg,aura,asset);
+  }
+}
+
+function drawInitialSVG(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  if(asset.key==='pijama'){
+    const body = document.createElementNS(NS,'rect'); body.setAttribute('x','36'); body.setAttribute('y','30'); body.setAttribute('width','56'); body.setAttribute('height','68'); body.setAttribute('rx','10'); body.setAttribute('fill','#c9a6ff'); g.appendChild(body);
+    const head = document.createElementNS(NS,'circle'); head.setAttribute('cx','64'); head.setAttribute('cy','22'); head.setAttribute('r','12'); head.setAttribute('fill','#f6e6ff'); g.appendChild(head);
+  } else if(asset.key==='graveto'){
+    const stick = document.createElementNS(NS,'rect'); stick.setAttribute('x','60'); stick.setAttribute('y','18'); stick.setAttribute('width','8'); stick.setAttribute('height','82'); stick.setAttribute('rx','4'); stick.setAttribute('fill','#b67b4a'); g.appendChild(stick);
+    const knot = document.createElementNS(NS,'rect'); knot.setAttribute('x','56'); knot.setAttribute('y','14'); knot.setAttribute('width','16'); knot.setAttribute('height','6'); knot.setAttribute('rx','3'); knot.setAttribute('fill','#a4632f'); g.appendChild(knot);
+  }
+}
+
+/* ========== small animation helpers ========== */
+
+function addRunes(svg,g,asset){
+  const NS = "http://www.w3.org/2000/svg";
+  const r = document.createElementNS(NS,'text'); r.setAttribute('x','64'); r.setAttribute('y','86'); r.setAttribute('text-anchor','middle'); r.setAttribute('font-size','8'); r.setAttribute('fill', rarityColor(asset.rarity));
+  r.textContent = '✦✧';
+  const anim = document.createElementNS(NS,'animate'); anim.setAttribute('attributeName','opacity'); anim.setAttribute('values',
