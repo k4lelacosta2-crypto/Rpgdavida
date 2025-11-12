@@ -3,47 +3,52 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Grimório — Pacote Integrado (preview)</title>
+<title>Grimório — Visual Refinado (Preview)</title>
 <style>
   :root{
-    --bg-wood-top:#2b1a10; --bg-wood-bottom:#1a0f07;
+    --wood-top:#2b1a10; --wood-bottom:#1a0f07;
     --text-light:#efe9ff; --text-dark:#231b20;
     --muted:#cfc6e8;
     --rar-common:#9e9e9e; --rar-rare:#4aa3ff; --rar-epic:#8a4efd; --rar-legend:#d4af37;
-    --lilac-bg: #3a1f4d; /* placeholder, images will have solid lilac background as requested */
+    --lilac-solid: #3b1670; /* fundo sólido das imagens conforme pedido */
+    --panel: rgba(255,255,255,0.02);
+    --glass: rgba(255,255,255,0.03);
   }
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-  body{
-    background: linear-gradient(180deg,var(--bg-wood-top),var(--bg-wood-bottom));
-    color:var(--text-light);
-    -webkit-font-smoothing:antialiased;
-    padding:18px;
-  }
-  .container{max-width:1300px;margin:0 auto}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,var(--wood-top),var(--wood-bottom));color:var(--text-light);-webkit-font-smoothing:antialiased;padding:18px}
+  .container{max-width:1280px;margin:0 auto}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   h1{margin:0;font-size:20px;color:var(--text-light)}
-  .small{color:var(--muted);font-size:13px}
+  .hint{color:var(--muted);font-size:13px}
   .controls{display:flex;gap:8px;align-items:center}
-  .btn{background:var(--text-light);color:#13072a;border-radius:8px;padding:8px 10px;border:none;font-weight:700;cursor:pointer}
-  .toggle{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text-light);cursor:pointer}
-  .shelf{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.06));box-shadow:0 8px 40px rgba(0,0,0,0.6) inset;position:relative}
-  .sectionTitle{color:#d9c8ff;font-weight:800;margin-top:6px;margin-bottom:12px;font-size:16px}
+  button, .filebtn {cursor:pointer;border-radius:8px;padding:8px 10px;border:none;font-weight:700}
+  button{background:var(--text-light);color:#120217}
+  .toggle{padding:6px 10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text-light)}
+  .shelf{margin-top:18px;padding:18px;border-radius:12px;background: linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06)); box-shadow: 0 8px 40px rgba(0,0,0,0.6) inset;}
+  .sectionTitle{color:#d9c8ff;font-weight:800;margin:8px 0;font-size:16px}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px}
-  .card{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-  .artWrap{width:140px;height:140px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.04))}
+  .card{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:var(--panel);border:1px solid rgba(255,255,255,0.03)}
+  .artWrap{width:140px;height:140px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)); box-shadow: 0 6px 16px rgba(0,0,0,0.45) inset}
   .meta{flex:1}
   .name{font-weight:900;font-size:15px}
   .rarity{display:inline-block;margin-top:6px;padding:6px 10px;border-radius:8px;font-weight:900;color:#111;margin-bottom:6px}
   .desc{color:var(--muted);font-style:italic;margin-top:6px}
-  .avatarBox{width:160px;height:160px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.06));display:flex;align-items:center;justify-content:center}
+  .avatarBox{width:160px;height:160px;border-radius:12px;background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));display:flex;align-items:center;justify-content:center}
   footer{color:var(--muted);text-align:center;margin-top:18px}
-  body.light{
-    background: linear-gradient(180deg,#efe6d0,#e6d4a0);
-    color:var(--text-dark);
-  }
+  /* light theme */
+  body.light{background: linear-gradient(180deg,#efe6d0,#e6d4a0);color:var(--text-dark)}
   body.light .toggle{color:var(--text-dark)}
-  body.light .btn{background:var(--text-dark);color:var(--text-light)}
+  body.light button{background:var(--text-dark);color:var(--text-light)}
   @media(max-width:760px){ .grid{grid-template-columns:1fr} .artWrap{width:120px;height:120px} .avatarBox{width:120px;height:120px} }
+  .badge-common{background:var(--rar-common)}
+  .badge-rare{background:var(--rar-rare)}
+  .badge-epic{background:var(--rar-epic)}
+  .badge-legend{background:var(--rar-legend)}
+  .mutedSmall{font-size:12px;color:var(--muted)}
+  /* subtle hover */
+  .card:hover{transform: translateY(-4px); transition: transform 0.18s ease}
+  /* accessibility focus */
+  .card:focus-within{outline:2px solid rgba(255,255,255,0.06); box-shadow:0 6px 18px rgba(0,0,0,0.5)}
 </style>
 </head>
 <body>
@@ -51,83 +56,88 @@
     <header>
       <div>
         <h1>Grimório das Artes do RPG de Tarefas</h1>
-        <div class="small">Preview integrado — imagens 128×128 com fundo lilás sólido. Clique para equipar no avatar.</div>
+        <div class="hint">Estante refinada — artes 128×128 (fundo lilás sólido). Clique em um item para equipar no avatar.</div>
       </div>
-      <div class="controls">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div id="avatarBox" class="avatarBox" title="Preview do avatar"></div>
-        </div>
-        <div>
-          <button id="btnGender" class="toggle">Masculino</button>
-          <button id="btnTheme" class="toggle">Tema Claro</button>
-          <button id="btnExport" class="btn">Exportar ZIP</button>
+
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <div id="avatarBox" class="avatarBox" title="Preview do avatar"></div>
+            <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+              <div>
+                <button id="btnGender" class="toggle">Masculino</button>
+                <button id="btnTheme" class="toggle">Tema Claro</button>
+                <button id="btnExport" class="toggle">Exportar ZIP</button>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <label class="mutedSmall">Música:</label>
+                <input id="audioFile" class="filebtn" type="file" accept="audio/*" style="padding:6px 10px;border-radius:8px;background:transparent;color:var(--text-light)">
+                <button id="btnPlayAudio" class="toggle">▶️ Tocar</button>
+                <button id="btnMuteAudio" class="toggle">🔈 Mudo</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
     </header>
 
-    <div class="shelf" id="shelfRoot"></div>
+    <main class="shelf" id="shelfRoot" role="main" aria-live="polite">
+      <!-- conteúdo injetado por script -->
+    </main>
 
-    <footer>RPG de Tarefas — Grimório das Artes — Preview integrado</footer>
+    <footer>RPG de Tarefas — Grimório das Artes — Preview Refinado</footer>
   </div>
 
-  <!-- JSZip (CDN) - usado para criar o ZIP no navegador -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script>
-/* ========== Config inicial ========== */
+<script>
+/* ---------------------------
+   Config e dados dos assets
+   --------------------------- */
 const ASSETS = [];
-const rarities = [
-  {k:'common', label:'Comum', color:'#9e9e9e'},
-  {k:'rare', label:'Raro', color:'#4aa3ff'},
-  {k:'epic', label:'Épica', color:'#8a4efd'},
-  {k:'legend', label:'Lendária', color:'#d4af37'}
+const RARITIES = [
+  {k:'common', label:'Comum'},
+  {k:'rare', label:'Raro'},
+  {k:'epic', label:'Épica'},
+  {k:'legend', label:'Lendária'}
 ];
 
-function pushWeapon(base){
-  rarities.forEach(r=> ASSETS.push({category:'Armas', type:'weapon', key:base.toLowerCase(), name:`${base} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
-}
-function pushArmor(k,n){
-  rarities.forEach(r=> ASSETS.push({category:'Armaduras', type:'armor', key:k, name:`${n} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
-}
-function pushCosmetic(k,n){
-  rarities.forEach(r=> ASSETS.push({category:'Cosméticos', type:'cosmetic', key:k, name:`${n} — ${r.label}`, rarity:r.k, rarityLabel:r.label}));
-}
-function pushChest(){
-  const names=['Baú — Comum','Baú — Raro','Baú — Épico','Baú — Lendário'];
-  rarities.forEach((r,i)=> ASSETS.push({category:'Baús', type:'chest', key:'chest', name:names[i], rarity:r.k, rarityLabel:r.label}));
-}
-function pushMonsters(){
+function addWeapon(name){ RARITIES.forEach(r=> ASSETS.push({category:'Armas', type:'weapon', key:name.toLowerCase(), name:`${name} — ${r.label}`, rarity:r.k, rarityLabel:r.label})); }
+function addArmor(k,n){ RARITIES.forEach(r=> ASSETS.push({category:'Armaduras', type:'armor', key:k, name:`${n} — ${r.label}`, rarity:r.k, rarityLabel:r.label})); }
+function addCosmetic(k,n){ RARITIES.forEach(r=> ASSETS.push({category:'Cosméticos', type:'cosmetic', key:k, name:`${n} — ${r.label}`, rarity:r.k, rarityLabel:r.label})); }
+function addChests(){ const names=['Baú — Comum','Baú — Raro','Baú — Épico','Baú — Lendário']; RARITIES.forEach((r,i)=> ASSETS.push({category:'Baús', type:'chest', key:'chest', name:names[i], rarity:r.k, rarityLabel:r.label})); }
+function addMonsters(){
   const missions=['Diária','Semanal','Mensal'];
   for(const m of missions){
     for(let imp=1; imp<=4; imp++){
-      const labelImp = (imp===1?'Sem muita importância':imp===2?'Importante':imp===3?'Muito importante':'Essencial');
+      const labelImp = imp===1?'Sem muita importância':imp===2?'Importante':imp===3?'Muito importante':'Essencial';
       const rarity = imp===1?'common':imp===2?'rare':imp===3?'epic':'legend';
       ASSETS.push({category:'Monstros', type:'monster', key:m.toLowerCase(), name:`${m} — ${labelImp}`, rarity:rarity, rarityLabel:labelImp, importance:imp});
     }
   }
 }
 
-/* preencher lista */
-const weapons = ['Espada','Cajado','Machado','Arco','Foice','Lança'];
-weapons.forEach(w=> pushWeapon(w));
-const armors = [
-  {k:'tunica',n:'Túnica do Aventureiro'},
-  {k:'guardiao',n:'Armadura do Guardião'},
-  {k:'cacador',n:'Armadura do Caçador'},
-  {k:'feiticeiro',n:'Armadura do Feiticeiro'},
-  {k:'couraca',n:'Couraça Estelar'}
-];
-armors.forEach(a=> pushArmor(a.k,a.n));
-pushCosmetic('capa','Capa (Curta)');
-pushCosmetic('capa_long','Capa (Longa)');
-pushCosmetic('chap_advent','Chapéu (Aventureiro)');
-pushCosmetic('chap_mage','Chapéu (Mago)');
-pushChest();
-pushMonsters();
-/* itens iniciais */
+/* preencher arrays */
+['Espada','Cajado','Machado','Arco','Foice','Lança'].forEach(addWeapon);
+[
+  {k:'tunica', n:'Túnica do Aventureiro'},
+  {k:'guardiao', n:'Armadura do Guardião'},
+  {k:'cacador', n:'Armadura do Caçador'},
+  {k:'feiticeiro', n:'Armadura do Feiticeiro'},
+  {k:'couraca', n:'Couraça Estelar'}
+].forEach(a=> addArmor(a.k,a.n));
+
+addCosmetic('capa','Capa (Curta)'); addCosmetic('capa_long','Capa (Longa)');
+addCosmetic('chap_advent','Chapéu (Aventureiro)'); addCosmetic('chap_mage','Chapéu (Mago)');
+addChests(); addMonsters();
+/* itens iniciais no começo */
 ASSETS.unshift({category:'Equipamento Inicial', type:'initial', key:'graveto', name:'Graveto Inicial — Comum', rarity:'common', rarityLabel:'Comum'});
 ASSETS.unshift({category:'Equipamento Inicial', type:'initial', key:'pijama', name:'Pijama do Herói — Comum', rarity:'common', rarityLabel:'Comum'});
 
-/* ========== helpers para gerar SVG 128x128 (fundo lilás sólido) ========== */
+/* ---------------------------
+   Utilitários SVG & geração
+   --------------------------- */
+
+/* cor de raridade */
 function rarityColor(k){
   if(k==='common') return '#9e9e9e';
   if(k==='rare') return '#4aa3ff';
@@ -136,123 +146,119 @@ function rarityColor(k){
   return '#9e9e9e';
 }
 
-/* cria SVG string (128x128) com fundo lilás sólido e desenho apropriado */
+/* cria string SVG 128x128 com fundo lilás sólido e elementos de acordo com tipo/key.
+   As SVGs são inline (não dependem de imagens externas) — evita o problema de "não aparecer".
+*/
 function createAssetSVGString(asset, gender='male'){
-  // We'll return a full SVG string (with xmlns)
-  const bg = '#3b1670'; // solid lilac background (user requested lilás sólido)
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--lilac-solid') || '#3b1670';
   const col = rarityColor(asset.rarity);
-  // small poetic glyph text used as visual detail
   const glyph = asset.type === 'weapon' ? '⚔' : asset.type==='armor' ? '⛨' : asset.type==='cosmetic' ? '★' : asset.type==='chest' ? '☷' : asset.type==='monster' ? '✹' : '✦';
 
-  // choose shape depending on key
-  let shapeSvg = '';
-  if(asset.type==='weapon'){
+  // shape por tipo/chave (melhor detalhamento das formas)
+  let shape = '';
+  if(asset.type === 'weapon'){
     const k = asset.key;
-    if(k==='espada'){
-      shapeSvg = `<g transform="translate(0,0)"><rect x="58" y="18" width="12" height="72" rx="3" fill="#2a1b23" /><polygon points="64,6 80,36 64,46 48,36" fill="${col}" stroke="#1a0e13" stroke-width="1.2"/></g>`;
-    } else if(k==='cajado'){
-      shapeSvg = `<g transform="translate(0,0)"><rect x="62" y="16" width="8" height="96" rx="4" fill="${col}" /><circle cx="66" cy="12" r="12" fill="white" opacity="0.06"/></g>`;
-    } else if(k==='machado'){
-      shapeSvg = `<g transform="translate(0,0)"><rect x="56" y="24" width="20" height="10" rx="2" fill="${col}" /><rect x="60" y="8" width="8" height="72" rx="3" fill="#2a1b23"/></g>`;
-    } else if(k==='arco'){
-      shapeSvg = `<g transform="translate(0,0)"><path d="M42 28 q24 -18 44 0 q-6 8 -44 0 z" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round"/></g>`;
-    } else if(k==='foice'){
-      shapeSvg = `<g transform="translate(0,0)"><path d="M46 22 q28 8 22 40 q-18 -8 -22 -12 z" fill="${col}" /></g>`;
-    } else if(k==='lança'){
-      shapeSvg = `<g transform="translate(0,0)"><rect x="62" y="8" width="6" height="100" fill="${col}" /><polygon points="64,2 76,18 52,18" fill="${col}" /></g>`;
-    } else {
-      shapeSvg = `<rect x="44" y="28" width="40" height="44" rx="6" fill="${col}" />`;
-    }
-  } else if(asset.type==='armor'){
-    shapeSvg = `<g><rect x="28" y="26" width="72" height="76" rx="12" fill="${col}" stroke="#24161e" stroke-width="1.6"/><path d="M36 50 L92 50" stroke="#24161e" stroke-width="1"/></g>`;
-  } else if(asset.type==='cosmetic'){
-    if(asset.key.includes('capa')) shapeSvg = `<g><path d="M36 28 q40 18 76 0 v80 h-76 z" fill="${col}" /></g>`;
-    else shapeSvg = `<g><ellipse cx="64" cy="36" rx="32" ry="14" fill="${col}" /></g>`;
-  } else if(asset.type==='chest'){
-    shapeSvg = `<g><rect x="28" y="46" width="72" height="52" rx="8" fill="#4b362b" stroke="#2b1a18"/><rect x="24" y="34" width="80" height="22" rx="8" fill="${col}" stroke="#2b1a18"/></g>`;
-  } else if(asset.type==='monster'){
-    // stylized blob & eye
-    shapeSvg = `<g><ellipse cx="64" cy="70" rx="36" ry="28" fill="${col}" opacity="0.95"/><circle cx="64" cy="58" r="6" fill="#120712"/></g>`;
-  } else if(asset.type==='initial'){
-    if(asset.key==='pijama'){
-      shapeSvg = `<g><rect x="34" y="34" width="60" height="72" rx="10" fill="#b98bff"/><circle cx="64" cy="22" r="14" fill="#efe6ff"/></g>`;
-    } else {
-      shapeSvg = `<g><rect x="60" y="12" width="8" height="104" rx="4" fill="#8b5a3a"/></g>`;
-    }
-  } else {
-    shapeSvg = `<rect x="36" y="36" width="56" height="56" rx="8" fill="${col}" />`;
+    if(k === 'espada'){
+      shape = `<g transform="translate(0,0)">
+        <rect x="58" y="20" width="12" height="72" rx="3" fill="#2b1b23"/>
+        <polygon points="64,8 82,42 64,54 46,42" fill="${col}" stroke="#1a0e13" stroke-width="1.4"/>
+        </g>`;
+    } else if(k === 'cajado'){
+      shape = `<g><rect x="62" y="16" width="8" height="96" rx="4" fill="${col}" /><circle cx="66" cy="12" r="12" fill="${col}" opacity="0.16"/></g>`;
+    } else if(k === 'machado'){
+      shape = `<g><rect x="58" y="24" width="18" height="12" rx="2" fill="${col}" /><rect x="62" y="8" width="8" height="72" rx="3" fill="#2b1b23"/></g>`;
+    } else if(k === 'arco'){
+      shape = `<g><path d="M40 28 q24 -18 44 0 q-6 8 -44 0 z" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round"/></g>`;
+    } else if(k === 'foice'){
+      shape = `<g><path d="M44 22 q30 6 26 38 q-18 -6 -26 -10 z" fill="${col}" /></g>`;
+    } else if(k === 'lança'){
+      shape = `<g><rect x="62" y="8" width="6" height="100" fill="${col}" /><polygon points="64,2 76,18 52,18" fill="${col}" /></g>`;
+    } else shape = `<rect x="44" y="28" width="40" height="44" rx="6" fill="${col}" />`;
+  } else if(asset.type === 'armor'){
+    shape = `<g><rect x="30" y="28" width="68" height="76" rx="12" fill="${col}" stroke="#24161e" stroke-width="1.6"/><path d="M40 48 L88 48" stroke="#24161e" stroke-width="1"/></g>`;
+  } else if(asset.type === 'cosmetic'){
+    if(asset.key.includes('capa')) shape = `<g><path d="M36 28 q40 18 76 0 v80 h-76 z" fill="${col}" /></g>`;
+    else shape = `<g><ellipse cx="64" cy="36" rx="32" ry="14" fill="${col}" /></g>`;
+  } else if(asset.type === 'chest'){
+    shape = `<g><rect x="28" y="46" width="72" height="52" rx="8" fill="#4b362b" stroke="#2b1a18"/><rect x="24" y="34" width="80" height="22" rx="8" fill="${col}" stroke="#2b1a18"/></g>`;
+  } else if(asset.type === 'monster'){
+    shape = `<g><ellipse cx="64" cy="70" rx="36" ry="28" fill="${col}" opacity="0.96"/><circle cx="64" cy="58" r="6" fill="#120712"/></g>`;
+  } else if(asset.type === 'initial'){
+    if(asset.key === 'pijama') shape = `<g><rect x="34" y="34" width="60" height="72" rx="10" fill="#b98bff"/><circle cx="64" cy="22" r="14" fill="#efe6ff"/></g>`;
+    else shape = `<g><rect x="60" y="12" width="8" height="104" rx="4" fill="#8b5a3a"/></g>`;
+  } else shape = `<rect x="36" y="36" width="56" height="56" rx="8" fill="${col}" />`;
+
+  // animação leve para raridade > common
+  let anim = '';
+  if(asset.rarity !== 'common'){
+    const alpha = asset.rarity === 'rare' ? 0.06 : asset.rarity === 'epic' ? 0.08 : 0.12;
+    const dur = asset.rarity === 'rare' ? '2.6s' : asset.rarity === 'epic' ? '3.2s' : '3.6s';
+    anim = `<g><circle cx="64" cy="64" r="${asset.rarity==='rare'?28:asset.rarity==='epic'?30:34}" fill="${col}" opacity="${alpha}">
+      <animate attributeName="opacity" values="0.02;${alpha*1.8};0.02" dur="${dur}" repeatCount="indefinite" /></circle>
+    </g>`;
   }
 
-  // animated extras only for rare / epic / legend
-  let animExtra = '';
-  if(asset.rarity!=='common'){
-    // subtle pulse circle and runes
-    animExtra = `
-      <g>
-        <circle cx="64" cy="64" r="${asset.rarity==='rare'?28:asset.rarity==='epic'?30:34}" fill="${col}" opacity="${asset.rarity==='rare'?0.06:asset.rarity==='epic'?0.08:0.12}">
-          <animate attributeName="opacity" values="0.02;${asset.rarity==='rare'?0.12:asset.rarity==='epic'?0.18:0.26};0.02" dur="${asset.rarity==='rare'?2.8:asset.rarity==='epic'?3.2:3.6}s" repeatCount="indefinite"/>
-        </circle>
-        <text x="64" y="98" font-size="14" text-anchor="middle" fill="${col}" opacity="0.9">✦</text>
-      </g>
-    `;
-  }
-
-  // final svg
   const svg = `<?xml version="1.0" encoding="utf-8"?>
-  <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="${escapeHtml(asset.name)}">
     <rect width="128" height="128" fill="${bg}" />
-    ${animExtra}
+    ${anim}
     <g transform="translate(0,0)">
-      ${shapeSvg}
+      ${shape}
     </g>
-    <!-- corner label -->
-    <rect x="6" y="6" width="48" height="18" rx="6" fill="rgba(0,0,0,0.18)"/>
-    <text x="30" y="18" font-size="10" text-anchor="middle" fill="#fff">${escapeXml(asset.rarityLabel)}</text>
+    <rect x="6" y="6" width="58" height="18" rx="6" fill="rgba(0,0,0,0.14)"/>
+    <text x="35" y="18" font-size="10" text-anchor="middle" fill="#fff" font-family="sans-serif">${escapeHtml(asset.rarityLabel)}</text>
   </svg>`;
   return svg;
 }
 
-/* helper escape */
-function escapeXml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* convert SVG string to blob (PNG) via canvas; returns Promise resolving to {name,blob,dataUrl} */
+/* converter string SVG -> elemento DOM (inline) */
+function svgStringToElement(svgString){
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = svgString;
+  return wrapper.firstElementChild;
+}
+
+/* converter SVG string -> PNG blob (usado para exportar) */
 function svgStringToPng(svgString, filename){
-  return new Promise((res, rej)=>{
+  return new Promise((res, rej) => {
     const img = new Image();
-    const svgBlob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
-    const url = URL.createObjectURL(svgBlob);
+    const blob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
     img.onload = () => {
       try{
         const canvas = document.createElement('canvas');
-        canvas.width = 128; canvas.height = 128;
+        canvas.width = 128;
+        canvas.height = 128;
         const ctx = canvas.getContext('2d');
-        // background already in SVG
-        ctx.clearRect(0,0,128,128);
-        ctx.drawImage(img,0,0);
-        canvas.toBlob((blob)=>{
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(b => {
           URL.revokeObjectURL(url);
-          res({name:filename, blob:blob, dataUrl:canvas.toDataURL('image/png')});
+          res({name:filename, blob:b, dataUrl:canvas.toDataURL('image/png')});
         }, 'image/png');
       }catch(e){ URL.revokeObjectURL(url); rej(e); }
     };
-    img.onerror = (e)=>{ URL.revokeObjectURL(url); rej(e); };
+    img.onerror = (e) => { URL.revokeObjectURL(url); rej(new Error('Falha ao renderizar SVG')); };
     img.src = url;
   });
 }
 
-/* ========== UI rendering ========== */
+/* ---------------------------
+   UI: render shelf & avatar
+   --------------------------- */
 const shelfRoot = document.getElementById('shelfRoot');
 const avatarBox = document.getElementById('avatarBox');
 let currentGender = 'male';
 let lightMode = false;
 let equipped = null;
 
-function generateDesc(a){
-  const base = a.type==='weapon'? 'Uma arma que sussurra antigas canções de batalha.' :
-               a.type==='armor'? 'Proteção forjada para travessias perigosas.' :
-               a.type==='cosmetic'? 'Um acessório de presença e estilo.' :
-               a.type==='chest'? 'Um baú que guarda surpresas e destino.' :
-               a.type==='monster'? 'Um inimigo que testa coragem e hábito.' :
+function generateDescription(a){
+  const base = a.type === 'weapon' ? 'Uma arma que sussurra antigas canções de batalha.' :
+               a.type === 'armor' ? 'Proteção forjada para travessias perigosas.' :
+               a.type === 'cosmetic' ? 'Um acessório de presença e estilo.' :
+               a.type === 'chest' ? 'Um baú que guarda surpresas e destino.' :
+               a.type === 'monster' ? 'Um inimigo que testa coragem e hábito.' :
                'Um artefato do Grimório.';
   let extra = '';
   if(a.rarity==='rare') extra = ' Uma luz tenue adorna sua superfície.';
@@ -262,35 +268,35 @@ function generateDesc(a){
 }
 
 function createCard(asset){
-  const card = document.createElement('div'); card.className='card';
+  const el = document.createElement('div'); el.className='card'; el.tabIndex = 0;
   const artWrap = document.createElement('div'); artWrap.className='artWrap';
   const meta = document.createElement('div'); meta.className='meta';
   const name = document.createElement('div'); name.className='name'; name.textContent = asset.name;
   const badge = document.createElement('div'); badge.className='rarity'; badge.textContent = asset.rarityLabel;
   badge.style.background = rarityColor(asset.rarity);
-  const desc = document.createElement('div'); desc.className='desc'; desc.textContent = generateDesc(asset);
+  const desc = document.createElement('div'); desc.className='desc'; desc.textContent = generateDescription(asset);
 
-  // svg element (inline) created from string
+  // create inline svg
   const svgStr = createAssetSVGString(asset, currentGender);
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = svgStr;
-  const svgEl = wrapper.firstElementChild;
+  const svgEl = svgStringToElement(svgStr);
   svgEl.classList.add('asset');
+  // ensure focusable for a11y
+  svgEl.setAttribute('role','img'); svgEl.setAttribute('aria-label', asset.name);
 
   artWrap.appendChild(svgEl);
   meta.appendChild(name); meta.appendChild(badge); meta.appendChild(desc);
-  card.appendChild(artWrap); card.appendChild(meta);
+  el.appendChild(artWrap); el.appendChild(meta);
 
-  // click to equip preview
-  card.addEventListener('click', ()=> {
+  // click equips preview in avatar
+  el.addEventListener('click', ()=> {
     equipped = asset;
-    renderAvatarPreview();
-    // indicate selected visually briefly
-    card.style.border = '2px solid rgba(255,255,255,0.08)';
-    setTimeout(()=> card.style.border = '', 800);
+    renderAvatar();
+    // feedback
+    el.style.outline = '2px solid rgba(255,255,255,0.06)';
+    setTimeout(()=> el.style.outline = '', 700);
   });
 
-  return card;
+  return el;
 }
 
 function buildShelf(){
@@ -300,101 +306,93 @@ function buildShelf(){
     const title = document.createElement('div'); title.className='sectionTitle'; title.textContent = cat;
     shelfRoot.appendChild(title);
     const grid = document.createElement('div'); grid.className='grid';
-    const items = ASSETS.filter(a=> a.category===cat);
-    items.forEach(it=> grid.appendChild(createCard(it)));
+    const items = ASSETS.filter(a=> a.category === cat);
+    items.forEach(it => grid.appendChild(createCard(it)));
     shelfRoot.appendChild(grid);
   });
 }
 
-function renderAvatarPreview(){
+function renderAvatar(){
   avatarBox.innerHTML = '';
-  const svgNS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(svgNS,'svg');
-  svg.setAttribute('viewBox','0 0 240 240'); svg.setAttribute('width','140'); svg.setAttribute('height','140');
-  const bg = document.createElementNS(svgNS,'rect'); bg.setAttribute('x','0'); bg.setAttribute('y','0'); bg.setAttribute('width','240'); bg.setAttribute('height','240'); bg.setAttribute('rx','12'); bg.setAttribute('fill','none');
-  svg.appendChild(bg);
-  // body
-  const torso = document.createElementNS(svgNS,'rect'); torso.setAttribute('x','70'); torso.setAttribute('y','72'); torso.setAttribute('width','100'); torso.setAttribute('height','110'); torso.setAttribute('rx','14'); torso.setAttribute('fill','#c9a6ff');
-  svg.appendChild(torso);
-  const head = document.createElementNS(svgNS,'circle'); head.setAttribute('cx','120'); head.setAttribute('cy','42'); head.setAttribute('r','26'); head.setAttribute('fill','#efe6ff');
-  svg.appendChild(head);
-
-  if(equipped){
-    // overlay simple shapes representing equip
-    if(equipped.type==='weapon'){
-      const w = document.createElementNS(svgNS,'rect'); w.setAttribute('x','170'); w.setAttribute('y','40'); w.setAttribute('width','12'); w.setAttribute('height','120'); w.setAttribute('rx','6'); w.setAttribute('fill',rarityColor(equipped.rarity));
-      svg.appendChild(w);
-    } else if(equipped.type==='armor'){
-      const p = document.createElementNS(svgNS,'rect'); p.setAttribute('x','80'); p.setAttribute('y','92'); p.setAttribute('width','80'); p.setAttribute('height','80'); p.setAttribute('rx','10'); p.setAttribute('fill',rarityColor(equipped.rarity));
-      svg.appendChild(p);
-    } else if(equipped.type==='cosmetic'){
-      const c = document.createElementNS(svgNS,'path'); c.setAttribute('d','M60 80 q60 -30 120 0 v60 h-120 z'); c.setAttribute('fill',rarityColor(equipped.rarity));
-      svg.appendChild(c);
-    } else if(equipped.type==='chest'){
-      const box = document.createElementNS(svgNS,'rect'); box.setAttribute('x','86'); box.setAttribute('y','120'); box.setAttribute('width','68'); box.setAttribute('height','38'); box.setAttribute('rx','6'); box.setAttribute('fill',rarityColor(equipped.rarity));
-      svg.appendChild(box);
-    } else if(equipped.type==='monster'){
-      const m = document.createElementNS(svgNS,'ellipse'); m.setAttribute('cx','120'); m.setAttribute('cy','120'); m.setAttribute('rx','44'); m.setAttribute('ry','36'); m.setAttribute('fill',rarityColor(equipped.rarity));
-      svg.appendChild(m);
-    } else if(equipped.type==='initial'){
-      if(equipped.key==='pijama'){
-        // adjust base color
-        torso.setAttribute('fill','#b98bff');
-      } else {
-        // graveto overlay
-        const s = document.createElementNS(svgNS,'rect'); s.setAttribute('x','170'); s.setAttribute('y','20'); s.setAttribute('width','12'); s.setAttribute('height','160'); s.setAttribute('rx','6'); s.setAttribute('fill','#8b5a3a');
-        svg.appendChild(s);
-      }
-    }
-  }
-
-  avatarBox.appendChild(svg);
+  // create SVG preview larger (scaled)
+  const svgStr = createAvatarPreviewSVGString(currentGender, equipped);
+  const el = svgStringToElement(svgStr);
+  avatarBox.appendChild(el);
 }
 
-/* toggles */
+function createAvatarPreviewSVGString(gender, asset){
+  const bgRect = ''; // transparent bg in box so it shows estante
+  let overlay = '';
+  if(asset){
+    if(asset.type === 'weapon') overlay = `<rect x="170" y="40" width="12" height="120" rx="6" fill="${rarityColor(asset.rarity)}"/>`;
+    else if(asset.type === 'armor') overlay = `<rect x="80" y="92" width="80" height="80" rx="10" fill="${rarityColor(asset.rarity)}"/>`;
+    else if(asset.type === 'cosmetic') overlay = `<path d="M60 80 q60 -30 120 0 v60 h-120 z" fill="${rarityColor(asset.rarity)}"/>`;
+    else if(asset.type === 'chest') overlay = `<rect x="86" y="120" width="68" height="38" rx="6" fill="${rarityColor(asset.rarity)}"/>`;
+    else if(asset.type === 'monster') overlay = `<ellipse cx="120" cy="120" rx="44" ry="36" fill="${rarityColor(asset.rarity)}"/>`;
+    else if(asset.type === 'initial'){ if(asset.key==='pijama') overlay = `<rect x="80" y="92" width="80" height="80" rx="10" fill="#b98bff"/>`; else overlay = `<rect x="170" y="20" width="12" height="160" rx="6" fill="#8b5a3a"/>`; }
+  }
+  const svg = `<?xml version="1.0" encoding="utf-8"?>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="140" height="140">
+    <rect x="0" y="0" width="240" height="240" rx="12" fill="none"/>
+    <rect x="70" y="72" width="100" height="110" rx="14" fill="#c9a6ff"/>
+    <circle cx="120" cy="42" r="26" fill="#efe6ff"/>
+    ${overlay}
+  </svg>`;
+  return svg;
+}
+
+/* ---------------------------
+   Eventos UI & toggles
+   --------------------------- */
 document.getElementById('btnGender').addEventListener('click', ()=>{
-  currentGender = currentGender==='male' ? 'female' : 'male';
-  document.getElementById('btnGender').textContent = currentGender==='male' ? 'Masculino' : 'Feminino';
-  // For now gender only affects label; re-render shelf (SVG generation uses gender if needed)
+  currentGender = (currentGender==='male') ? 'female' : 'male';
+  document.getElementById('btnGender').textContent = (currentGender==='male') ? 'Masculino' : 'Feminino';
+  // re-render (gender could affect sprites if we add variants)
   buildShelf();
-  renderAvatarPreview();
+  renderAvatar();
 });
+
 document.getElementById('btnTheme').addEventListener('click', ()=>{
   lightMode = !lightMode;
   document.body.classList.toggle('light', lightMode);
   document.getElementById('btnTheme').textContent = lightMode ? 'Tema Escuro' : 'Tema Claro';
-  buildShelf();
+  buildShelf(); renderAvatar();
 });
 
-/* build initial UI */
-buildShelf();
-renderAvatarPreview();
+/* ---------------------------
+   Áudio: carregar e reproduzir
+   - o usuário carrega o arquivo (MP3/OGG) local via input
+   - botão play/pause e mute
+   --------------------------- */
+let audio = null;
+let audioLoaded = false;
+const audioInput = document.getElementById('audioFile');
+const btnPlayAudio = document.getElementById('btnPlayAudio');
+const btnMuteAudio = document.getElementById('btnMuteAudio');
 
-/* ========== EXPORT ZIP (gera PNGs a partir dos SVGs e cria ZIP) ========== */
-document.getElementById('btnExport').addEventListener('click', async ()=>{
-  try{
-    const zip = new JSZip();
-    const folderImgs = zip.folder('images');
-    // for each asset, create SVG string -> convert to PNG blob -> add to zip
-    const total = ASSETS.length;
-    let count = 0;
-    // show simple progress (replace button text temporarily)
-    const btn = document.getElementById('btnExport');
-    const originalText = btn.textContent;
-    btn.textContent = 'Gerando imagens...';
-    btn.disabled = true;
+audioInput.addEventListener('change', (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  if(audio){ audio.pause(); audio = null; audioLoaded = false; }
+  audio = new Audio(URL.createObjectURL(f));
+  audio.loop = true; audio.volume = 0.55;
+  audioLoaded = true;
+  btnPlayAudio.textContent = '▶️ Tocar';
+  alert('Áudio carregado — use o botão Tocar para iniciar (navegadores requerem interação do usuário).');
+});
 
-    for(const a of ASSETS){
-      const svgStr = createAssetSVGString(a, currentGender);
-      const nameSafe = a.name.replace(/\s+/g,'_').replace(/[^\w\-_.]/g,'') + '.png';
-      // convert
-      // use image element and canvas
-      // await conversion
-      const result = await svgStringToPng(svgStr, nameSafe);
-      folderImgs.file(result.name, result.blob);
-      count++;
-      btn.textContent = `Gerando imagens... (${count}/${total})`;
-    }
+btnPlayAudio.addEventListener('click', ()=>{
+  if(!audioLoaded){ alert('Carregue um arquivo de áudio (MP3/OGG) usando o botão "Carregar música".'); return; }
+  if(audio.paused){ audio.play(); btnPlayAudio.textContent = '⏸ Pausar'; }
+  else { audio.pause(); btnPlayAudio.textContent = '▶️ Tocar'; }
+});
+btnMuteAudio.addEventListener('click', ()=>{
+  if(!audio) return;
+  audio.muted = !audio.muted;
+  btnMuteAudio.textContent = audio.muted ? '🔇 Mudo' : '🔈 Mudo';
+});
 
-    // also include index.html (this file) inside zip for offline package
-    const htmlConte
+/* ---------------------------
+   Export: gera PNGs via SVG -> canvas e zip (JSZip injetado se necessário)
+   --------------------------- */
+async functi
