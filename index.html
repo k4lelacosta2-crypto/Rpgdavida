@@ -1,199 +1,460 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grimório das Artes do RPG de Tarefas</title>
-  <style>
-    body {
-      font-family: "Press Start 2P", monospace;
-      background: linear-gradient(180deg, #1e0d1f, #2b0b2f);
-      color: #e9d8ff;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    body.light {
-      background: linear-gradient(180deg, #f3e8ff, #e8d5f9);
-      color: #2a1231;
-    }
-
-    header {
-      text-align: center;
-      padding: 20px;
-    }
-
-    h1 {
-      font-size: 1.2em;
-      margin-bottom: 10px;
-    }
-
-    .controls {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    button, input[type="file"] {
-      background: #6b21a8;
-      border: none;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background: #8b5cf6;
-    }
-
-    .shelf {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid #a855f7;
-      border-radius: 12px;
-      text-align: center;
-      padding: 10px;
-      transition: transform 0.2s, background 0.3s;
-    }
-
-    .item:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .item img {
-      width: 128px;
-      height: 128px;
-      image-rendering: pixelated;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.8em;
-      opacity: 0.7;
-    }
-
-    .rarity {
-      font-size: 0.7em;
-      border-radius: 6px;
-      padding: 3px 6px;
-      display: inline-block;
-      margin-top: 5px;
-    }
-
-    .comum { background: #9ca3af; color: #000; }
-    .raro { background: #60a5fa; color: #000; }
-    .epico { background: #a855f7; color: #fff; }
-
-    .avatar-preview {
-      text-align: center;
-      margin: 10px auto;
-    }
-
-    .avatar-preview img {
-      width: 96px;
-      height: 96px;
-      image-rendering: pixelated;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RPG de Tarefas — Jogo (prototipo)</title>
+<style>
+  :root{
+    --bg-dark:#13061a;
+    --panel:#1f0b25;
+    --accent:#8a4efd;
+    --muted:#c7bfe6;
+    --green:#82f0b1;
+    --danger:#ff7b7b;
+    --avatar:#b98bff;
+    --lilac:#3b1670;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:linear-gradient(180deg,var(--bg-dark),#160417);color:#efe6ff}
+  .app{max-width:900px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  h1{font-size:20px;margin:0}
+  .top-controls{display:flex;gap:8px;align-items:center}
+  button{background:var(--accent);border:none;color:#100016;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
+  .toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:var(--muted);cursor:pointer}
+  main{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+  /* left column */
+  .left{flex:0 0 320px;background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .avatar-box{width:280px;height:200px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:center;position:relative}
+  .avatar-svg{width:160px;height:160px}
+  .xpbar{height:14px;background:rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;margin-top:8px}
+  .xpfill{height:100%;background:linear-gradient(90deg,var(--lilac),var(--accent));width:0%}
+  .lvl{font-weight:800;margin-top:8px}
+  .inventory{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .slot{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.12)}
+  .slot button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:6px;color:var(--muted)}
+  .center{flex:1;min-width:300px}
+  .tasks{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .task-row{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px}
+  .task-row input[type="text"]{flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+  .small{font-size:12px;color:var(--muted)}
+  .right{flex:0 0 260px}
+  .monster-area{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .monster{display:flex;align-items:center;gap:10px}
+  .monster svg{width:96px;height:96px}
+  .btn-danger{background:var(--danger)}
+  .chest{width:64px;height:64px;border-radius:8px;background:linear-gradient(180deg,#3a2a35,#241624);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer}
+  footer{margin-top:auto;color:var(--muted);font-size:13px;text-align:center;padding:8px}
+  /* small animations */
+  .shake { animation: shake 0.6s ease; }
+  @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-4px)} 100%{transform:translateX(0)} }
+  .fallen { opacity:0.28; transform:translateY(6px); transition:opacity 0.2s, transform 0.2s }
+  /* responsive */
+  @media(max-width:880px){ main{flex-direction:column} .left,.right{flex:1 1 auto} .avatar-box{width:200px;height:160px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Grimório das Artes do RPG de Tarefas</h1>
-    <p>Estante refinada — artes 128×128 (fundo lilás sólido). Clique em um item para equipar no avatar.</p>
-    <div class="controls">
-      <button id="toggleGender">Masculino</button>
-      <button id="toggleTheme">Tema Claro</button>
-      <label>Música: <input type="file" id="musicFile" accept="audio/*"></label>
-      <button id="playMusic">Tocar</button>
-      <button id="muteMusic">Mudo</button>
-      <button id="exportZip">Exportar ZIP</button>
-    </div>
-    <div class="avatar-preview">
-      <img id="avatar" src="assets/avatar_masc.png" alt="Avatar">
-    </div>
-  </header>
+  <div class="app">
+    <header>
+      <h1>RPG de Tarefas — Jogar</h1>
+      <div class="top-controls">
+        <button id="btnAddSample">Adicionar tarefas exemplo</button>
+        <button id="btnOpenChest">Abrir baú</button>
+        <button id="btnEndMonth">Finalizar mês (boss)</button>
+        <button id="btnExportState" class="toggle">Exportar estado</button>
+      </div>
+    </header>
 
-  <main>
-    <div class="shelf" id="itemShelf">
-      <div class="item">
-        <img src="assets/pijama.png" alt="Pijama do Herói">
-        <div><b>Pijama do Herói</b></div>
-        <div class="rarity comum">Comum</div>
-        <p>Traje lilás justo ao corpo. Onde toda jornada começa.</p>
+    <main>
+      <!-- left: avatar / info / inventory -->
+      <div class="left">
+        <div class="avatar-box" id="avatarBox">
+          <!-- placeholder avatar SVG -->
+          <svg viewBox="0 0 64 64" class="avatar-svg" id="avatarSVG">
+            <rect x="12" y="20" width="40" height="34" rx="6" fill="var(--avatar)"/>
+            <circle cx="32" cy="12" r="8" fill="#fff"/>
+            <text x="32" y="54" font-size="6" text-anchor="middle" fill="#100016">Lvl</text>
+          </svg>
+        </div>
+
+        <div class="lvl">Nível <span id="lvl">1</span> — XP: <span id="xpText">0</span>/<span id="xpNeed">100</span></div>
+        <div class="xpbar" title="Barra de XP"><div class="xpfill" id="xpfill"></div></div>
+
+        <div class="inventory">
+          <div class="small">Inventário (Slots: Arma, Armadura, Cosmético)</div>
+          <div class="slot"><div style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px" id="slotWeapon">Arma</div>
+            <div style="flex:1" class="small">Equipar arma</div>
+            <button id="unequipWeapon">Desequipar</button>
+          </div>
+          <div class="slot"><div id="slotArmor" style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px">Armadura</div>
+            <div style="flex:1" class="small">Equipar armadura</div>
+            <button id="unequipArmor">Desequipar</button>
+          </div>
+          <div class="slot"><div id="slotCosmetic" style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px">Cosmético</div>
+            <div style="flex:1" class="small">Equipar cosmético</div>
+            <button id="unequipCosmetic">Desequipar</button>
+          </div>
+        </div>
       </div>
 
-      <div class="item">
-        <img src="assets/espada_epica.png" alt="Espada Épica">
-        <div><b>Espada Épica</b></div>
-        <div class="rarity epico">Épica</div>
-        <p>A lâmina canta com ecos de dias antigos. Rúnas suaves brilham.</p>
+      <!-- center: tasks -->
+      <div class="center">
+        <div class="tasks">
+          <h3>Tarefas <span class="small" id="scheduledCount"></span></h3>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <input id="taskText" placeholder="Nova tarefa..." type="text"/>
+            <select id="taskType">
+              <option value="daily">Diária</option>
+              <option value="weekly">Semanal</option>
+              <option value="monthly">Mensal</option>
+            </select>
+            <select id="taskImportance">
+              <option value="0">Sem muita importância</option>
+              <option value="1">Importante</option>
+              <option value="2">Muito importante</option>
+              <option value="3">Essencial</option>
+            </select>
+            <input id="taskDue" type="datetime-local" />
+            <button id="btnAddTask">Adicionar</button>
+          </div>
+
+          <div id="tasksList"></div>
+        </div>
       </div>
 
-      <div class="item">
-        <img src="assets/bau_raro.png" alt="Baú Raro">
-        <div><b>Baú Raro</b></div>
-        <div class="rarity raro">Raro</div>
-        <p>Baú que guarda segredos e luz lilás em seu interior.</p>
+      <!-- right: monster / chest / logs -->
+      <div class="right">
+        <div class="monster-area">
+          <h4>Próximo desafio</h4>
+          <div id="monsterContainer"></div>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button id="btnSimulateWin">Simular vitória (+XP)</button>
+            <button id="btnSimulateFail" class="btn-danger">Simular falha</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="monster-area">
+          <h4>Logs</h4>
+          <div id="log" style="max-height:220px;overflow:auto;font-size:13px;color:var(--muted)"></div>
+        </div>
       </div>
-    </div>
-  </main>
 
-  <footer>
-    RPG de Tarefas — Grimório das Artes — Preview Refinado
-  </footer>
+    </main>
 
-  <script>
-    const toggleThemeBtn = document.getElementById("toggleTheme");
-    const toggleGenderBtn = document.getElementById("toggleGender");
-    const avatar = document.getElementById("avatar");
-    const musicFile = document.getElementById("musicFile");
-    const playMusicBtn = document.getElementById("playMusic");
-    const muteMusicBtn = document.getElementById("muteMusic");
+    <footer>
+      Estado salvo localmente. Se quiser compartilhar, use "Exportar estado".
+    </footer>
+  </div>
 
-    let currentTheme = "dark";
-    let gender = "masc";
-    let audio = new Audio();
+<script>
+/* ---------- GAME CORE ---------- */
 
-    toggleThemeBtn.onclick = () => {
-      document.body.classList.toggle("light");
-      currentTheme = currentTheme === "dark" ? "light" : "dark";
-      toggleThemeBtn.textContent = currentTheme === "dark" ? "Tema Claro" : "Tema Escuro";
+/* Config / constants */
+const BASE_XP = 50; // base XP per task before modifiers
+const TYPE_PENALTY = { daily:0.10, weekly:0.20, monthly:0.30 }; // reduces XP gained when completing
+const IMPORTANCE_LABELS = ['Sem muita importância','Importante','Muito importante','Essencial'];
+// importanceIndex 0..3 ; bonus per level = 2.5% (0.025) per level
+const IMPORTANCE_BONUS_PER_LEVEL = 0.025; // 2.5% each level
+const IMPORTANCE_FAIL_PENALTY_PER_LEVEL = 0.02; // +2% penalty each level on fail
+// XP for next level formula
+function xpForLevel(l){ return Math.round(100 * Math.pow(1.25, l-1)); }
+
+/* Game state (persisted) */
+let state = {
+  level:1,
+  xp:0,
+  inventory: { weapon:null, armor:null, cosmetic:null },
+  tasks: [], // each: {id, text, type, importance, due: ISO string, created, done:false, scheduled:true}
+  lastOpen: new Date().toISOString(),
+  logs: []
+};
+
+/* Load from localStorage */
+function loadState(){
+  try{
+    const raw = localStorage.getItem('rpg_tasks_state');
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){ console.error('loadState',e); }
+}
+function saveState(){
+  localStorage.setItem('rpg_tasks_state', JSON.stringify(state));
+}
+
+/* Utility */
+function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function nowISO(){ return new Date().toISOString(); }
+function fmtDate(input){
+  if(!input) return '--';
+  const d = new Date(input);
+  return d.toLocaleString();
+}
+function logAdd(txt){
+  const at = '[' + new Date().toLocaleTimeString() + '] ' + txt;
+  state.logs.unshift(at);
+  if(state.logs.length>200) state.logs.pop();
+  renderLogs();
+  saveState();
+}
+
+/* XP / Levels */
+function addXP(xp){
+  if(!xp || xp<=0) return;
+  state.xp += Math.round(xp);
+  logAdd(`Ganhou ${Math.round(xp)} XP`);
+  // level up check
+  while(state.xp >= xpForLevel(state.level)){
+    state.xp -= xpForLevel(state.level);
+    state.level++;
+    logAdd(`Subiu para o nível ${state.level}!`);
+    // level-up effect
+    playEffect('levelup');
+  }
+  renderStats();
+  saveState();
+}
+
+/* Penalty on fail: compute potential XP and subtract penaltyPercent of that SPARE (user loses XP?) 
+   We'll implement: when fail -> user loses penaltyPercent of WOULD_BE_XP as immediate XP negative (floor to 0 not allowed), but do not reduce level below 1.
+*/
+function applyFailurePenalty(task){
+  const base = BASE_XP;
+  const typePenalty = TYPE_PENALTY[task.type] || 0;
+  const importanceIdx = Number(task.importance);
+  const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL;
+  const potentialXP = base * (1 - typePenalty) * importanceBonus;
+  const penaltyPercent = (TYPE_PENALTY[task.type] || 0) + (importanceIdx * IMPORTANCE_FAIL_PENALTY_PER_LEVEL);
+  const xpLost = Math.round(potentialXP * (penaltyPercent));
+  // lose xp (reduce current xp or levels)
+  let remaining = xpLost;
+  // first subtract from current xp if possible
+  if(state.xp >= remaining){
+    state.xp -= remaining;
+    remaining = 0;
+  } else {
+    remaining -= state.xp;
+    state.xp = 0;
+    // reduce levels if still remaining
+    while(remaining > 0 && state.level > 1){
+      state.level--;
+      remaining = Math.max(0, remaining - xpForLevel(state.level));
+    }
+  }
+  logAdd(`Falhou: perdeu ${xpLost} XP (penalidade).`);
+  playEffect('fail');
+  renderStats();
+  saveState();
+}
+
+/* Task XP on success */
+function computeTaskXP(task){
+  const base = BASE_XP;
+  const typePenalty = TYPE_PENALTY[task.type] || 0; // reduces XP
+  const importanceIdx = Number(task.importance);
+  const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL; // +2.5% per level
+  const xp = base * (1 - typePenalty) * importanceBonus;
+  return Math.round(xp);
+}
+
+/* ---------- UI Rendering ---------- */
+const tasksListEl = document.getElementById('tasksList');
+const xpfill = document.getElementById('xpfill');
+const xpText = document.getElementById('xpText');
+const xpNeedEl = document.getElementById('xpNeed');
+const lvlEl = document.getElementById('lvl');
+const scheduledCount = document.getElementById('scheduledCount');
+const logEl = document.getElementById('log');
+const monsterContainer = document.getElementById('monsterContainer');
+
+function renderStats(){
+  const need = xpForLevel(state.level);
+  xpText.textContent = state.xp;
+  xpNeedEl.textContent = need;
+  lvlEl.textContent = state.level;
+  const pct = Math.min(100, Math.round(100 * (state.xp / need)));
+  xpfill.style.width = pct + '%';
+  scheduledCount.textContent = `Agendadas: ${state.tasks.filter(t=>!t.done).length}`;
+}
+
+function renderLogs(){
+  logEl.innerHTML = '';
+  state.logs.slice(0,80).forEach(line => {
+    const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d);
+  });
+}
+
+/* Render tasks */
+function renderTasks(){
+  tasksListEl.innerHTML = '';
+  state.tasks.forEach(task=>{
+    const row = document.createElement('div'); row.className = 'task-row';
+    const left = document.createElement('div'); left.style.flex='1';
+    const title = document.createElement('div'); title.textContent = task.text;
+    const meta = document.createElement('div'); meta.className='small'; meta.textContent = `${task.type} • ${IMPORTANCE_LABELS[task.importance]} • ${fmtDate(task.due)}`;
+    left.appendChild(title); left.appendChild(meta);
+
+    const btnComplete = document.createElement('button'); btnComplete.textContent = 'Concluir';
+    btnComplete.onclick = ()=> {
+      // animate avatar attack then add XP
+      animateBattle(task);
+      // mark done
+      task.done = true;
+      const xp = computeTaskXP(task);
+      addXP(xp);
+      logAdd(`Tarefa "${task.text}" concluída (+${xp} XP).`);
+      saveState();
+      renderTasks();
+      renderMonsterFor(task); // show monster defeated
     };
 
-    toggleGenderBtn.onclick = () => {
-      gender = gender === "masc" ? "fem" : "masc";
-      avatar.src = `assets/avatar_${gender}.png`;
-      toggleGenderBtn.textContent = gender === "masc" ? "Masculino" : "Feminino";
+    const btnFail = document.createElement('button'); btnFail.textContent = 'Marcar falha';
+    btnFail.onclick = ()=>{
+      applyFailurePenalty(task);
+      task.done = true;
+      saveState();
+      renderTasks();
     };
 
-    musicFile.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) audio.src = URL.createObjectURL(file);
+    const btnDel = document.createElement('button'); btnDel.textContent = 'Remover';
+    btnDel.onclick = ()=>{
+      if(confirm('Remover tarefa?')){ state.tasks = state.tasks.filter(t=>t.id!==task.id); saveState(); renderTasks(); }
     };
 
-    playMusicBtn.onclick = () => audio.play();
-    muteMusicBtn.onclick = () => audio.pause();
+    row.appendChild(left);
+    row.appendChild(btnComplete);
+    row.appendChild(btnFail);
+    row.appendChild(btnDel);
 
-    document.getElementById("exportZip").onclick = () => {
-      alert("Função de exportação ZIP será ativada em breve (WIP).");
-    };
-  </script>
-</body>
-</html>
+    tasksListEl.appendChild(row);
+  });
+}
+
+/* Render monster visualization for next task (if any). We'll show the first not-done task. */
+function renderNextMonster(){
+  monsterContainer.innerHTML = '';
+  const next = state.tasks.find(t=>!t.done);
+  if(!next){
+    monsterContainer.innerHTML = '<div class="small">Nenhum desafio agendado</div>';
+    return;
+  }
+  renderMonsterFor(next);
+}
+function renderMonsterFor(task){
+  monsterContainer.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.alignItems='center';
+  const label = document.createElement('div'); label.textContent = task.text; label.style.fontWeight = '800'; label.style.marginBottom='6px';
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 64 64'); svg.setAttribute('width','96'); svg.setAttribute('height','96');
+  // monster visual: color by importance/rarity
+  const importance = Number(task.importance);
+  const colors = ['#7f7f7f','#60a5fa','#8a4efd','#ffd166'];
+  const c = colors[Math.min(importance,colors.length-1)];
+  const circle = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+  circle.setAttribute('cx','32'); circle.setAttribute('cy','34'); circle.setAttribute('rx','26'); circle.setAttribute('ry','20'); circle.setAttribute('fill',c);
+  svg.appendChild(circle);
+  const eye = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  eye.setAttribute('cx','32'); eye.setAttribute('cy','28'); eye.setAttribute('r','4'); eye.setAttribute('fill','#100016');
+  svg.appendChild(eye);
+  wrap.appendChild(label); wrap.appendChild(svg);
+  monsterContainer.appendChild(wrap);
+}
+
+/* --------- Animations & Effects (placeholders) ---------- */
+function animateBattle(task){
+  // avatar shakes and monster fades -> simple visual
+  const av = document.getElementById('avatarSVG');
+  av.classList.add('shake');
+  setTimeout(()=> av.classList.remove('shake'), 700);
+  // show monster defeated
+  const container = monsterContainer;
+  container.classList.add('shake');
+  setTimeout(()=> container.classList.remove('shake'), 700);
+  playEffect('hit');
+}
+
+/* sound effects */
+const sounds = {
+  hit: new Audio(), levelup: new Audio(), fail: new Audio(), chest: new Audio()
+};
+// (leave empty or user can assign src later)
+function playEffect(kind){
+  try{ const s = sounds[kind]; if(s && s.src) s.play().catch(()=>{}); } catch(e){}
+}
+
+/* ---------- Task creation handlers ---------- */
+document.getElementById('btnAddTask').addEventListener('click', ()=>{
+  const text = (document.getElementById('taskText')).value.trim();
+  if(!text){ alert('Digite uma tarefa'); return; }
+  const type = document.getElementById('taskType').value;
+  const importance = document.getElementById('taskImportance').value;
+  const dueInput = document.getElementById('taskDue').value;
+  const due = dueInput ? new Date(dueInput).toISOString() : new Date(Date.now() + (type==='daily'?24*3600*1000: type==='weekly'?7*24*3600*1000:30*24*3600*1000)).toISOString();
+  const t = { id: uid('task'), text, type, importance, due, created: nowISO(), done:false };
+  state.tasks.push(t);
+  saveState();
+  renderTasks(); renderNextMonster();
+  document.getElementById('taskText').value = '';
+});
+
+/* add sample tasks */
+document.getElementById('btnAddSample').addEventListener('click', ()=>{
+  const samples = [
+    {text:'Exercício matinal', type:'daily', importance:1},
+    {text:'Revisar relatório', type:'weekly', importance:2},
+    {text:'Pagar contas mensais', type:'monthly', importance:3}
+  ];
+  samples.forEach(s=>{
+    const due = new Date(Date.now() + (s.type==='daily'?12*3600*1000: s.type==='weekly'?3*24*3600*1000: 8*24*3600*1000)).toISOString();
+    state.tasks.push({id:uid('task'),text:s.text,type:s.type,importance:s.importance,due,created:nowISO(),done:false});
+  });
+  saveState(); renderTasks(); renderNextMonster();
+});
+
+/* simulate buttons */
+document.getElementById('btnSimulateWin').addEventListener('click', ()=>{
+  const task = state.tasks.find(t=>!t.done);
+  if(!task){ alert('Sem tarefas agendadas'); return; }
+  // simulate win
+  animateBattle(task);
+  task.done = true;
+  const xp = computeTaskXP(task);
+  addXP(xp);
+  logAdd(`Tarefa "${task.text}" concluída (simulação) +${xp} XP`);
+  saveState(); renderTasks(); renderNextMonster();
+});
+document.getElementById('btnSimulateFail').addEventListener('click', ()=>{
+  const task = state.tasks.find(t=>!t.done);
+  if(!task){ alert('Sem tarefas agendadas'); return; }
+  applyFailurePenalty(task);
+  task.done = true;
+  saveState(); renderTasks(); renderNextMonster();
+});
+
+/* ---------- Chests (loot) ---------- */
+document.getElementById('btnOpenChest').addEventListener('click', () => openChest('random'));
+function openChest(type='random'){
+  // simple chest animation: display modal-like log and award random item
+  const rarRoll = Math.random();
+  let rarity='common';
+  if(rarRoll>0.92) rarity='legend';
+  else if(rarRoll>0.75) rarity='epic';
+  else if(rarRoll>0.45) rarity='rare';
+  else rarity='common';
+  // pick item type
+  const itypes = ['weapon','armor','cosmetic'];
+  const chosen = itypes[Math.floor(Math.random()*itypes.length)];
+  const item = { id: uid('item'), type:chosen, name: `${chosen} ${rarity}`, rarity };
+  // add to inventory (first available slot)
+  if(chosen==='weapon') state.inventory.weapon = item;
+  if(chosen==='armor') state.inventory.armor = item;
+  if(chosen==='cosmetic') state.inventory.cosmetic = item;
+  logAdd(`Baú aberto: ganhou ${item.name}`);
+  playEffect('chest');
+  renderInventory();
+  saveState();
+}
+
+/* equip/unequip handlers */
+document.getElementById('unequipWeapon').addEventListener('click', ()=>{ state.inventory.weapon=null; renderInventory(); saveState(); });
+document.getElementById('unequipArmor').addEventListener('click', ()=>{ state.inventory.armor=null; renderInvent
