@@ -3,237 +3,340 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RPG de Tarefas — Jogar (corrigido)</title>
+<title>RPG de Tarefas — Grimório (final)</title>
 <style>
+  /* -------------------
+     Visual / Tema geral
+     ------------------- */
   :root{
-    --bg-dark:#13061a;
-    --panel:#1f0b25;
-    --accent:#8a4efd;
-    --muted:#c7bfe6;
-    --green:#82f0b1;
-    --danger:#ff7b7b;
-    --avatar:#b98bff;
-    --lilac:#3b1670;
+    --lilac-1: #3b1670;
+    --lilac-2: #7d4ef0;
+    --bg-dark: #120512;
+    --bg-dark-2: #1b0b23;
+    --bg-light: #f2ecf9;
+    --wood-top: #3b1f0e;
+    --wood-bottom: #24110a;
+    --text-dark: #1b0b14;
+    --text-light: #efe6ff;
+    --muted: #cfc6e8;
+    --accent: #8a4efd;
+    --danger: #ff6b6b;
+    --avatar-base: #b98bff;
+    --paper-yellow: #f4e2b8;
   }
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg-dark),#160417);color:#efe6ff}
-  .app{max-width:980px;margin:0 auto;padding:14px;display:flex;flex-direction:column;gap:12px;min-height:100vh}
-  header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  h1{font-size:20px;margin:0}
-  .top-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  button{background:var(--accent);border:none;color:#100016;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
-  .toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:var(--muted);cursor:pointer}
+  html,body{height:100%;margin:0;font-family: "Cormorant Garamond", Georgia, serif; background:linear-gradient(180deg,var(--wood-top),var(--wood-bottom)); color:var(--text-light); -webkit-font-smoothing:antialiased;}
+  .app{max-width:1100px;margin:0 auto;padding:18px;display:flex;flex-direction:column;min-height:100vh;gap:14px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  h1{margin:0;font-size:20px;letter-spacing:0.6px}
+  .subtitle{color:var(--muted);font-size:13px}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  button, .btn{cursor:pointer;border-radius:8px;padding:8px 10px;border:none;font-weight:700}
+  .btn{background:linear-gradient(90deg,var(--lilac-2),#b28fff); color: #160216}
+  .toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:6px 8px;border-radius:8px}
+  /* main layout */
   main{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  /* left column */
-  .left{flex:0 0 340px;background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .avatar-box{width:300px;height:200px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:center;position:relative}
-  .avatar-svg{width:160px;height:160px}
+  .left{flex:0 0 320px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .center{flex:1;min-width:340px}
+  .right{flex:0 0 300px}
+  /* avatar box */
+  .avatar-box{width:300px;height:220px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 6px 30px rgba(0,0,0,0.45)}
+  .avatar-svg{width:170px;height:170px}
+  .lvl{font-weight:800;margin-top:8px;color:var(--muted)}
   .xpbar{height:14px;background:rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;margin-top:8px}
-  .xpfill{height:100%;background:linear-gradient(90deg,var(--lilac),var(--accent));width:0%}
-  .lvl{font-weight:800;margin-top:8px}
-  .inventory{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .xpfill{height:100%;background:linear-gradient(90deg,var(--lilac-1),var(--lilac-2));width:0%}
+  .inventory{margin-top:12px;display:flex;flex-direction:column;gap:8px}
   .slot{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.12)}
-  .slot button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:6px;color:var(--muted)}
-  .center{flex:1;min-width:320px}
-  .tasks{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .task-row{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:8px}
-  .task-row input[type="text"]{flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-  .small{font-size:12px;color:var(--muted)}
-  .right{flex:0 0 280px}
-  .monster-area{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-  .monster{display:flex;align-items:center;gap:10px}
+  .slot .slotLabel{flex:1;color:var(--muted)}
+  .slot .slotIcon{width:44px;height:44;border-radius:6px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
+  /* tasks pergaminho */
+  .tasks-panel{padding:18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5); background:transparent}
+  /* pergaminho container (2D stylized) */
+  .parchment{
+    margin-top:8px;
+    padding:18px;
+    border-radius:10px;
+    position:relative;
+    min-height:220px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    overflow:auto;
+  }
+  /* dark pergaminho (C) - lilac acinzentado */
+  body[data-theme="dark"] .parchment{
+    background:
+      linear-gradient(180deg, rgba(60,34,86,0.95), rgba(45,22,60,0.95));
+    border:2px solid rgba(255,255,255,0.04);
+    color:var(--text-light);
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.02), transparent 6%),
+      linear-gradient(180deg, rgba(56,22,82,0.9), rgba(30,12,48,0.9));
+  }
+  /* light pergaminho (D) - magical lilac with runes */
+  body[data-theme="light"] .parchment{
+    background:
+      linear-gradient(180deg, rgba(240,232,250,0.98), rgba(232,224,246,0.98));
+    border:2px solid rgba(140,60,170,0.12);
+    color:var(--text-dark);
+    box-shadow: 0 10px 30px rgba(20,10,30,0.06);
+    /* runes decorative faint */
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(180,150,220,0.06), transparent 6%),
+      linear-gradient(180deg, rgba(240,232,250,0.98), rgba(232,224,246,0.98));
+  }
+  /* parchment header style */
+  .parchment:before{
+    content: "";
+    position:absolute;
+    left:8px; right:8px; top:8px; height:10px; border-radius:6px;
+    opacity:0.08;
+  }
+  /* task input area */
+  .add-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .add-row input[type="text"], .add-row select, .add-row input[type="datetime-local"]{
+    padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:inherit;
+  }
+  .task-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,0.06)}
+  .task-item .meta{font-size:12px;color:var(--muted);margin-top:4px}
+  .task-actions{display:flex;gap:6px}
+  .task-actions button{padding:6px 8px;border-radius:6px;border:none;background:linear-gradient(90deg,#7f5cf6,#b08dff);color:#120017;font-weight:800;cursor:pointer}
+  .task-actions .fail{background:linear-gradient(90deg,#ff6b6b,#ff9a9a);color:#100}
+  .task-actions .remove{background:linear-gradient(90deg,#444,#222);color:#fff}
+  /* monster & logs */
+  .monster-area{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
   .monster svg{width:96px;height:96px}
-  .btn-danger{background:var(--danger)}
-  .chest{width:64px;height:64px;border-radius:8px;background:linear-gradient(180deg,#3a2a35,#241624);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;cursor:pointer}
-  footer{margin-top:auto;color:var(--muted);font-size:13px;text-align:center;padding:8px}
-  /* small animations */
-  .shake { animation: shake 0.6s ease; }
-  @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-4px)} 100%{transform:translateX(0)} }
-  .fallen { opacity:0.28; transform:translateY(6px); transition:opacity 0.2s, transform 0.2s }
-  /* responsive */
-  @media(max-width:880px){ main{flex-direction:column} .left,.right{flex:1 1 auto} .avatar-box{width:200px;height:160px}}
-  /* small buttons style inside tasks */
-  .task-row button { padding:6px 8px; border-radius:6px; border:none; cursor:pointer; background:#6f2bdc; color:#fff; font-weight:700 }
-  .task-meta{font-size:12px;color:#cfc6e8;margin-top:4px}
+  .logs{max-height:220px;overflow:auto;font-size:13px;color:var(--muted)}
+  /* tiny responsive */
+  @media(max-width:900px){
+    main{flex-direction:column}
+    .left,.right{flex:1}
+    .avatar-box{width:220px;height:160px}
+    .xpbar{height:12px}
+  }
+  /* parchment decorative corners */
+  .parchment::after{
+    content:"";
+    position:absolute;
+    right:8px; bottom:8px; width:36px; height:36px; border-radius:6px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+    opacity:0.06;
+  }
+  /* subtle runes for light theme (overlay) */
+  body[data-theme="light"] .parchment .runes{
+    position:absolute; inset:0; pointer-events:none; opacity:0.08; mix-blend-mode:overlay;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(140,60,170,0.12), transparent 4%),
+      radial-gradient(circle at 80% 70%, rgba(140,60,170,0.08), transparent 3%);
+  }
+  /* title style medieval */
+  .panel-title{font-family: "Cormorant Garamond", Georgia, serif; font-size:18px; font-weight:700; color:inherit}
 </style>
 </head>
-<body>
-  <div class="app">
+<body data-theme="dark">
+  <div class="app" role="application">
     <header>
       <div>
-        <h1>RPG de Tarefas — Jogar</h1>
-        <div class="small">Todas as funções essenciais ativas — tarefas, XP, inventário.</div>
+        <h1>RPG de Tarefas — Grimório</h1>
+        <div class="subtitle">Sua rotina como uma aventura medieval — complete tarefas, equipe itens e suba de nível.</div>
       </div>
-      <div class="top-controls">
-        <button id="btnAddSample">Adicionar tarefas exemplo</button>
-        <button id="btnOpenChest">Abrir baú</button>
-        <button id="btnEndMonth">Finalizar mês (boss)</button>
+
+      <div class="controls">
+        <button id="btnToggleTheme" class="toggle">Tema Claro</button>
+        <button id="btnToggleGender" class="toggle">Masculino</button>
+        <label style="display:flex;gap:8px;align-items:center">
+          <input id="audioFile" type="file" accept="audio/*" style="display:none">
+          <button id="btnLoadAudio" class="toggle">Carregar música</button>
+        </label>
         <button id="btnExportState" class="toggle">Exportar estado</button>
       </div>
     </header>
 
     <main>
-      <!-- left: avatar / info / inventory -->
-      <div class="left">
+      <!-- LEFT: Avatar & inventory -->
+      <div class="left" aria-label="Avatar e inventário">
         <div class="avatar-box" id="avatarBox" aria-hidden="false">
-          <svg viewBox="0 0 64 64" class="avatar-svg" id="avatarSVG" role="img" aria-label="Avatar">
-            <rect x="12" y="20" width="40" height="34" rx="6" fill="var(--avatar)"/>
-            <circle cx="32" cy="12" r="8" fill="#fff"/>
-            <text x="32" y="54" font-size="6" text-anchor="middle" fill="#100016">Lvl</text>
+          <!-- avatar SVG preview -->
+          <svg viewBox="0 0 240 240" class="avatar-svg" id="avatarSVG" role="img" aria-label="Avatar">
+            <rect x="70" y="72" width="100" height="110" rx="14" fill="#b98bff"/>
+            <circle cx="120" cy="42" r="30" fill="#fff"/>
           </svg>
         </div>
 
-        <div class="lvl">Nível <span id="lvl">1</span> — XP: <span id="xpText">0</span>/<span id="xpNeed">100</span></div>
-        <div class="xpbar" title="Barra de XP"><div class="xpfill" id="xpfill"></div></div>
+        <div class="lvl">Nível <strong id="lvl">1</strong> — XP: <strong id="xpText">0</strong>/<strong id="xpNeed">100</strong></div>
+        <div class="xpbar" title="Barra de XP"><div class="xpfill" id="xpfill" style="width:0%"></div></div>
 
-        <div class="inventory">
-          <div class="small">Inventário (Slots: Arma, Armadura, Cosmético)</div>
-          <div class="slot"><div id="slotWeapon" style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px">Arma</div>
-            <div style="flex:1" class="small">Equipar arma</div>
+        <div class="inventory" aria-label="Inventário">
+          <div class="small">Inventário (slots)</div>
+
+          <div class="slot" title="Arma">
+            <div class="slotIcon" id="slotWeapon">🪵</div>
+            <div class="slotLabel" id="labelWeapon">Graveto (inicial)</div>
             <button id="unequipWeapon" class="toggle">Desequipar</button>
           </div>
-          <div class="slot"><div id="slotArmor" style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px">Armadura</div>
-            <div style="flex:1" class="small">Equipar armadura</div>
+
+          <div class="slot" title="Armadura">
+            <div class="slotIcon" id="slotArmor">👕</div>
+            <div class="slotLabel" id="labelArmor">Pijama (inicial)</div>
             <button id="unequipArmor" class="toggle">Desequipar</button>
           </div>
-          <div class="slot"><div id="slotCosmetic" style="width:44px;height:44;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border-radius:6px">Cosmético</div>
-            <div style="flex:1" class="small">Equipar cosmético</div>
+
+          <div class="slot" title="Cosmético">
+            <div class="slotIcon" id="slotCosmetic">🎩</div>
+            <div class="slotLabel" id="labelCosmetic">Sem cosmético</div>
             <button id="unequipCosmetic" class="toggle">Desequipar</button>
           </div>
         </div>
       </div>
 
-      <!-- center: tasks -->
+      <!-- CENTER: Pergaminho com tarefas -->
       <div class="center">
-        <div class="tasks">
-          <h3>Tarefas <span class="small" id="scheduledCount"></span></h3>
-          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-            <input id="taskText" placeholder="Nova tarefa..." type="text" style="flex:1;min-width:160px;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit"/>
-            <select id="taskType" style="padding:8px;border-radius:6px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04)">
-              <option value="daily">Diária</option>
-              <option value="weekly">Semanal</option>
-              <option value="monthly">Mensal</option>
-            </select>
-            <select id="taskImportance" style="padding:8px;border-radius:6px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04)">
-              <option value="0">Sem muita importância</option>
-              <option value="1">Importante</option>
-              <option value="2">Muito importante</option>
-              <option value="3">Essencial</option>
-            </select>
-            <input id="taskDue" type="datetime-local" style="padding:8px;border-radius:6px;background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04)"/>
-            <button id="btnAddTask">Adicionar</button>
+        <section class="tasks-panel" aria-labelledby="tasksTitle">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="panel-title" id="tasksTitle">Tarefas</div>
+            <div class="small" id="scheduledCount">Agendadas: 0</div>
           </div>
 
-          <div id="tasksList" aria-live="polite"></div>
-        </div>
+          <div class="parchment" id="parchment">
+            <div class="runes" aria-hidden="true"></div>
+
+            <!-- add row -->
+            <div class="add-row" style="margin-bottom:12px">
+              <input id="taskText" type="text" placeholder="Nova tarefa..." style="flex:1;min-width:160px"/>
+              <select id="taskType" title="Tipo">
+                <option value="daily">Diária</option>
+                <option value="weekly">Semanal</option>
+                <option value="monthly">Mensal</option>
+              </select>
+              <select id="taskImportance" title="Importância">
+                <option value="0">Sem muita importância</option>
+                <option value="1">Importante</option>
+                <option value="2">Muito importante</option>
+                <option value="3">Essencial</option>
+              </select>
+              <input id="taskDue" type="datetime-local" title="Prazo (opcional)"/>
+              <button id="btnAddTask" class="btn">Adicionar</button>
+            </div>
+
+            <!-- tasks list -->
+            <div id="tasksList" aria-live="polite" style="padding-bottom:10px"></div>
+          </div>
+        </section>
       </div>
 
-      <!-- right: monster / chest / logs -->
+      <!-- RIGHT: Monster & logs -->
       <div class="right">
-        <div class="monster-area">
-          <h4>Próximo desafio</h4>
-          <div id="monsterContainer" class="small">Nenhum desafio agendado</div>
+        <div class="monster-area" aria-label="Próximo desafio">
+          <div class="panel-title">Próximo desafio</div>
+          <div id="monsterContainer" style="margin-top:8px" class="small">Nenhum desafio agendado</div>
           <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-            <button id="btnSimulateWin">Simular vitória (+XP)</button>
-            <button id="btnSimulateFail" class="btn-danger">Simular falha</button>
+            <button id="btnSimulateWin" class="btn">Simular vitória</button>
+            <button id="btnSimulateFail" class="btn fail">Simular falha</button>
+            <button id="btnOpenChest" class="btn">Abrir baú</button>
+            <button id="btnEndMonth" class="btn">Finalizar mês</button>
           </div>
         </div>
 
         <div style="height:12px"></div>
 
         <div class="monster-area">
-          <h4>Logs</h4>
-          <div id="log" style="max-height:220px;overflow:auto;font-size:13px;color:var(--muted)"></div>
+          <div class="panel-title">Registro</div>
+          <div id="log" class="logs" aria-live="polite"></div>
         </div>
       </div>
-
     </main>
 
-    <footer>
-      Estado salvo localmente. Se quiser compartilhar, use "Exportar estado".
+    <footer style="text-align:center;color:var(--muted);padding:10px">
+      RPG de Tarefas — Grimório — Theme: <span id="themeLabel">Escuro</span>
     </footer>
   </div>
 
 <script>
-/* ---------- GAME CORE (completo e sem cortes) ---------- */
-
-/* Config / constants */
-const BASE_XP = 50; // base XP per task before modifiers
-const TYPE_PENALTY = { daily:0.10, weekly:0.20, monthly:0.30 }; // reduces XP gained when completing
+/* ===========================
+   GAME RULES & CONFIG
+   =========================== */
+const BASE_XP = 50;
+const TYPE_PENALTY = { daily:0.10, weekly:0.20, monthly:0.30 };
 const IMPORTANCE_LABELS = ['Sem muita importância','Importante','Muito importante','Essencial'];
-const IMPORTANCE_BONUS_PER_LEVEL = 0.025; // 2.5% each level
-const IMPORTANCE_FAIL_PENALTY_PER_LEVEL = 0.02; // +2% penalty each level on fail
+const IMPORTANCE_BONUS_PER_LEVEL = 0.025; // 2.5% por nível
+const IMPORTANCE_FAIL_PENALTY_PER_LEVEL = 0.02; // +2% penalty each importance level
 function xpForLevel(l){ return Math.round(100 * Math.pow(1.25, l-1)); }
 
-/* Game state (persisted) */
+/* ===========================
+   STATE
+   =========================== */
 let state = {
   level:1,
   xp:0,
-  inventory: { weapon:null, armor:null, cosmetic:null },
-  tasks: [], // each: {id, text, type, importance, due, created, done:false, _attackedOnOpen:false}
-  lastOpen: new Date().toISOString(),
+  gender: 'male',
+  inventory: { weapon:{name:'Graveto',rarity:'common'}, armor:{name:'Pijama',rarity:'common'}, cosmetic:null },
+  tasks: [], // {id,text,type,importance,due,created,done,_attackedOnOpen}
   logs: []
 };
+
+const STORAGE_KEY = 'grimorio_rpg_state';
 
 /* Load / Save */
 function loadState(){
   try{
-    const raw = localStorage.getItem('rpg_tasks_state');
-    if(raw){ state = JSON.parse(raw); }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ const parsed = JSON.parse(raw); state = Object.assign(state, parsed); }
   }catch(e){ console.error('loadState',e); }
 }
 function saveState(){
-  state.lastOpen = new Date().toISOString();
-  localStorage.setItem('rpg_tasks_state', JSON.stringify(state));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
 /* Utils */
-function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function uid(pref='id'){ return pref + '_' + Math.random().toString(36).slice(2,9); }
 function nowISO(){ return new Date().toISOString(); }
-function fmtDate(input){ if(!input) return '--'; const d = new Date(input); return d.toLocaleString(); }
-function logAdd(txt){
-  const at = '[' + new Date().toLocaleTimeString() + '] ' + txt;
-  state.logs.unshift(at);
-  if(state.logs.length>200) state.logs.pop();
-  renderLogs();
-  saveState();
-}
+function fmtDate(iso){ if(!iso) return '--'; const d = new Date(iso); return d.toLocaleString(); }
+function logAdd(txt){ state.logs.unshift('['+new Date().toLocaleTimeString()+'] '+txt); if(state.logs.length>300) state.logs.pop(); renderLogs(); saveState(); }
 
-/* XP / Level handling */
-function addXP(xp){
-  if(!xp || xp<=0) return;
-  state.xp += Math.round(xp);
-  logAdd(`Ganhou ${Math.round(xp)} XP`);
-  // level up loop
+/* ===========================
+   XP / LEVEL
+   =========================== */
+function addXP(amount){
+  if(!amount || amount<=0) return;
+  state.xp += Math.round(amount);
+  logAdd(`Ganhou ${Math.round(amount)} XP`);
+  // level up
   while(state.xp >= xpForLevel(state.level)){
     state.xp -= xpForLevel(state.level);
     state.level++;
     logAdd(`Subiu para o nível ${state.level}!`);
+    // visual effect placeholder
     playEffect('levelup');
   }
   renderStats();
   saveState();
 }
 
-/* Failure penalty implementation */
-function applyFailurePenalty(task){
-  const base = BASE_XP;
+/* compute xp for task completion */
+function computeTaskXP(task){
   const typePenalty = TYPE_PENALTY[task.type] || 0;
-  const importanceIdx = Number(task.importance);
+  const importanceIdx = Number(task.importance || 0);
   const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL;
-  const potentialXP = base * (1 - typePenalty) * importanceBonus;
-  const penaltyPercent = (TYPE_PENALTY[task.type] || 0) + (importanceIdx * IMPORTANCE_FAIL_PENALTY_PER_LEVEL);
-  const xpLost = Math.round(potentialXP * (penaltyPercent));
-  // subtract xpLost from player (reduce xp, and possibly levels)
+  const xp = BASE_XP * (1 - typePenalty) * importanceBonus;
+  return Math.round(xp);
+}
+
+/* failure penalty */
+function applyFailurePenalty(task){
+  const typePenalty = TYPE_PENALTY[task.type] || 0;
+  const importanceIdx = Number(task.importance || 0);
+  const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL;
+  const potential = BASE_XP * (1 - typePenalty) * importanceBonus;
+  const penaltyPercent = typePenalty + (importanceIdx * IMPORTANCE_FAIL_PENALTY_PER_LEVEL);
+  const xpLost = Math.round(potential * penaltyPercent);
+  // subtract from state.xp and possibly reduce levels
   let remaining = xpLost;
   if(state.xp >= remaining){
     state.xp -= remaining; remaining = 0;
   } else {
     remaining -= state.xp; state.xp = 0;
     while(remaining > 0 && state.level > 1){
-      const need = xpForLevel(state.level-1);
+      const prevNeed = xpForLevel(state.level-1);
       state.level--;
-      if(remaining >= need) remaining -= need;
-      else { state.xp = Math.max(0, need - remaining); remaining = 0; }
+      if(remaining >= prevNeed) remaining -= prevNeed;
+      else { state.xp = Math.max(0, prevNeed - remaining); remaining = 0; }
     }
   }
   logAdd(`Falha: perdeu ${xpLost} XP (penalidade).`);
@@ -242,186 +345,95 @@ function applyFailurePenalty(task){
   saveState();
 }
 
-/* Compute XP for task success */
-function computeTaskXP(task){
-  const base = BASE_XP;
-  const typePenalty = TYPE_PENALTY[task.type] || 0; // reduces XP
-  const importanceIdx = Number(task.importance);
-  const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL; // +2.5% per level
-  const xp = base * (1 - typePenalty) * importanceBonus;
-  return Math.round(xp);
-}
-
-/* ---------- Rendering ---------- */
+/* ===========================
+   RENDERERS
+   =========================== */
 const tasksListEl = document.getElementById('tasksList');
 const xpfill = document.getElementById('xpfill');
 const xpText = document.getElementById('xpText');
 const xpNeedEl = document.getElementById('xpNeed');
 const lvlEl = document.getElementById('lvl');
 const scheduledCount = document.getElementById('scheduledCount');
-const logEl = document.getElementById('log');
 const monsterContainer = document.getElementById('monsterContainer');
+const logEl = document.getElementById('log');
 
 function renderStats(){
-  const need = xpForLevel(state.level);
   xpText.textContent = state.xp;
-  xpNeedEl.textContent = need;
+  xpNeedEl.textContent = xpForLevel(state.level);
   lvlEl.textContent = state.level;
-  const pct = Math.min(100, Math.round(100 * (state.xp / need)));
+  const pct = Math.min(100, Math.round(100 * (state.xp / xpForLevel(state.level))));
   xpfill.style.width = pct + '%';
   scheduledCount.textContent = `Agendadas: ${state.tasks.filter(t=>!t.done).length}`;
 }
 
+/* Render logs */
 function renderLogs(){
   logEl.innerHTML = '';
-  state.logs.slice(0,80).forEach(line => {
-    const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d);
-  });
+  state.logs.forEach(line => { const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d); });
 }
 
-/* Render tasks list with buttons */
-function renderTasks(){
-  tasksListEl.innerHTML = '';
-  if(state.tasks.length === 0){
-    tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>';
-    renderNextMonster();
-    return;
+/* Render inventory */
+function renderInventory(){
+  document.getElementById('labelWeapon').textContent = state.inventory.weapon ? state.inventory.weapon.name : 'Vazio';
+  document.getElementById('labelArmor').textContent = state.inventory.armor ? state.inventory.armor.name : 'Vazio';
+  document.getElementById('labelCosmetic').textContent = state.inventory.cosmetic ? state.inventory.cosmetic.name : 'Sem cosmético';
+  // avatar color hint based on armor rarity
+  const svg = document.getElementById('avatarSVG');
+  if(state.inventory.armor){
+    const r = state.inventory.armor.rarity || 'common';
+    const col = r==='legend' ? '#ffd166' : r==='epic' ? '#8a4efd' : r==='rare' ? '#4aa3ff' : 'var(--avatar-base)';
+    svg.querySelector('rect').setAttribute('fill', col);
+  } else {
+    svg.querySelector('rect').setAttribute('fill', 'var(--avatar-base)');
   }
-  state.tasks.forEach(task=>{
-    const row = document.createElement('div'); row.className = 'task-row';
-    const left = document.createElement('div'); left.style.flex='1';
-    const title = document.createElement('div'); title.textContent = task.text;
-    const meta = document.createElement('div'); meta.className='task-meta'; meta.textContent = `${task.type} • ${IMPORTANCE_LABELS[task.importance]} • ${fmtDate(task.due)}`;
-    left.appendChild(title); left.appendChild(meta);
-
-    const btnComplete = document.createElement('button'); btnComplete.textContent = 'Concluir';
-    btnComplete.title = 'Concluir tarefa';
-    btnComplete.onclick = ()=> {
-      // guard: ensure task not already done
-      if(task.done){ alert('Tarefa já concluída'); return; }
-      animateBattle(task);
-      task.done = true;
-      const xp = computeTaskXP(task);
-      addXP(xp);
-      logAdd(`Tarefa "${task.text}" concluída (+${xp} XP).`);
-      saveState();
-      // remove task from pending list after a short delay (to allow animation)
-      setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.id !== task.id); saveState(); renderTasks(); renderNextMonster(); }, 600);
-    };
-
-    const btnFail = document.createElement('button'); btnFail.textContent = 'Marcar falha';
-    btnFail.title = 'Aplica penalidade';
-    btnFail.style.background = 'linear-gradient(90deg,#ff6b6b,#ff9a9a)';
-    btnFail.onclick = ()=>{
-      if(task.done){ alert('Tarefa já concluída'); return; }
-      applyFailurePenalty(task);
-      task.done = true;
-      // remove after a short delay
-      setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.id !== task.id); saveState(); renderTasks(); renderNextMonster(); }, 300);
-    };
-
-    const btnDel = document.createElement('button'); btnDel.textContent = 'Remover';
-    btnDel.title = 'Remover tarefa';
-    btnDel.style.background = 'linear-gradient(90deg,#444444,#222222)';
-    btnDel.onclick = ()=>{
-      if(confirm('Remover tarefa?')){ state.tasks = state.tasks.filter(t=>t.id!==task.id); saveState(); renderTasks(); renderNextMonster(); }
-    };
-
-    row.appendChild(left);
-    row.appendChild(btnComplete);
-    row.appendChild(btnFail);
-    row.appendChild(btnDel);
-    tasksListEl.appendChild(row);
-  });
-  renderNextMonster();
 }
 
-/* Monster preview for first pending task */
+/* Render monster for first pending task */
 function renderNextMonster(){
   monsterContainer.innerHTML = '';
   const next = state.tasks.find(t=>!t.done);
-  if(!next){
-    monsterContainer.innerHTML = '<div class="small">Nenhum desafio agendado</div>';
-    return;
-  }
+  if(!next){ monsterContainer.innerHTML = '<div class="small">Nenhum desafio agendado</div>'; return; }
   renderMonsterFor(next);
 }
 function renderMonsterFor(task){
   monsterContainer.innerHTML = '';
   const wrap = document.createElement('div'); wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.alignItems='center';
-  const label = document.createElement('div'); label.textContent = task.text; label.style.fontWeight = '800'; label.style.marginBottom='6px';
+  const label = document.createElement('div'); label.textContent = task.text; label.style.fontWeight='800'; label.style.marginBottom='6px';
   const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox','0 0 64 64'); svg.setAttribute('width','96'); svg.setAttribute('height','96');
-  const importance = Number(task.importance);
+  const imp = Number(task.importance || 0);
   const colors = ['#7f7f7f','#60a5fa','#8a4efd','#ffd166'];
-  const c = colors[Math.min(importance,colors.length-1)];
+  const c = colors[Math.min(imp, colors.length-1)];
   const circle = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
   circle.setAttribute('cx','32'); circle.setAttribute('cy','34'); circle.setAttribute('rx','26'); circle.setAttribute('ry','20'); circle.setAttribute('fill',c);
   svg.appendChild(circle);
   const eye = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  eye.setAttribute('cx','32'); eye.setAttribute('cy','28'); eye.setAttribute('r','4'); eye.setAttribute('fill','#100016');
+  eye.setAttribute('cx','32'); eye.setAttribute('cy','28'); eye.setAttribute('r','4'); eye.setAttribute('fill','#120712');
   svg.appendChild(eye);
   wrap.appendChild(label); wrap.appendChild(svg);
   monsterContainer.appendChild(wrap);
 }
 
-/* Animations & effects */
-function animateBattle(task){
-  const av = document.getElementById('avatarSVG');
-  av.classList.add('shake');
-  setTimeout(()=> av.classList.remove('shake'), 700);
-  const container = monsterContainer;
-  container.classList.add('shake');
-  setTimeout(()=> container.classList.remove('shake'), 700);
-  playEffect('hit');
-}
+/* Render tasks into the parchment */
+function renderTasks(){
+  tasksListEl.innerHTML = '';
+  if(state.tasks.length === 0){
+    tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>';
+    renderNextMonster();
+    renderStats();
+    return;
+  }
+  state.tasks.forEach((task, idx) => {
+    const item = document.createElement('div'); item.className = 'task-item';
+    const left = document.createElement('div'); left.style.flex = '1';
+    const title = document.createElement('div'); title.textContent = task.text;
+    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = `${task.type} • ${IMPORTANCE_LABELS[task.importance]} • ${fmtDate(task.due)}`;
+    left.appendChild(title); left.appendChild(meta);
 
-/* sound effects placeholders */
-const sounds = { hit: new Audio(), levelup: new Audio(), fail: new Audio(), chest: new Audio() };
-function playEffect(kind){ try{ const s = sounds[kind]; if(s && s.src) s.play().catch(()=>{}); }catch(e){} }
-
-/* ---------- Task creation & controls ---------- */
-document.getElementById('btnAddTask').addEventListener('click', ()=>{
-  const text = (document.getElementById('taskText')).value.trim();
-  if(!text){ alert('Digite uma tarefa'); return; }
-  const type = document.getElementById('taskType').value;
-  const importance = document.getElementById('taskImportance').value;
-  const dueInput = document.getElementById('taskDue').value;
-  const due = dueInput ? new Date(dueInput).toISOString() : new Date(Date.now() + (type==='daily'?24*3600*1000: type==='weekly'?7*24*3600*1000:30*24*3600*1000)).toISOString();
-  const t = { id: uid('task'), text, type, importance, due, created: nowISO(), done:false, _attackedOnOpen:false };
-  state.tasks.push(t);
-  saveState();
-  renderTasks();
-  document.getElementById('taskText').value = '';
-});
-
-/* Sample tasks */
-document.getElementById('btnAddSample').addEventListener('click', ()=>{
-  const samples = [
-    {text:'Exercício matinal', type:'daily', importance:1},
-    {text:'Revisar relatório', type:'weekly', importance:2},
-    {text:'Pagar contas mensais', type:'monthly', importance:3}
-  ];
-  samples.forEach(s=>{
-    const due = new Date(Date.now() + (s.type==='daily'?12*3600*1000: s.type==='weekly'?3*24*3600*1000: 8*24*3600*1000)).toISOString();
-    state.tasks.push({id:uid('task'),text:s.text,type:s.type,importance:s.importance,due,created:nowISO(),done:false,_attackedOnOpen:false});
-  });
-  saveState(); renderTasks(); renderNextMonster();
-});
-
-/* simulate buttons */
-document.getElementById('btnSimulateWin').addEventListener('click', ()=>{
-  const task = state.tasks.find(t=>!t.done);
-  if(!task){ alert('Sem tarefas agendadas'); return; }
-  animateBattle(task);
-  task.done = true;
-  const xp = computeTaskXP(task);
-  addXP(xp);
-  logAdd(`Tarefa "${task.text}" concluída (simulação) +${xp} XP`);
-  // remove
-  state.tasks = state.tasks.filter(t=>t.id !== task.id);
-  saveState(); renderTasks(); renderNextMonster();
-});
-document.getElementById('btnSimulateFail').addEventListener('click', ()=>{
-  const task = state.tasks.find(t=>!t.done);
-  
+    const actions = document.createElement('div'); actions.className = 'task-actions';
+    const btnConcluir = document.createElement('button'); btnConcluir.textContent = 'Concluir';
+    btnConcluir.onclick = () => { if(task.done) return; animateBattle(); task.done = true; const xp = computeTaskXP(task); addXP(xp); logAdd(`Tarefa "${task.text}" concluída (+${xp} XP)`); // remove after short delay
+      setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.id!==task.id); saveState(); renderTasks(); renderNextMonster(); }, 500);
+    };
+    const btnFail = document.createElement('button'); btnFail.textContent = 'Marcar falha'; btnFail.className='fail';
+    btnFail.onclick = () => { if(task.done) return; applyFailurePenalty(task); task.done = true; setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.i
