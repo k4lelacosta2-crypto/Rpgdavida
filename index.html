@@ -1,100 +1,54 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>RPG de Tarefas</title>
-<style>
-    body {
-        background: #1a1a1a;
-        color: white;
-        font-family: Arial;
-    }
-    .task {
-        background: #2a2a2a;
-        padding: 12px;
-        margin: 8px 0;
-        border-radius: 6px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    button {
-        padding: 6px 12px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        background: purple;
-        color: white;
-        font-weight: bold;
-    }
-</style>
-</head>
-<body>
+/* equip/unequip handlers */
+document.getElementById('unequipWeapon').addEventListener('click', ()=>{
+  state.inventory.weapon = null;
+  renderInventory();
+  saveState();
+});
 
-<h1>RPG de Tarefas</h1>
+document.getElementById('unequipArmor').addEventListener('click', ()=>{
+  state.inventory.armor = null;
+  renderInventory();
+  saveState();
+});
 
-XP Atual: <span id="xp">0</span>
+document.getElementById('unequipCosmetic').addEventListener('click', ()=>{
+  state.inventory.cosmetic = null;
+  renderInventory();
+  saveState();
+});
 
-<h2>Adicionar Tarefa</h2>
-<input id="taskText" placeholder="Descrição da tarefa">
-<button onclick="addTask()">Adicionar</button>
+/* Render inventory icons */
+function renderInventory(){
+  const w = document.getElementById('slotWeapon');
+  const a = document.getElementById('slotArmor');
+  const c = document.getElementById('slotCosmetic');
 
-<h2>Tarefas</h2>
-<div id="taskList"></div>
-
-<script>
-let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-let xp = parseInt(localStorage.getItem("xp") || "0");
-
-document.getElementById("xp").innerText = xp;
-
-// --- Salva tudo ---
-function save() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    localStorage.setItem("xp", xp);
+  w.textContent = state.inventory.weapon ? state.inventory.weapon.name : "Arma";
+  a.textContent = state.inventory.armor ? state.inventory.armor.name : "Armadura";
+  c.textContent = state.inventory.cosmetic ? state.inventory.cosmetic.name : "Cosmético";
 }
 
-// --- Renderiza tarefas ---
-function renderTasks() {
-    let list = document.getElementById("taskList");
-    list.innerHTML = "";
+/* Export state */
+document.getElementById('btnExportState').addEventListener('click', ()=>{
+  const data = JSON.stringify(state, null, 2);
+  navigator.clipboard.writeText(data).then(()=>{
+    alert("Estado copiado para a área de transferência!");
+  });
+});
 
-    tasks.forEach((task, index) => {
-        let div = document.createElement("div");
-        div.className = "task";
+/* End month */
+document.getElementById('btnEndMonth').addEventListener('click', ()=>{
+  logAdd("Mês finalizado! Boss derrotado.");
+  addXP(120);
+});
 
-        div.innerHTML = `
-            <span>${task}</span>
-            <button onclick="completeTask(${index})">Concluir</button>
-        `;
-
-        list.appendChild(div);
-    });
+/* INITIALIZATION */
+function init(){
+  loadState();
+  renderStats();
+  renderTasks();
+  renderInventory();
+  renderNextMonster();
+  renderLogs();
 }
-
-// --- Adicionar Tarefa ---
-function addTask() {
-    let text = document.getElementById("taskText").value.trim();
-    if (text === "") return;
-
-    tasks.push(text);
-    document.getElementById("taskText").value = "";
-    save();
-    renderTasks();
-}
-
-// --- Concluir Tarefa ---
-function completeTask(index) {
-    tasks.splice(index, 1);  // remove tarefa
-    xp += 10;                // XP ganho por tarefa
-    document.getElementById("xp").innerText = xp;
-    save();
-    renderTasks();
-}
-
-// Renderiza ao abrir a página
-renderTasks();
-</script>
-
-</body>
-</html>
+init();
