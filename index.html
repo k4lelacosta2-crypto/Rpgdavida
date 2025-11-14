@@ -1,159 +1,95 @@
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RPG de Tarefas — Grimório (final)</title>
+<title>Grimório das Tarefas</title>
 <style>
-  /* -------------------
-     Visual / Tema geral
-     ------------------- */
   :root{
-    --lilac-1: #3b1670;
-    --lilac-2: #7d4ef0;
-    --bg-dark: #120512;
-    --bg-dark-2: #1b0b23;
-    --bg-light: #f2ecf9;
-    --wood-top: #3b1f0e;
-    --wood-bottom: #24110a;
-    --text-dark: #1b0b14;
-    --text-light: #efe6ff;
-    --muted: #cfc6e8;
-    --accent: #8a4efd;
-    --danger: #ff6b6b;
-    --avatar-base: #b98bff;
-    --paper-yellow: #f4e2b8;
+    --lilac-1:#3b1670;
+    --lilac-2:#7d4ef0;
+    --bg-dark-1:#2a0d3b;
+    --bg-dark-2:#1b0620;
+    --bg-light-1:#f5eefb;
+    --bg-light-2:#efe1fb;
+    --muted-light:#efe6ff;
+    --muted-dark:#43264a;
+    --accent:#b08dff;
+    --danger:#ff6b6b;
+    --paper-shadow: rgba(0,0,0,0.45);
+    --avatar-base:#b98bff;
+    --paper:#f4e2b8;
   }
-  html,body{height:100%;margin:0;font-family: "Cormorant Garamond", Georgia, serif; background:linear-gradient(180deg,var(--wood-top),var(--wood-bottom)); color:var(--text-light); -webkit-font-smoothing:antialiased;}
-  .app{max-width:1100px;margin:0 auto;padding:18px;display:flex;flex-direction:column;min-height:100vh;gap:14px}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg-dark-1),var(--bg-dark-2));color:var(--muted-light);-webkit-font-smoothing:antialiased}
+  body[data-theme="light"]{background:linear-gradient(180deg,var(--bg-light-1),var(--bg-light-2));color:var(--muted-dark)}
+  .app{max-width:1100px;margin:0 auto;padding:16px;display:flex;flex-direction:column;min-height:100vh;gap:12px}
   header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-  h1{margin:0;font-size:20px;letter-spacing:0.6px}
-  .subtitle{color:var(--muted);font-size:13px}
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  button, .btn{cursor:pointer;border-radius:8px;padding:8px 10px;border:none;font-weight:700}
-  .btn{background:linear-gradient(90deg,var(--lilac-2),#b28fff); color: #160216}
-  .toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:6px 8px;border-radius:8px}
-  /* main layout */
+  h1{margin:0;font-size:20px}
+  .subtitle{font-size:12px;opacity:0.9}
+  .top-controls{display:flex;gap:8px;align-items:center}
+  button{background:var(--accent);border:none;padding:8px 10px;border-radius:8px;color:#120017;font-weight:700;cursor:pointer}
+  .toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:inherit;cursor:pointer}
   main{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  .left{flex:0 0 320px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .left{flex:0 0 320px;padding:12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
   .center{flex:1;min-width:340px}
-  .right{flex:0 0 300px}
-  /* avatar box */
-  .avatar-box{width:300px;height:220px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 6px 30px rgba(0,0,0,0.45)}
-  .avatar-svg{width:170px;height:170px}
-  .lvl{font-weight:800;margin-top:8px;color:var(--muted)}
+  .right{flex:0 0 320px}
+  .avatar-box{width:300px;height:200px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 6px 30px rgba(0,0,0,0.45)}
+  .avatar-svg{width:160px;height:160px}
+  .lvl{font-weight:800;margin-top:8px}
   .xpbar{height:14px;background:rgba(255,255,255,0.06);border-radius:12px;overflow:hidden;margin-top:8px}
-  .xpfill{height:100%;background:linear-gradient(90deg,var(--lilac-1),var(--lilac-2));width:0%}
-  .inventory{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-  .slot{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(0,0,0,0.12)}
-  .slot .slotLabel{flex:1;color:var(--muted)}
-  .slot .slotIcon{width:44px;height:44;border-radius:6px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center}
-  /* tasks pergaminho */
-  .tasks-panel{padding:18px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.5); background:transparent}
-  /* pergaminho container (2D stylized) */
-  .parchment{
-    margin-top:8px;
-    padding:18px;
-    border-radius:10px;
-    position:relative;
-    min-height:220px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-    overflow:auto;
-  }
-  /* dark pergaminho (C) - lilac acinzentado */
-  body[data-theme="dark"] .parchment{
-    background:
-      linear-gradient(180deg, rgba(60,34,86,0.95), rgba(45,22,60,0.95));
-    border:2px solid rgba(255,255,255,0.04);
-    color:var(--text-light);
-    background-image:
-      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.02), transparent 6%),
-      linear-gradient(180deg, rgba(56,22,82,0.9), rgba(30,12,48,0.9));
-  }
-  /* light pergaminho (D) - magical lilac with runes */
-  body[data-theme="light"] .parchment{
-    background:
-      linear-gradient(180deg, rgba(240,232,250,0.98), rgba(232,224,246,0.98));
-    border:2px solid rgba(140,60,170,0.12);
-    color:var(--text-dark);
-    box-shadow: 0 10px 30px rgba(20,10,30,0.06);
-    /* runes decorative faint */
-    background-image:
-      radial-gradient(circle at 10% 20%, rgba(180,150,220,0.06), transparent 6%),
-      linear-gradient(180deg, rgba(240,232,250,0.98), rgba(232,224,246,0.98));
-  }
-  /* parchment header style */
-  .parchment:before{
-    content: "";
-    position:absolute;
-    left:8px; right:8px; top:8px; height:10px; border-radius:6px;
-    opacity:0.08;
-  }
-  /* task input area */
-  .add-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .add-row input[type="text"], .add-row select, .add-row input[type="datetime-local"]{
-    padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.08);background:transparent;color:inherit;
-  }
-  .task-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,0.06)}
-  .task-item .meta{font-size:12px;color:var(--muted);margin-top:4px}
+  .xpfill{height:100%;background:linear-gradient(90deg,var(--lilac-1),var(--lilac-2));width:0%;transition:width 600ms}
+  .inventory{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+  .slot-row{display:flex;gap:8px;flex-wrap:wrap}
+  .slot{width:64px;height:64;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.04);cursor:pointer;position:relative}
+  .slot.empty{opacity:0.35}
+  .slot .label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:11px}
+  .tasks-panel{padding:12px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.4);background:transparent}
+  .parchment{margin-top:8px;padding:12px;border-radius:10px;position:relative;min-height:240px;overflow:auto}
+  body[data-theme="dark"] .parchment{background:linear-gradient(180deg, rgba(60,34,86,0.92), rgba(45,22,60,0.92));border:2px solid rgba(255,255,255,0.04);color:var(--muted-light)}
+  body[data-theme="light"] .parchment{background:linear-gradient(180deg, rgba(250,244,255,0.98), rgba(245,238,255,0.98));border:2px solid rgba(140,60,170,0.12);color:var(--muted-dark)}
+  .add-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .add-row input[type="text"], .add-row select, .add-row input[type="datetime-local"]{padding:8px;border-radius:6px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:inherit}
+  .task-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02)}
+  .task-item .meta{font-size:12px;color:inherit;opacity:0.9;margin-top:4px}
   .task-actions{display:flex;gap:6px}
   .task-actions button{padding:6px 8px;border-radius:6px;border:none;background:linear-gradient(90deg,#7f5cf6,#b08dff);color:#120017;font-weight:800;cursor:pointer}
-  .task-actions .fail{background:linear-gradient(90deg,#ff6b6b,#ff9a9a);color:#100}
   .task-actions .remove{background:linear-gradient(90deg,#444,#222);color:#fff}
-  /* monster & logs */
   .monster-area{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-  .monster svg{width:96px;height:96px}
-  .logs{max-height:220px;overflow:auto;font-size:13px;color:var(--muted)}
-  /* tiny responsive */
-  @media(max-width:900px){
-    main{flex-direction:column}
-    .left,.right{flex:1}
-    .avatar-box{width:220px;height:160px}
-    .xpbar{height:12px}
-  }
-  /* parchment decorative corners */
-  .parchment::after{
-    content:"";
-    position:absolute;
-    right:8px; bottom:8px; width:36px; height:36px; border-radius:6px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
-    opacity:0.06;
-  }
-  /* subtle runes for light theme (overlay) */
-  body[data-theme="light"] .parchment .runes{
-    position:absolute; inset:0; pointer-events:none; opacity:0.08; mix-blend-mode:overlay;
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(140,60,170,0.12), transparent 4%),
-      radial-gradient(circle at 80% 70%, rgba(140,60,170,0.08), transparent 3%);
-  }
-  /* title style medieval */
-  .panel-title{font-family: "Cormorant Garamond", Georgia, serif; font-size:18px; font-weight:700; color:inherit}
+  .logs{max-height:220px;overflow:auto;font-size:13px;color:var(--muted-light)}
+  .small{font-size:13px}
+  .shake{animation:shake 0.6s ease}
+  @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+  .fallen{opacity:0.28;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s}
+  footer{margin-top:12px;color:var(--muted-light);font-size:13px;text-align:center;padding:8px}
+  @media(max-width:900px){main{flex-direction:column}.left,.right{flex:1}.avatar-box{width:220px;height:160px}}
+  /* confirmation modal */
+  .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999}
+  .modal-box{background:var(--bg-light-1);padding:18px;border-radius:10px;min-width:280px}
+  body[data-theme="dark"] .modal-box{background:#1d0b22;color:var(--muted-light)}
+  .hidden{display:none}
 </style>
 </head>
 <body data-theme="dark">
   <div class="app" role="application">
     <header>
       <div>
-        <h1>RPG de Tarefas — Grimório</h1>
-        <div class="subtitle">Sua rotina como uma aventura medieval — complete tarefas, equipe itens e suba de nível.</div>
+        <h1>Grimório das Tarefas</h1>
+        <div class="subtitle">Complete tarefas, equipe itens e suba de nível.</div>
       </div>
-
-      <div class="controls">
+      <div class="top-controls">
+        <button id="btnAddSample" class="toggle">Adicionar tarefas exemplo</button>
+        <button id="btnOpenChest" class="toggle">Abrir baú</button>
+        <button id="btnEndMonth" class="toggle">Finalizar mês</button>
+        <button id="btnExportState" class="toggle">Exportar estado</button>
         <button id="btnToggleTheme" class="toggle">Tema Claro</button>
         <button id="btnToggleGender" class="toggle">Masculino</button>
-        <label style="display:flex;gap:8px;align-items:center">
-          <input id="audioFile" type="file" accept="audio/*" style="display:none">
-          <button id="btnLoadAudio" class="toggle">Carregar música</button>
-        </label>
-        <button id="btnExportState" class="toggle">Exportar estado</button>
       </div>
     </header>
 
     <main>
-      <!-- LEFT: Avatar & inventory -->
       <div class="left" aria-label="Avatar e inventário">
-        <div class="avatar-box" id="avatarBox" aria-hidden="false">
-          <!-- avatar SVG preview -->
+        <div class="avatar-box" id="avatarBox">
           <svg viewBox="0 0 240 240" class="avatar-svg" id="avatarSVG" role="img" aria-label="Avatar">
             <rect x="70" y="72" width="100" height="110" rx="14" fill="#b98bff"/>
             <circle cx="120" cy="42" r="30" fill="#fff"/>
@@ -161,32 +97,14 @@
         </div>
 
         <div class="lvl">Nível <strong id="lvl">1</strong> — XP: <strong id="xpText">0</strong>/<strong id="xpNeed">100</strong></div>
-        <div class="xpbar" title="Barra de XP"><div class="xpfill" id="xpfill" style="width:0%"></div></div>
+        <div class="xpbar" title="Barra de XP"><div id="xpfill" class="xpfill"></div></div>
 
         <div class="inventory" aria-label="Inventário">
-          <div class="small">Inventário (slots)</div>
-
-          <div class="slot" title="Arma">
-            <div class="slotIcon" id="slotWeapon">🪵</div>
-            <div class="slotLabel" id="labelWeapon">Graveto (inicial)</div>
-            <button id="unequipWeapon" class="toggle">Desequipar</button>
-          </div>
-
-          <div class="slot" title="Armadura">
-            <div class="slotIcon" id="slotArmor">👕</div>
-            <div class="slotLabel" id="labelArmor">Pijama (inicial)</div>
-            <button id="unequipArmor" class="toggle">Desequipar</button>
-          </div>
-
-          <div class="slot" title="Cosmético">
-            <div class="slotIcon" id="slotCosmetic">🎩</div>
-            <div class="slotLabel" id="labelCosmetic">Sem cosmético</div>
-            <button id="unequipCosmetic" class="toggle">Desequipar</button>
-          </div>
+          <div class="small">Inventário (clique para selecionar e clique em outro slot para trocar) — Lixeira no primeiro slot</div>
+          <div id="slotContainer" class="slot-row" style="margin-top:8px"></div>
         </div>
       </div>
 
-      <!-- CENTER: Pergaminho com tarefas -->
       <div class="center">
         <section class="tasks-panel" aria-labelledby="tasksTitle">
           <div style="display:flex;justify-content:space-between;align-items:center">
@@ -195,121 +113,124 @@
           </div>
 
           <div class="parchment" id="parchment">
-            <div class="runes" aria-hidden="true"></div>
-
-            <!-- add row -->
-            <div class="add-row" style="margin-bottom:12px">
-              <input id="taskText" type="text" placeholder="Nova tarefa..." style="flex:1;min-width:160px"/>
-              <select id="taskType" title="Tipo">
+            <div class="add-row">
+              <input id="taskText" type="text" placeholder="Nova tarefa..." />
+              <select id="taskType">
                 <option value="daily">Diária</option>
                 <option value="weekly">Semanal</option>
                 <option value="monthly">Mensal</option>
               </select>
-              <select id="taskImportance" title="Importância">
+              <select id="taskImportance">
                 <option value="0">Sem muita importância</option>
                 <option value="1">Importante</option>
                 <option value="2">Muito importante</option>
                 <option value="3">Essencial</option>
               </select>
-              <input id="taskDue" type="datetime-local" title="Prazo (opcional)"/>
+              <input id="taskDue" type="datetime-local" />
               <button id="btnAddTask" class="btn">Adicionar</button>
             </div>
 
-            <!-- tasks list -->
-            <div id="tasksList" aria-live="polite" style="padding-bottom:10px"></div>
+            <div id="tasksList" aria-live="polite"></div>
           </div>
         </section>
       </div>
 
-      <!-- RIGHT: Monster & logs -->
       <div class="right">
-        <div class="monster-area" aria-label="Próximo desafio">
-          <div class="panel-title">Próximo desafio</div>
+        <div class="monster-area">
+          <h4>Próximo desafio</h4>
           <div id="monsterContainer" style="margin-top:8px" class="small">Nenhum desafio agendado</div>
           <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
             <button id="btnSimulateWin" class="btn">Simular vitória</button>
-            <button id="btnSimulateFail" class="btn fail">Simular falha</button>
-            <button id="btnOpenChest" class="btn">Abrir baú</button>
-            <button id="btnEndMonth" class="btn">Finalizar mês</button>
+            <button id="btnOpenChest2" class="btn">Abrir baú (teste)</button>
+            <button id="btnEndMonth2" class="btn">Finalizar mês</button>
           </div>
         </div>
 
         <div style="height:12px"></div>
 
         <div class="monster-area">
-          <div class="panel-title">Registro</div>
+          <h4>Registro</h4>
           <div id="log" class="logs" aria-live="polite"></div>
         </div>
       </div>
     </main>
 
-    <footer style="text-align:center;color:var(--muted);padding:10px">
-      RPG de Tarefas — Grimório — Theme: <span id="themeLabel">Escuro</span>
+    <footer>
+      Grimório das Tarefas — salvo localmente.
     </footer>
   </div>
 
+  <!-- confirm modal -->
+  <div id="confirmModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-box">
+      <div id="confirmText">Deseja realmente excluir este item?</div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button id="confirmYes" class="btn">Sim</button>
+        <button id="confirmNo" class="toggle">Não</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* ===========================
-   GAME RULES & CONFIG
-   =========================== */
+/* ============================
+   CONFIG & CONSTANTS
+   ============================ */
+const STORAGE_KEY = 'grimorio_rpg_state_v3';
 const BASE_XP = 50;
 const TYPE_PENALTY = { daily:0.10, weekly:0.20, monthly:0.30 };
-const IMPORTANCE_LABELS = ['Sem muita importância','Importante','Muito importante','Essencial'];
-const IMPORTANCE_BONUS_PER_LEVEL = 0.025; // 2.5% por nível
-const IMPORTANCE_FAIL_PENALTY_PER_LEVEL = 0.02; // +2% penalty each importance level
-function xpForLevel(l){ return Math.round(100 * Math.pow(1.25, l-1)); }
+const IMPORTANCE_BONUS_PER_LEVEL = 0.025; // 2.5% per importance level
+const IMPORTANCE_FAIL_PENALTY_PER_LEVEL = 0.02;
+function xpForLevel(l){ return Math.round(100 * Math.pow(1.25, l-1)); } // scalable, up to 1000
 
-/* ===========================
+/* ============================
    STATE
-   =========================== */
+   ============================ */
 let state = {
   level:1,
   xp:0,
-  gender: 'male',
-  inventory: { weapon:{name:'Graveto',rarity:'common'}, armor:{name:'Pijama',rarity:'common'}, cosmetic:null },
-  tasks: [], // {id,text,type,importance,due,created,done,_attackedOnOpen}
+  gender:'male',
+  theme:'dark',
+  inventory: [], // slot 0 is reserved for trash indicator; items: {id,name,rarity}
+  tasks: [], // {id,text,type,importance,created,due,done,expired}
   logs: []
 };
 
-const STORAGE_KEY = 'grimorio_rpg_state';
-
-/* Load / Save */
+/* ============================
+   STORAGE
+   ============================ */
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){ const parsed = JSON.parse(raw); state = Object.assign(state, parsed); }
-  }catch(e){ console.error('loadState',e); }
+    if(raw){ const parsed = JSON.parse(raw); // merge carefully
+      state = Object.assign(state, parsed);
+      state.inventory = state.inventory || [];
+      state.tasks = state.tasks || [];
+      state.logs = state.logs || [];
+    }
+  }catch(e){ console.error('loadState', e); }
 }
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-/* Utils */
+/* ============================
+   UTILITIES
+   ============================ */
 function uid(pref='id'){ return pref + '_' + Math.random().toString(36).slice(2,9); }
 function nowISO(){ return new Date().toISOString(); }
 function fmtDate(iso){ if(!iso) return '--'; const d = new Date(iso); return d.toLocaleString(); }
-function logAdd(txt){ state.logs.unshift('['+new Date().toLocaleTimeString()+'] '+txt); if(state.logs.length>300) state.logs.pop(); renderLogs(); saveState(); }
+function minutesBetween(a,b){ return Math.floor((b-a)/60000); }
+function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
 
-/* ===========================
-   XP / LEVEL
-   =========================== */
-function addXP(amount){
-  if(!amount || amount<=0) return;
-  state.xp += Math.round(amount);
-  logAdd(`Ganhou ${Math.round(amount)} XP`);
-  // level up
-  while(state.xp >= xpForLevel(state.level)){
-    state.xp -= xpForLevel(state.level);
-    state.level++;
-    logAdd(`Subiu para o nível ${state.level}!`);
-    // visual effect placeholder
-    playEffect('levelup');
-  }
-  renderStats();
+/* logging */
+function logAdd(txt){
+  state.logs.unshift('['+new Date().toLocaleTimeString()+'] '+txt);
+  if(state.logs.length>300) state.logs.pop();
+  renderLogs();
   saveState();
 }
 
-/* compute xp for task completion */
+/* ============================
+   XP & LEVELS
+   ============================ */
 function computeTaskXP(task){
   const typePenalty = TYPE_PENALTY[task.type] || 0;
   const importanceIdx = Number(task.importance || 0);
@@ -318,122 +239,206 @@ function computeTaskXP(task){
   return Math.round(xp);
 }
 
-/* failure penalty */
-function applyFailurePenalty(task){
+function addXP(amount){
+  if(!amount || amount<=0) return;
+  state.xp += Math.round(amount);
+  logAdd(`Ganhou ${Math.round(amount)} XP`);
+  while(state.level < 1000 && state.xp >= xpForLevel(state.level)){
+    state.xp -= xpForLevel(state.level);
+    state.level++;
+    const title = titleForLevel(state.level);
+    logAdd(`Subiu para o nível ${state.level} — ${title}`);
+    playEffect('levelup');
+  }
+  renderStats();
+  saveState();
+}
+
+function applyExpirationPenalty(task){
+  // potential XP
+  const potentialXP = computeTaskXP(task);
   const typePenalty = TYPE_PENALTY[task.type] || 0;
   const importanceIdx = Number(task.importance || 0);
-  const importanceBonus = 1 + importanceIdx * IMPORTANCE_BONUS_PER_LEVEL;
-  const potential = BASE_XP * (1 - typePenalty) * importanceBonus;
   const penaltyPercent = typePenalty + (importanceIdx * IMPORTANCE_FAIL_PENALTY_PER_LEVEL);
-  const xpLost = Math.round(potential * penaltyPercent);
-  // subtract from state.xp and possibly reduce levels
+  const xpLost = Math.round(potentialXP * penaltyPercent);
+  // subtract from current xp and possibly levels
   let remaining = xpLost;
   if(state.xp >= remaining){
     state.xp -= remaining; remaining = 0;
   } else {
     remaining -= state.xp; state.xp = 0;
     while(remaining > 0 && state.level > 1){
-      const prevNeed = xpForLevel(state.level-1);
       state.level--;
-      if(remaining >= prevNeed) remaining -= prevNeed;
-      else { state.xp = Math.max(0, prevNeed - remaining); remaining = 0; }
+      const need = xpForLevel(state.level);
+      if(remaining >= need) remaining -= need;
+      else { state.xp = Math.max(0, need - remaining); remaining = 0; }
     }
   }
-  logAdd(`Falha: perdeu ${xpLost} XP (penalidade).`);
+  logAdd(`Tarefa "${task.text}" expirou: perdeu ${xpLost} XP.`);
   playEffect('fail');
   renderStats();
   saveState();
 }
 
-/* ===========================
+/* Titles by level (sample ranges up to 1000) */
+function titleForLevel(l){
+  if(l >= 1000) return 'Lenda Eterna';
+  if(l >= 500) return 'Arquimago da Constância';
+  if(l >= 200) return 'Sábio do Planejamento';
+  if(l >= 100) return 'Lorde das Missões';
+  if(l >= 50) return 'Mestre da Disciplina';
+  if(l >= 20) return 'Vigia dos Dias';
+  if(l >= 10) return 'Guardião';
+  if(l >= 5) return 'Aventureiro';
+  return 'Iniciado das Tarefas';
+}
+
+/* ============================
    RENDERERS
-   =========================== */
+   ============================ */
 const tasksListEl = document.getElementById('tasksList');
-const xpfill = document.getElementById('xpfill');
-const xpText = document.getElementById('xpText');
+const xpfillEl = document.getElementById('xpfill');
+const xpTextEl = document.getElementById('xpText');
 const xpNeedEl = document.getElementById('xpNeed');
 const lvlEl = document.getElementById('lvl');
-const scheduledCount = document.getElementById('scheduledCount');
-const monsterContainer = document.getElementById('monsterContainer');
+const scheduledCountEl = document.getElementById('scheduledCount');
+const slotContainer = document.getElementById('slotContainer');
 const logEl = document.getElementById('log');
+const monsterContainer = document.getElementById('monsterContainer');
 
 function renderStats(){
-  xpText.textContent = state.xp;
+  xpTextEl.textContent = state.xp;
   xpNeedEl.textContent = xpForLevel(state.level);
   lvlEl.textContent = state.level;
   const pct = Math.min(100, Math.round(100 * (state.xp / xpForLevel(state.level))));
-  xpfill.style.width = pct + '%';
-  scheduledCount.textContent = `Agendadas: ${state.tasks.filter(t=>!t.done).length}`;
+  xpfillEl.style.width = pct + '%';
+  scheduledCountEl.textContent = `Agendadas: ${state.tasks.filter(t=>!t.done && !t.expired).length}`;
+  // title shown in log top maybe; also update header title if desired
 }
 
-/* Render logs */
 function renderLogs(){
   logEl.innerHTML = '';
-  state.logs.forEach(line => { const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d); });
+  state.logs.slice(0,200).forEach(line => { const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d); });
 }
 
-/* Render inventory */
+/* Inventory rendering - unlimited slots; first slot is trash */
+let selectedItem = null; // {index, item}
+
 function renderInventory(){
-  document.getElementById('labelWeapon').textContent = state.inventory.weapon ? state.inventory.weapon.name : 'Vazio';
-  document.getElementById('labelArmor').textContent = state.inventory.armor ? state.inventory.armor.name : 'Vazio';
-  document.getElementById('labelCosmetic').textContent = state.inventory.cosmetic ? state.inventory.cosmetic.name : 'Sem cosmético';
-  // avatar color hint based on armor rarity
-  const svg = document.getElementById('avatarSVG');
-  if(state.inventory.armor){
-    const r = state.inventory.armor.rarity || 'common';
-    const col = r==='legend' ? '#ffd166' : r==='epic' ? '#8a4efd' : r==='rare' ? '#4aa3ff' : 'var(--avatar-base)';
-    svg.querySelector('rect').setAttribute('fill', col);
-  } else {
-    svg.querySelector('rect').setAttribute('fill', 'var(--avatar-base)');
-  }
+  slotContainer.innerHTML = '';
+  // ensure first slot is trash placeholder UI
+  const trashSlot = document.createElement('div'); trashSlot.className = 'slot'; trashSlot.title='Lixeira (clique para excluir item selecionado)';
+  trashSlot.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="7" width="12" height="12" rx="2" fill="#9b59b6"/><rect x="8" y="4" width="8" height="2" rx="1" fill="#9b59b6"/></svg>';
+  trashSlot.addEventListener('click', ()=> {
+    if(selectedItem && selectedItem.index !== 0){
+      // confirm deletion
+      openConfirm(`Deseja realmente excluir "${selectedItem.item.name}"?`, ()=> {
+        // delete
+        state.inventory.splice(selectedItem.index - 1, 1); // because slot 0 is trash, inventory array starts at slot 1
+        selectedItem = null;
+        renderInventory();
+        saveState();
+      });
+    }
+  });
+  slotContainer.appendChild(trashSlot);
+
+  // render actual items: index offset by 1 to account for trash
+  state.inventory.forEach((it, i) => {
+    const slot = document.createElement('div'); slot.className = 'slot'; slot.dataset.idx = i+1;
+    slot.innerHTML = `<div style="text-align:center">${it.name}</div><div class="label">${it.rarity}</div>`;
+    slot.addEventListener('click', ()=> {
+      handleSlotClick(i+1);
+    });
+    // highlight if selected
+    if(selectedItem && selectedItem.index === i+1){
+      slot.style.outline = '2px solid rgba(255,255,255,0.12)';
+    }
+    slotContainer.appendChild(slot);
+  });
+
+  // an empty prompt slot so there's always an empty slot to click to move into
+  const emptySlot = document.createElement('div'); emptySlot.className = 'slot empty'; emptySlot.dataset.idx = state.inventory.length + 1;
+  emptySlot.title = 'Slot vazio (clique para mover item selecionado para cá)';
+  emptySlot.addEventListener('click', ()=> {
+    handleSlotClick(state.inventory.length + 1);
+  });
+  slotContainer.appendChild(emptySlot);
 }
 
-/* Render monster for first pending task */
-function renderNextMonster(){
-  monsterContainer.innerHTML = '';
-  const next = state.tasks.find(t=>!t.done);
-  if(!next){ monsterContainer.innerHTML = '<div class="small">Nenhum desafio agendado</div>'; return; }
-  renderMonsterFor(next);
-}
-function renderMonsterFor(task){
-  monsterContainer.innerHTML = '';
-  const wrap = document.createElement('div'); wrap.style.display='flex'; wrap.style.flexDirection='column'; wrap.style.alignItems='center';
-  const label = document.createElement('div'); label.textContent = task.text; label.style.fontWeight='800'; label.style.marginBottom='6px';
-  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 64 64'); svg.setAttribute('width','96'); svg.setAttribute('height','96');
-  const imp = Number(task.importance || 0);
-  const colors = ['#7f7f7f','#60a5fa','#8a4efd','#ffd166'];
-  const c = colors[Math.min(imp, colors.length-1)];
-  const circle = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-  circle.setAttribute('cx','32'); circle.setAttribute('cy','34'); circle.setAttribute('rx','26'); circle.setAttribute('ry','20'); circle.setAttribute('fill',c);
-  svg.appendChild(circle);
-  const eye = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  eye.setAttribute('cx','32'); eye.setAttribute('cy','28'); eye.setAttribute('r','4'); eye.setAttribute('fill','#120712');
-  svg.appendChild(eye);
-  wrap.appendChild(label); wrap.appendChild(svg);
-  monsterContainer.appendChild(wrap);
-}
-
-/* Render tasks into the parchment */
-function renderTasks(){
-  tasksListEl.innerHTML = '';
-  if(state.tasks.length === 0){
-    tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>';
-    renderNextMonster();
-    renderStats();
+/* handle clicking on slots (index with 0=trash, 1..n inventory positions) */
+function handleSlotClick(slotIndex){
+  // if click on trash is handled elsewhere (trash is index 0)
+  if(slotIndex === 0) return;
+  // if nothing selected, select this item if present
+  if(!selectedItem){
+    if(slotIndex <= state.inventory.length){
+      selectedItem = { index: slotIndex, item: state.inventory[slotIndex - 1] };
+    } else {
+      // clicking empty with nothing selected does nothing
+      return;
+    }
+    renderInventory();
     return;
   }
-  state.tasks.forEach((task, idx) => {
-    const item = document.createElement('div'); item.className = 'task-item';
-    const left = document.createElement('div'); left.style.flex = '1';
+  // if item selected and clicked same slot -> deselect
+  if(selectedItem.index === slotIndex){
+    selectedItem = null; renderInventory(); return;
+  }
+  // if clicked a different slot:
+  if(slotIndex === 0){ /* handled above; trash click use separate handler */ }
+  else if(slotIndex <= state.inventory.length){
+    // swap positions
+    const srcIdx = selectedItem.index - 1;
+    const dstIdx = slotIndex - 1;
+    const tmp = state.inventory[dstIdx];
+    state.inventory[dstIdx] = state.inventory[srcIdx];
+    state.inventory[srcIdx] = tmp;
+    selectedItem = null;
+    renderInventory(); saveState();
+  } else {
+    // clicked an empty slot at the end -> move item to end
+    const srcIdx = selectedItem.index - 1;
+    const moving = state.inventory.splice(srcIdx, 1)[0];
+    state.inventory.push(moving);
+    selectedItem = null;
+    renderInventory(); saveState();
+  }
+}
+
+/* ============================
+   TASKS
+   ============================ */
+function renderTasks(){
+  tasksListEl.innerHTML = '';
+  if(state.tasks.length === 0){ tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>'; renderNextMonster(); renderStats(); return; }
+  state.tasks.forEach((task) => {
+    if(task.done || task.expired) return;
+    const el = document.createElement('div'); el.className = 'task-item';
+    const left = document.createElement('div'); left.style.flex='1';
     const title = document.createElement('div'); title.textContent = task.text;
-    const meta = document.createElement('div'); meta.className = 'meta'; meta.textContent = `${task.type} • ${IMPORTANCE_LABELS[task.importance]} • ${fmtDate(task.due)}`;
+    const meta = document.createElement('div'); meta.className='meta';
+    const timeRem = timeRemainingText(task);
+    meta.textContent = `${task.type} • ${importanceLabel(task.importance)} • ⏳ ${timeRem}`;
     left.appendChild(title); left.appendChild(meta);
 
-    const actions = document.createElement('div'); actions.className = 'task-actions';
-    const btnConcluir = document.createElement('button'); btnConcluir.textContent = 'Concluir';
-    btnConcluir.onclick = () => { if(task.done) return; animateBattle(); task.done = true; const xp = computeTaskXP(task); addXP(xp); logAdd(`Tarefa "${task.text}" concluída (+${xp} XP)`); // remove after short delay
-      setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.id!==task.id); saveState(); renderTasks(); renderNextMonster(); }, 500);
-    };
-    const btnFail = document.createElement('button'); btnFail.textContent = 'Marcar falha'; btnFail.className='fail';
-    btnFail.onclick = () => { if(task.done) return; applyFailurePenalty(task); task.done = true; setTimeout(()=>{ state.tasks = state.tasks.filter(t=>t.i
+    const actions = document.createElement('div'); actions.className='task-actions';
+    const btnConcluir = document.createElement('button'); btnConcluir.textContent='Concluir';
+    btnConcluir.onclick = ()=> completeTask(task.id);
+    const btnRemove = document.createElement('button'); btnRemove.textContent='Remover'; btnRemove.className='remove';
+    btnRemove.onclick = ()=> { if(confirm('Remover tarefa?')){ state.tasks = state.tasks.filter(t=>t.id !== task.id); saveState(); renderTasks(); renderNextMonster(); } };
+    actions.appendChild(btnConcluir); actions.appendChild(btnRemove);
+
+    el.appendChild(left); el.appendChild(actions);
+    tasksListEl.appendChild(el);
+  });
+  renderNextMonster();
+  renderStats();
+}
+
+function importanceLabel(i){ return ['Sem muita importância','Importante','Muito importante','Essencial'][Number(i) || 0]; }
+
+function timeRemainingText(task){
+  const now = Date.now();
+  const due =
+  
