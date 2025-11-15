@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Grimório das Tarefas</title>
+<title>Grimório das Tarefas — Corrigido</title>
 <style>
   :root{
     --lilac-1:#3b1670;
@@ -19,7 +18,6 @@
     --danger:#ff6b6b;
     --paper-shadow: rgba(0,0,0,0.45);
     --avatar-base:#b98bff;
-    --paper:#f4e2b8;
   }
   html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg-dark-1),var(--bg-dark-2));color:var(--muted-light);-webkit-font-smoothing:antialiased}
   body[data-theme="light"]{background:linear-gradient(180deg,var(--bg-light-1),var(--bg-light-2));color:var(--muted-dark)}
@@ -63,7 +61,6 @@
   .fallen{opacity:0.28;transform:translateY(6px);transition:opacity 0.2s,transform 0.2s}
   footer{margin-top:12px;color:var(--muted-light);font-size:13px;text-align:center;padding:8px}
   @media(max-width:900px){main{flex-direction:column}.left,.right{flex:1}.avatar-box{width:220px;height:160px}}
-  /* confirmation modal */
   .modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:999}
   .modal-box{background:var(--bg-light-1);padding:18px;border-radius:10px;min-width:280px}
   body[data-theme="dark"] .modal-box{background:#1d0b22;color:var(--muted-light)}
@@ -190,7 +187,7 @@ let state = {
   xp:0,
   gender:'male',
   theme:'dark',
-  inventory: [], // slot 0 is reserved for trash indicator; items: {id,name,rarity}
+  inventory: [], // items: {id,name,rarity}
   tasks: [], // {id,text,type,importance,created,due,done,expired}
   logs: []
 };
@@ -201,7 +198,7 @@ let state = {
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){ const parsed = JSON.parse(raw); // merge carefully
+    if(raw){ const parsed = JSON.parse(raw);
       state = Object.assign(state, parsed);
       state.inventory = state.inventory || [];
       state.tasks = state.tasks || [];
@@ -217,10 +214,7 @@ function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
 function uid(pref='id'){ return pref + '_' + Math.random().toString(36).slice(2,9); }
 function nowISO(){ return new Date().toISOString(); }
 function fmtDate(iso){ if(!iso) return '--'; const d = new Date(iso); return d.toLocaleString(); }
-function minutesBetween(a,b){ return Math.floor((b-a)/60000); }
 function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
-
-/* logging */
 function logAdd(txt){
   state.logs.unshift('['+new Date().toLocaleTimeString()+'] '+txt);
   if(state.logs.length>300) state.logs.pop();
@@ -248,20 +242,17 @@ function addXP(amount){
     state.level++;
     const title = titleForLevel(state.level);
     logAdd(`Subiu para o nível ${state.level} — ${title}`);
-    playEffect('levelup');
   }
   renderStats();
   saveState();
 }
 
 function applyExpirationPenalty(task){
-  // potential XP
   const potentialXP = computeTaskXP(task);
   const typePenalty = TYPE_PENALTY[task.type] || 0;
   const importanceIdx = Number(task.importance || 0);
   const penaltyPercent = typePenalty + (importanceIdx * IMPORTANCE_FAIL_PENALTY_PER_LEVEL);
   const xpLost = Math.round(potentialXP * penaltyPercent);
-  // subtract from current xp and possibly levels
   let remaining = xpLost;
   if(state.xp >= remaining){
     state.xp -= remaining; remaining = 0;
@@ -275,12 +266,10 @@ function applyExpirationPenalty(task){
     }
   }
   logAdd(`Tarefa "${task.text}" expirou: perdeu ${xpLost} XP.`);
-  playEffect('fail');
   renderStats();
   saveState();
 }
 
-/* Titles by level (sample ranges up to 1000) */
 function titleForLevel(l){
   if(l >= 1000) return 'Lenda Eterna';
   if(l >= 500) return 'Arquimago da Constância';
@@ -313,7 +302,6 @@ function renderStats(){
   const pct = Math.min(100, Math.round(100 * (state.xp / xpForLevel(state.level))));
   xpfillEl.style.width = pct + '%';
   scheduledCountEl.textContent = `Agendadas: ${state.tasks.filter(t=>!t.done && !t.expired).length}`;
-  // title shown in log top maybe; also update header title if desired
 }
 
 function renderLogs(){
@@ -321,20 +309,16 @@ function renderLogs(){
   state.logs.slice(0,200).forEach(line => { const d = document.createElement('div'); d.textContent = line; logEl.appendChild(d); });
 }
 
-/* Inventory rendering - unlimited slots; first slot is trash */
-let selectedItem = null; // {index, item}
-
+/* INVENTORY */
+let selectedItem = null;
 function renderInventory(){
   slotContainer.innerHTML = '';
-  // ensure first slot is trash placeholder UI
   const trashSlot = document.createElement('div'); trashSlot.className = 'slot'; trashSlot.title='Lixeira (clique para excluir item selecionado)';
   trashSlot.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="7" width="12" height="12" rx="2" fill="#9b59b6"/><rect x="8" y="4" width="8" height="2" rx="1" fill="#9b59b6"/></svg>';
   trashSlot.addEventListener('click', ()=> {
     if(selectedItem && selectedItem.index !== 0){
-      // confirm deletion
       openConfirm(`Deseja realmente excluir "${selectedItem.item.name}"?`, ()=> {
-        // delete
-        state.inventory.splice(selectedItem.index - 1, 1); // because slot 0 is trash, inventory array starts at slot 1
+        state.inventory.splice(selectedItem.index - 1, 1);
         selectedItem = null;
         renderInventory();
         saveState();
@@ -343,52 +327,32 @@ function renderInventory(){
   });
   slotContainer.appendChild(trashSlot);
 
-  // render actual items: index offset by 1 to account for trash
   state.inventory.forEach((it, i) => {
     const slot = document.createElement('div'); slot.className = 'slot'; slot.dataset.idx = i+1;
     slot.innerHTML = `<div style="text-align:center">${it.name}</div><div class="label">${it.rarity}</div>`;
-    slot.addEventListener('click', ()=> {
-      handleSlotClick(i+1);
-    });
-    // highlight if selected
-    if(selectedItem && selectedItem.index === i+1){
-      slot.style.outline = '2px solid rgba(255,255,255,0.12)';
-    }
+    slot.addEventListener('click', ()=> handleSlotClick(i+1));
+    if(selectedItem && selectedItem.index === i+1) slot.style.outline = '2px solid rgba(255,255,255,0.12)';
     slotContainer.appendChild(slot);
   });
 
-  // an empty prompt slot so there's always an empty slot to click to move into
   const emptySlot = document.createElement('div'); emptySlot.className = 'slot empty'; emptySlot.dataset.idx = state.inventory.length + 1;
   emptySlot.title = 'Slot vazio (clique para mover item selecionado para cá)';
-  emptySlot.addEventListener('click', ()=> {
-    handleSlotClick(state.inventory.length + 1);
-  });
+  emptySlot.addEventListener('click', ()=> handleSlotClick(state.inventory.length + 1));
   slotContainer.appendChild(emptySlot);
 }
 
-/* handle clicking on slots (index with 0=trash, 1..n inventory positions) */
 function handleSlotClick(slotIndex){
-  // if click on trash is handled elsewhere (trash is index 0)
-  if(slotIndex === 0) return;
-  // if nothing selected, select this item if present
   if(!selectedItem){
     if(slotIndex <= state.inventory.length){
       selectedItem = { index: slotIndex, item: state.inventory[slotIndex - 1] };
-    } else {
-      // clicking empty with nothing selected does nothing
-      return;
+      renderInventory();
     }
-    renderInventory();
     return;
   }
-  // if item selected and clicked same slot -> deselect
   if(selectedItem.index === slotIndex){
     selectedItem = null; renderInventory(); return;
   }
-  // if clicked a different slot:
-  if(slotIndex === 0){ /* handled above; trash click use separate handler */ }
-  else if(slotIndex <= state.inventory.length){
-    // swap positions
+  if(slotIndex <= state.inventory.length){
     const srcIdx = selectedItem.index - 1;
     const dstIdx = slotIndex - 1;
     const tmp = state.inventory[dstIdx];
@@ -397,23 +361,52 @@ function handleSlotClick(slotIndex){
     selectedItem = null;
     renderInventory(); saveState();
   } else {
-    // clicked an empty slot at the end -> move item to end
     const srcIdx = selectedItem.index - 1;
     const moving = state.inventory.splice(srcIdx, 1)[0];
     state.inventory.push(moving);
-    selectedItem = null;
-    renderInventory(); saveState();
+    selectedItem = null; renderInventory(); saveState();
   }
 }
 
 /* ============================
    TASKS
    ============================ */
+function importanceLabel(i){ return ['Sem muita importância','Importante','Muito importante','Essencial'][Number(i) || 0]; }
+
+function timeRemainingText(task){
+  const now = Date.now();
+  const due = new Date(task.due).getTime();
+  if(due <= now) return '0h 0m';
+  const diff = due - now;
+  const days = Math.floor(diff / (24*3600*1000));
+  const hours = Math.floor((diff % (24*3600*1000)) / (3600*1000));
+  const minutes = Math.floor((diff % (3600*1000)) / 60000);
+  if(days > 0) return `${days}d ${hours}h`;
+  return `${hours}h ${minutes}m`;
+}
+
+function computeDeadline(type, dueInput){
+  const now = new Date();
+  if(dueInput){
+    const parsed = new Date(dueInput);
+    if(!isNaN(parsed)) return parsed.toISOString();
+  }
+  if(type === 'daily'){
+    return new Date(now.getTime() + 24*3600*1000).toISOString();
+  } else if(type === 'weekly'){
+    return new Date(now.getTime() + 7*24*3600*1000).toISOString();
+  } else {
+    const y = now.getFullYear();
+    const lastDay = daysInMonth(y, now.getMonth()+1);
+    return new Date(y, now.getMonth(), lastDay, 23, 59, 59).toISOString();
+  }
+}
+
 function renderTasks(){
   tasksListEl.innerHTML = '';
-  if(state.tasks.length === 0){ tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>'; renderNextMonster(); renderStats(); return; }
-  state.tasks.forEach((task) => {
-    if(task.done || task.expired) return;
+  const activeTasks = state.tasks.filter(t => !t.done && !t.expired);
+  if(activeTasks.length === 0){ tasksListEl.innerHTML = '<div class="small">Nenhuma tarefa.</div>'; renderNextMonster(); renderStats(); return; }
+  activeTasks.forEach((task) => {
     const el = document.createElement('div'); el.className = 'task-item';
     const left = document.createElement('div'); left.style.flex='1';
     const title = document.createElement('div'); title.textContent = task.text;
@@ -436,9 +429,20 @@ function renderTasks(){
   renderStats();
 }
 
-function importanceLabel(i){ return ['Sem muita importância','Importante','Muito importante','Essencial'][Number(i) || 0]; }
+function completeTask(id){
+  const taskIndex = state.tasks.findIndex(t=>t.id===id);
+  if(taskIndex === -1) return;
+  const task = state.tasks[taskIndex];
+  if(task.done) return;
+  const xp = computeTaskXP(task);
+  addXP(xp);
+  task.done = true;
+  logAdd(`Tarefa "${task.text}" concluída (+${xp} XP)`);
+  // remove from array (we keep history only in logs)
+  state.tasks.splice(taskIndex, 1);
+  saveState();
+  renderTasks();
+  renderNextMonster();
+}
 
-function timeRemainingText(task){
-  const now = Date.now();
-  const due =
-  
+/* NEXT MONSTER (correct implementation
