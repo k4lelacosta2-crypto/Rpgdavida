@@ -1,30 +1,311 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RPG da Vida — Web</title>
-  <link rel="icon" href="/assets/app_icon.png" />
-  <style>
-    body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#120421,#4c1d95);color:#fff}
-    .app{max-width:480px;margin:0 auto;padding:12px}
-  </style>
-
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#4c1d95">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(()=>{});
-    }
-  </script>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>RPG de Tarefas</title>
+<meta name="theme-color" content="#12021a"/>
+<style>
+:root{
+  --bg-dark:#0b0410; --bg-mid:#2b0a44; --accent:#8a4efd; --paper:#f0d88a;
+  --txt:#efe9ff;
+  --rar1:#cfcfcf; --rar2:#6fe18a; --rar3:#66b3ff; --rar4:#c084fc; --rar5:#ffd166;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg-dark),var(--bg-mid));color:var(--txt)}
+.container{max-width:1100px;margin:0 auto;padding:14px}
+.header{display:flex;justify-content:space-between;align-items:center}
+.title{font-weight:900;font-size:20px;color:var(--accent)}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.03));padding:12px;border-radius:12px}
+.center{display:flex;gap:12px;margin-top:12px}
+.left{flex:1}
+.avatarBox{width:300px;height:260px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(76,29,149,0.45),rgba(31,6,74,0.45));border:3px solid rgba(192,148,255,0.12)}
+.avatarBox img{width:192px;height:192px;image-rendering:pixelated}
+.invList{max-height:440px;overflow:auto;margin-top:8px}
+.item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);margin-bottom:6px}
+.item img{width:64px;height:64px;image-rendering:pixelated}
+.slot{padding:10px;border-radius:8px;background:rgba(255,255,255,0.03);text-align:center}
+.button{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+.primary{background:var(--accent);color:#111;font-weight:800}
+.rarity{padding:4px 8px;border-radius:6px;font-weight:900}
+.r1{background:var(--rar1)} .r2{background:var(--rar2)} .r3{background:var(--rar3)} .r4{background:var(--rar4)} .r5{background:var(--rar5)}
+.footer{text-align:center;margin-top:12px;color:#aaa}
+@media(max-width:820px){ .center{flex-direction:column} .avatarBox{width:220px;height:200px} .avatarBox img{width:160px;height:160px} .title{font-size:18px}}
+.parch{background:linear-gradient(180deg,#f7e0ad,#efd18b);color:#100;padding:8px;border-radius:8px;border:2px solid rgba(120,20,120,0.08)}
+.small{font-size:13px;color:#d6cff0}
+.artGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px}
+.artCard{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;text-align:center}
+.artCard img{width:128px;height:128px;image-rendering:pixelated}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-</html>
+<div class="container">
+  <div class="header">
+    <div class="title">RPG de Tarefas</div>
+    <div><button id="btnSettings" class="button">☰</button></div>
+  </div>
+
+  <!-- Start panel -->
+  <div id="startPanel" class="panel" style="margin-top:12px;text-align:center">
+    <h2 style="margin:6px 0;color:var(--accent)">Grimório — RPG de Tarefas</h2>
+    <div class="small">Bem-vindo ao Grimório do herói. Escolha gênero e inicie a jornada. Efeitos sonoros serão solicitados no primeiro toque.</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+      <button id="maleBtn" class="button">Masculino</button>
+      <button id="femaleBtn" class="button">Feminino</button>
+    </div>
+    <div style="margin-top:12px"><button id="startBtn" class="button primary">Iniciar Jornada</button></div>
+  </div>
+
+  <!-- Game UI -->
+  <div id="gameUI" style="display:none">
+    <div class="center">
+      <div class="left panel">
+        <div style="display:flex;justify-content:space-between;align-items:center"><strong>Inventário</strong><div>Agendadas: <span id="scheduledCount">0</span></div></div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <input id="newTitle" placeholder="Nova tarefa..." style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+          <select id="newType"><option value="diaria">Diária</option><option value="semanal">Semanal</option><option value="mensal">Mensal</option></select>
+          <select id="newImp"><option value="1">Sem muita importância</option><option value="2">Importante</option><option value="3">Muito importante</option><option value="4">Essencial</option></select>
+          <input id="newXP" placeholder="XP" style="width:70px;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:#fff"/>
+          <button id="addTask" class="button">Adicionar</button>
+        </div>
+
+        <div class="invList" id="itemsContainer"></div>
+
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button id="openChest" class="button">Abrir baú</button>
+          <button id="gainXP" class="button primary">Simular vitória (+XP)</button>
+          <button id="loseXP" class="button" style="background:#ef4444;color:#fff">Simular falha</button>
+          <button id="viewArts" class="button" style="background:#6b21a8;color:#fff">Ver artes</button>
+        </div>
+      </div>
+
+      <div style="width:360px;display:flex;flex-direction:column;gap:10px;align-items:center">
+        <div class="avatarBox panel">
+          <img id="avatarImg" src="" alt="avatar"/>
+        </div>
+        <div class="slot panel slot">Arma: <div id="slotWeaponName" style="font-weight:800"></div></div>
+        <div class="slot panel slot">Armadura: <div id="slotArmorName" style="font-weight:800"></div></div>
+        <div class="slot panel slot">Cosmético: <div id="slotCosName" style="font-weight:800"></div></div>
+        <div style="width:100%" class="panel">Nível <span id="level">1</span> — XP: <span id="xp">0</span>/<span id="xpNext">100</span>
+          <div style="height:12px;width:100%;background:#372847;border-radius:8px;margin-top:6px;overflow:hidden"><div id="xpBar" style="height:100%;width:0%;background:linear-gradient(90deg,#7be3ff,#c084fc)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- arts panel -->
+    <div id="artsPanel" class="panel" style="margin-top:12px;display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center"><strong>Galeria de Artes (pré-visualização)</strong><button id="hideArts" class="button">Fechar</button></div>
+      <div id="artsGrid" class="artGrid"></div>
+    </div>
+  </div>
+
+  <div style="height:20px"></div>
+  <div class="footer">RPG de Tarefas — Registro dos efeitos e visuais do herói das tarefas</div>
+</div>
+
+<script>
+/* ------------------------------
+  ASSETS EMBUTIDOS (SVG placeholders estilizadas)
+  - Estas imagens representam as artes do Grimório (versões escura/clara, itens, baú, cenário).
+  - Para usar artes reais: substitua as strings abaixo por data URIs (data:image/png;base64,...) ou por caminhos locais.
+-------------------------------*/
+
+// Avatar (dark / light) - masculino & feminino variants can be combined
+const AVATAR_DARK = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'>
+  <rect width='100%' height='100%' fill='#27102a'/>
+  <g transform='translate(12,6) scale(0.8)'>
+    <rect x='8' y='36' width='96' height='72' rx='10' fill='#6b84c6' stroke='#3b2a5a'/>
+    <circle cx='56' cy='28' r='22' fill='#f2d9c9' stroke='#3b2a5a'/>
+    <rect x='34' y='86' width='44' height='10' rx='4' fill='#2b0f2a'/>
+    <text x='56' y='120' font-size='8' fill='#eee' text-anchor='middle'>Avatar Dark</text>
+  </g>
+</svg>`
+);
+
+const AVATAR_LIGHT = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'>
+  <rect width='100%' height='100%' fill='#efe6d0'/>
+  <g transform='translate(12,6) scale(0.8)'>
+    <rect x='8' y='36' width='96' height='72' rx='10' fill='#9fb4ff' stroke='#7a5a87'/>
+    <circle cx='56' cy='28' r='22' fill='#f7e6d0' stroke='#7a5a87'/>
+    <rect x='34' y='86' width='44' height='10' rx='4' fill='#c8b9a4'/>
+    <text x='56' y='120' font-size='8' fill='#2b0f2a' text-anchor='middle'>Avatar Light</text>
+  </g>
+</svg>`
+);
+
+// Chest
+const CHEST_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'>
+  <rect width='100%' height='100%' fill='#20102a'/>
+  <g transform='translate(14,18)'>
+    <rect x='6' y='34' width='92' height='52' rx='6' fill='#5b2d2d' stroke='#260b0b' stroke-width='2'/>
+    <rect x='6' y='18' width='92' height='28' rx='6' fill='#7b3b3b' stroke='#380a0a' stroke-width='2'/>
+    <text x='52' y='96' font-size='10' fill='#ffffd8' text-anchor='middle'>Baú</text>
+  </g>
+</svg>`
+);
+
+// Simple icons for weapon / armor / accessory (dark themed)
+const ICON_WEAPON = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='#241027'/><g fill='#cfcfcf'><rect x='56' y='22' width='8' height='64' rx='2'/><polygon points='56,22 80,14 76,26' /></g><text x='64' y='116' font-size='10' fill='#ddd' text-anchor='middle'>Espada</text></svg>`
+);
+const ICON_ARMOR = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='#20102a'/><g fill='#9fc4ff'><rect x='28' y='30' width='72' height='68' rx='10'/></g><text x='64' y='116' font-size='10' fill='#fff' text-anchor='middle'>Armadura</text></svg>`
+);
+const ICON_COS = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='#24102a'/><g fill='#ffd87a'><circle cx='64' cy='56' r='18'/><rect x='54' y='80' width='20' height='10' rx='4'/></g><text x='64' y='116' font-size='10' fill='#fff' text-anchor='middle'>Cosmético</text></svg>`
+);
+
+// Background scene (vilarejo dark)
+const SCENE_VILLAGE_DARK = 'data:image/svg+xml;utf8,'+encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='512' height='256'><rect width='100%' height='100%' fill='#0b0210'/><g fill='#2b0a44'><rect x='0' y='160' width='512' height='96'/></g><g fill='#3a1f4a'><rect x='40' y='110' width='120' height='60'/><rect x='200' y='90' width='150' height='80'/></g><text x='256' y='40' fill='#cfc7ff' font-size='20' text-anchor='middle'>Vilarejo (escuro)</text></svg>`
+);
+
+// Background scene (vilarejo light)
+const SCENE_VILLAGE_LIGHT = 'data:image/svg+xml;utf8,'+encodeURIComponent(
+`<svg xmlns='http://www.w3.org/2000/svg' width='512' height='256'><rect width='100%' height='100%' fill='#f2e6c8'/><g fill='#a58b6b'><rect x='0' y='160' width='512' height='96'/></g><g fill='#d4b586'><rect x='40' y='110' width='120' height='60'/><rect x='200' y='90' width='150' height='80'/></g><text x='256' y='40' fill='#3b2a5a' font-size='20' text-anchor='middle'>Vilarejo (claro)</text></svg>`
+);
+
+/* --------- Demo embedded item set (uses the placeholders above) ---------- */
+const EMBEDDED_ITEMS = [
+  { name:'Graveto Inicial', type:'weapon', rarity:1, rarityName:'Comum', dataUri:ICON_WEAPON },
+  { name:'Espada Encantada', type:'weapon', rarity:3, rarityName:'Raro', dataUri:ICON_WEAPON },
+  { name:'Cajado Místico', type:'weapon', rarity:4, rarityName:'Épico', dataUri:ICON_WEAPON },
+  { name:'Armadura de Lona', type:'armor', rarity:1, rarityName:'Comum', dataUri:ICON_ARMOR },
+  { name:'Peitoral Raro', type:'armor', rarity:3, rarityName:'Raro', dataUri:ICON_ARMOR },
+  { name:'Pingente Lendário', type:'cos', rarity:5, rarityName:'Lendário', dataUri:ICON_COS }
+];
+
+/* -------------------------
+   State, persistence & helpers
+   -------------------------*/
+const STORAGE_KEY = 'rpg_de_tarefas_assets_demo_v1';
+let state = {
+  character:{gender:'male',level:1,xp:0,equipped:{weapon:null,armor:null,cos:null}},
+  inventory:[],
+  tasks:[],
+  settings:{mode:'dark'}
+};
+try{ const s = localStorage.getItem(STORAGE_KEY); if(s) state = JSON.parse(s); }catch(e){ console.warn('no save'); }
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function xpToNext(l){ return Math.floor(100*Math.pow(1.35,l-1)); }
+function renderXP(){ document.getElementById('level').textContent = state.character.level; document.getElementById('xp').textContent = state.character.xp; document.getElementById('xpNext').textContent = xpToNext(state.character.level); const pct = Math.max(4, Math.min(100, Math.round((state.character.xp/xpToNext(state.character.level))*100))); document.getElementById('xpBar').style.width = pct + '%'; save(); }
+
+/* inventory rendering */
+function renderInventory(){
+  const container = document.getElementById('itemsContainer'); container.innerHTML = '';
+  if(state.inventory.length===0){ container.innerHTML = '<div style="color:#aaa;padding:10px">Inventário vazio</div>'; return; }
+  state.inventory.forEach((it,idx)=>{
+    const el = document.createElement('div'); el.className='item';
+    el.innerHTML = `<img src="${it.dataUri||ICON_WEAPON}"/><div style="flex:1"><div style="font-weight:900">${it.name}</div><div class="rarity r${it.rarity}">${it.rarityName}</div></div>`;
+    const eq = document.createElement('button'); eq.textContent='Equipar'; eq.className='button'; eq.onclick = ()=>{ equipItem(idx); };
+    const del = document.createElement('button'); del.textContent='Descartar'; del.className='button'; del.onclick = ()=>{ state.inventory.splice(idx,1); renderInventory(); save(); };
+    el.appendChild(eq); el.appendChild(del); container.appendChild(el);
+  });
+}
+
+function equipItem(index){
+  const it = state.inventory[index]; if(!it) return;
+  if(it.type==='weapon') state.character.equipped.weapon = it;
+  if(it.type==='armor') state.character.equipped.armor = it;
+  if(it.type==='cos') state.character.equipped.cos = it;
+  document.getElementById('slotWeaponName').textContent = state.character.equipped.weapon? state.character.equipped.weapon.name : '';
+  document.getElementById('slotArmorName').textContent = state.character.equipped.armor? state.character.equipped.armor.name : '';
+  document.getElementById('slotCosName').textContent = state.character.equipped.cos? state.character.equipped.cos.name : '';
+  updateAvatar(); save(); showEquipEffect();
+}
+
+/* avatar update */
+function updateAvatar(){
+  const el = document.getElementById('avatarImg');
+  const mode = state.settings.mode;
+  // priority: armor visual > cosmetic > base avatar
+  if(state.character.equipped.armor) el.src = state.character.equipped.armor.dataUri;
+  else if(state.character.equipped.cos) el.src = state.character.equipped.cos.dataUri;
+  else el.src = (mode === 'dark' ? AVATAR_DARK : AVATAR_LIGHT);
+}
+
+/* open chest */
+function weightedRarity(){
+  const r = Math.random()*100;
+  if(r<2) return 5;
+  if(r<12) return 4;
+  if(r<35) return 3;
+  if(r<70) return 2;
+  return 1;
+}
+function openChest(){
+  const rarity = weightedRarity();
+  const cand = EMBEDDED_ITEMS.filter(x=>x.rarity<=rarity+1); // pick similar or lower rar
+  let pick = cand.length? cand[Math.floor(Math.random()*cand.length)] : EMBEDDED_ITEMS[Math.floor(Math.random()*EMBEDDED_ITEMS.length)];
+  const it = Object.assign({}, pick);
+  it.name = pick.name + ' (' + pick.rarityName + ')';
+  state.inventory.push(it);
+  renderInventory(); save();
+  animateChest(); playChestEffect();
+  setTimeout(()=>alert('Baú aberto! Recebeste: ' + it.name), 350);
+}
+function animateChest(){
+  const img = document.createElement('img'); img.src = CHEST_SVG; img.style.position='fixed'; img.style.left='50%'; img.style.top='50%'; img.style.transform='translate(-50%,-50%)'; img.style.width='200px'; img.style.zIndex=9999; document.body.appendChild(img);
+  setTimeout(()=>img.remove(),900);
+}
+
+/* tasks (simplified): add task -> open chest & xp */
+document.getElementById('addTask').addEventListener('click', ()=>{
+  const title = document.getElementById('newTitle').value.trim(); if(!title) return alert('Nome da tarefa?');
+  const type = document.getElementById('newType').value; const imp = Number(document.getElementById('newImp').value); const xp = Number(document.getElementById('newXP').value) || 20;
+  const t = { id:'t-'+Math.random().toString(36).slice(2,9), title, type, importance:imp, xp, created:Date.now(), done:false };
+  state.tasks.unshift(t); document.getElementById('newTitle').value=''; document.getElementById('scheduledCount').textContent = state.tasks.length;
+  save();
+  // reward: slight bonus based on importance (2.5% per level)
+  const bonus = Math.round(xp * (0.025 * imp));
+  openChest(); gainXP(Math.round(xp + bonus));
+});
+
+/* xp & level */
+function gainXP(amount){ state.character.xp += amount; while(state.character.xp >= xpToNext(state.character.level)){ state.character.xp -= xpToNext(state.character.level); state.character.level++; } renderXP(); }
+
+/* simple sound effects */
+let audioCtx = null;
+function ensureAudio(){ if(audioCtx) return audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+function playChestEffect(){ ensureAudio(); const ctx = audioCtx; const now = ctx.currentTime; const o = ctx.createOscillator(); const g = ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(880, now); g.gain.setValueAtTime(0, 0); g.gain.linearRampToValueAtTime(0.06, now+0.02); g.gain.exponentialRampToValueAtTime(0.0001, now+0.7); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(now+0.9); }
+function playAttackEffect(){ ensureAudio(); const ctx = audioCtx; const now = ctx.currentTime; const o = ctx.createOscillator(); const g = ctx.createGain(); o.type='square'; o.frequency.setValueAtTime(220, now); g.gain.setValueAtTime(0.08, now); g.gain.exponentialRampToValueAtTime(0.0001, now+0.15); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(now+0.18); }
+function playWinEffect(){ ensureAudio(); const ctx = audioCtx; const now = ctx.currentTime; const o1 = ctx.createOscillator(), g1 = ctx.createGain(); o1.type='sine'; o1.frequency.setValueAtTime(440, now); g1.gain.setValueAtTime(0.06, now); g1.gain.exponentialRampToValueAtTime(0.0001, now+0.6); o1.connect(g1); g1.connect(ctx.destination); o1.start(); o1.stop(now+0.7); const o2 = ctx.createOscillator(), g2 = ctx.createGain(); o2.type='sine'; o2.frequency.setValueAtTime(660, now+0.05); g2.gain.setValueAtTime(0.04, now+0.05); g2.gain.exponentialRampToValueAtTime(0.0001, now+0.65); o2.connect(g2); g2.connect(ctx.destination); o2.start(); o2.stop(now+0.75); }
+
+/* arts gallery: show placeholders (dark & light grouped) */
+document.getElementById('viewArts').addEventListener('click', ()=>{
+  const panel = document.getElementById('artsPanel'); const grid = document.getElementById('artsGrid'); panel.style.display='block'; grid.innerHTML='';
+  // show avatar dark & light
+  const cards = [
+    {title:'Avatar (Escuro)', src:AVATAR_DARK},
+    {title:'Avatar (Claro)', src:AVATAR_LIGHT},
+    {title:'Graveto Inicial', src:ICON_WEAPON},
+    {title:'Espada Encantada', src:ICON_WEAPON},
+    {title:'Armadura de Lona', src:ICON_ARMOR},
+    {title:'Peitoral Raro', src:ICON_ARMOR},
+    {title:'Pingente Lendário', src:ICON_COS},
+    {title:'Baú Mágico', src:CHEST_SVG},
+    {title:'Vilarejo (Escuro)', src:SCENE_VILLAGE_DARK},
+    {title:'Vilarejo (Claro)', src:SCENE_VILLAGE_LIGHT}
+  ];
+  cards.forEach(c=>{
+    const d = document.createElement('div'); d.className='artCard';
+    d.innerHTML = `<img src="${c.src}" alt="${c.title}"/><div style="margin-top:6px;font-weight:800">${c.title}</div>`;
+    grid.appendChild(d);
+  });
+});
+
+/* hide arts */
+document.getElementById('hideArts').addEventListener('click', ()=>{ document.getElementById('artsPanel').style.display='none'; });
+
+/* ui bindings */
+document.getElementById('openChest').addEventListener('click', openChest);
+document.getElementById('gainXP').addEventListener('click', ()=>{ gainXP(25); playWinEffect(); });
+document.getElementById('loseXP').addEventListener('click', ()=>{ const loss = Math.round(state.character.xp * 0.3); state.character.xp = Math.max(0, state.character.xp-loss); renderXP(); alert('Penalidade: -'+loss+' XP'); });
+
+document.getElementById('maleBtn').addEventListene
