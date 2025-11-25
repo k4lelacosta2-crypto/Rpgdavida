@@ -1,0 +1,1 @@
+Grimório das Tarefas - Estrutura básica gerada.
