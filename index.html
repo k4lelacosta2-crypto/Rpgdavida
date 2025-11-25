@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset='utf-8'><title>RPG da Vida</title><link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#4c1d95">
+</head><body><div id='root'>Demo</div>
+<!-- Loading screen -->
+<style>
+#loadingScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#120421,#4c1d95);color:#fff;z-index:9999;flex-direction:column}
+#loadingBar{width:260px;height:14px;background:#333;border-radius:8px;overflow:hidden;margin-top:12px}
+#loadingFill{height:100%;width:0%;background:linear-gradient(90deg,#5dc3ff,#c084fc);transition:width 0.4s}
+</style>
+<div id="loadingScreen">
+  <div style="font-weight:800;font-size:20px">RPG da Vida — Carregando...</div>
+  <div id="loadingBar"><div id="loadingFill"></div></div>
+</div>
+
+<script>
+function simulateLoading(){
+  const fill = document.getElementById('loadingFill');
+  let v = 0;
+  const t = setInterval(()=>{ v += Math.random()*18; if(v>=100){ v=100; fill.style.width='100%'; clearInterval(t); setTimeout(()=>{ document.getElementById('loadingScreen').style.display='none'; },400); } else { fill.style.width = Math.floor(v)+'%'; } }, 180);
+}
+simulateLoading();
+
+window.addEventListener('load', ()=>{
+  const aud = document.querySelector('audio');
+  if(aud){
+    aud.volume = 0.6;
+    const p = aud.play();
+    if(p !== undefined){
+      p.then(()=>{ /* autoplay started */ }).catch(()=>{
+        const btn = document.createElement('button');
+        btn.textContent = 'Ativar Som';
+        btn.style.position='fixed'; btn.style.right='12px'; btn.style.top='80px'; btn.style.zIndex=10000; btn.style.padding='8px 12px'; btn.style.borderRadius='6px'; btn.style.background='#7C3AED'; btn.style.color='#fff';
+        btn.onclick = ()=>{ aud.play().catch(()=>{}); btn.remove(); };
+        document.body.appendChild(btn);
+      });
+    }
+  }
+});
+</script>
+
+</body></html>
