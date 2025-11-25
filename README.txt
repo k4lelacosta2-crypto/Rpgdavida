@@ -1,0 +1,1 @@
+This is the production-ready dist folder for RPG da Vida. Upload contents to Netlify (drag & drop).

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RPG da Vida — Web</title>
+  <link rel="icon" href="/assets/app_icon.png" />
+  <style>
+    body{margin:0;font-family:Inter,Arial;background:linear-gradient(180deg,#120421,#4c1d95);color:#fff}
+    .app{max-width:480px;margin:0 auto;padding:12px}
+  </style>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#4c1d95">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(()=>{});
+    }
+  </script>
+
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
